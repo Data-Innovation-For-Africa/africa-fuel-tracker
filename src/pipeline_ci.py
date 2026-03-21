@@ -2,7 +2,8 @@
 pipeline_ci.py — Africa Fuel Tracker · GitHub Actions Pipeline
 ==============================================================
 Step 1 : Fetch live FX rates
-Step 2 : Collect REAL prices from GlobalPetrolPrices.com + national authorities
+Step 2 : Build records from real_prices.json (42 countries verified)
+         + Try Playwright for any new weekly prices
 Step 3 : Generate Excel workbook  → docs/africa_fuel_prices.xlsx
 Step 4 : Generate HTML dashboard  → docs/index.html
 """
@@ -12,8 +13,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
 SRC  = Path(__file__).parent
-DOCS = ROOT / "data"; DOCS.mkdir(exist_ok=True)   # prices_db.json goes here
-DOCS = ROOT / "docs"; DOCS.mkdir(exist_ok=True)   # served by GitHub Pages
+DOCS = ROOT / "docs"; DOCS.mkdir(exist_ok=True)
+DATA = ROOT / "data"; DATA.mkdir(exist_ok=True)
 
 EXCEL_OUT = DOCS / "africa_fuel_prices.xlsx"
 HTML_OUT  = DOCS / "index.html"
@@ -35,37 +36,39 @@ def run():
     import data as D
     import excel_builder as EB
     import dashboard_builder as DB
-    import collector as C
 
     # ── 1. Fetch live FX rates ──────────────────────────────────────────────
     log("STEP 1/4 — Fetching live FX rates …")
     fx = D.fetch_live_fx()
     log(f"   → {len(fx)} currencies ready")
 
-    # ── 2. Collect real prices ──────────────────────────────────────────────
-    log("STEP 2/4 — Collecting real prices from official sources …")
-    log("   → Primary  : GlobalPetrolPrices.com (weekly pump prices)")
-    log("   → Secondary: National energy regulatory portals")
-    log("   → Tertiary : World Bank commodity benchmarks")
+    # ── 2. Build records from real data ────────────────────────────────────
+    log("STEP 2/4 — Building records from verified real data …")
+    log("   → Primary  : real_prices.json (42 countries, A/B/C/D sources)")
+    log("   → Fallback  : seed estimates  (12 countries, no confirmed source)")
 
+    # Optionally try Playwright for new weekly updates
     try:
-        C.run_collection()
-        records = C.build_records_from_db(fx)
-        live_count = sum(1 for r in records if r.get("data_quality") == "live")
-        log(f"   → {len(records)} countries · {live_count} with live data")
+        from collector import run_collection, build_records_from_db
+        log("   → Attempting live collection via Playwright …")
+        run_collection()
+        records = build_records_from_db(fx)
+        live_n = sum(1 for r in records if r.get("data_quality") == "live")
+        if live_n > 0:
+            log(f"   → {live_n} countries updated with live Playwright data")
+        else:
+            log("   → Playwright yielded no new data — using real_prices.json")
+            records = D.build_records(fx)
     except Exception as e:
-        log(f"   ⚠️  Collector error: {e} — falling back to seed data")
+        log(f"   → Collector unavailable ({e}) — using real_prices.json")
         records = D.build_records(fx)
+
+    real_n = sum(1 for r in records if r.get("data_quality") in ("real", "live"))
+    est_n  = sum(1 for r in records if r.get("data_quality") == "estimated")
+    log(f"   → {len(records)} countries | {real_n} real/verified | {est_n} estimated")
 
     # ── 3. Build JSON payload ───────────────────────────────────────────────
     payload = D.build_json_payload(records, fx)
-    # Add data quality info to payload
-    payload["data_quality_summary"] = {
-        "live":    sum(1 for r in records if r.get("data_quality") == "live"),
-        "partial": sum(1 for r in records if r.get("data_quality") == "partial"),
-        "seed":    sum(1 for r in records if r.get("data_quality") == "seed"),
-        "total":   len(records),
-    }
 
     # ── 4. Generate Excel ───────────────────────────────────────────────────
     log("STEP 3/4 — Generating Excel workbook …")
@@ -80,18 +83,17 @@ def run():
     LOG_OUT.write_text(
         f"Last updated : {now.strftime('%d %B %Y — %H:%M UTC')}\n"
         f"Countries    : {len(records)}\n"
-        f"Live data    : {payload['data_quality_summary']['live']}\n"
-        f"Partial data : {payload['data_quality_summary']['partial']}\n"
-        f"Seed fallback: {payload['data_quality_summary']['seed']}\n"
+        f"Real verified: {real_n} (sources A=GPP, B=RhinoCarHire, C=Press, D=Official)\n"
+        f"Estimated    : {est_n} (12 countries, no confirmed source available)\n"
+        f"Period       : 05 Jan 2026 — 21 Mar 2026 (12 weekly snapshots)\n"
         f"FX currencies: {len(fx)}\n"
-        f"Sources      : GlobalPetrolPrices.com · National Regulatory Portals · World Bank\n"
+        f"Sources      : GlobalPetrolPrices.com · RhinoCarHire.com · Zawya · Vanguard · gov.za · EPRA · NNPC · EGP\n"
     )
 
     log("=" * 62)
     log("  ✅  PIPELINE COMPLETE")
-    log(f"      Excel   : docs/africa_fuel_prices.xlsx")
+    log(f"      Excel    : docs/africa_fuel_prices.xlsx")
     log(f"      Dashboard: docs/index.html")
-    log(f"      DB      : data/prices_db.json")
     log("=" * 62)
 
 

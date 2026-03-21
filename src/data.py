@@ -1,43 +1,76 @@
 """
 data.py — Africa Fuel Tracker · Master Data Module
 ===================================================
-Period  : 1 January 2026 → 20 March 2026  (78 days, 12 weekly snapshots)
-Prices  : USD/L gasoline, diesel, LPG/kg  +  local national currency
-FX rates: 41 currencies — central bank reference rates, March 2026
-Sources : GlobalPetrolPrices.com · OPEC · World Bank · National Regulatory Portals
+Period  : 1 January 2026 → 21 March 2026 (12 weekly snapshots)
+Source  : Prix_Carburant_Afrique_2026_REEL.xlsx
+          42 countries: REAL verified data (GPP · RhinoCarHire · Press · Official)
+          12 countries: calibrated estimates (not covered by any accessible source)
+
+Week labels: W01 05-Jan … W12 21-Mar
 """
 
-import datetime, random, requests
+import datetime, requests
 
 # ── Period ─────────────────────────────────────────────────────────────────────
-PERIOD_START = datetime.date(2026, 1, 1)
-PERIOD_END   = datetime.date(2026, 3, 20)
+PERIOD_START  = datetime.date(2026, 1, 1)
+PERIOD_END    = datetime.date(2026, 3, 21)
 
-# Build weekly snapshot dates every 7 days
-WEEK_DATES = []
-d = PERIOD_START
-while d <= PERIOD_END:
-    WEEK_DATES.append(d)
-    d += datetime.timedelta(weeks=1)
-if WEEK_DATES[-1] != PERIOD_END:
-    WEEK_DATES.append(PERIOD_END)
-
+# 12 weekly dates (every Monday from Jan 5 + final snapshot Mar 21)
+WEEK_DATES = [
+    datetime.date(2026,  1,  5),  # W01
+    datetime.date(2026,  1, 12),  # W02
+    datetime.date(2026,  1, 19),  # W03
+    datetime.date(2026,  1, 26),  # W04
+    datetime.date(2026,  2,  2),  # W05
+    datetime.date(2026,  2,  9),  # W06
+    datetime.date(2026,  2, 16),  # W07
+    datetime.date(2026,  2, 23),  # W08
+    datetime.date(2026,  3,  2),  # W09
+    datetime.date(2026,  3,  9),  # W10
+    datetime.date(2026,  3, 16),  # W11
+    datetime.date(2026,  3, 21),  # W12
+]
 WEEK_LABELS = [d.strftime("%d %b") for d in WEEK_DATES]
 N_WEEKS     = len(WEEK_DATES)   # 12
 
+
 # ── FX Reference Rates (LC per 1 USD, March 2026) ─────────────────────────────
 FX_RATES = {
-    "DZD": 134.50,  "AOA": 910.00,  "XOF": 603.50,  "BWP":  13.70,
-    "BIF":2920.00,  "CVE": 100.50,  "XAF": 603.50,  "KMF": 451.00,
-    "CDF":2820.00,  "DJF": 177.70,  "EGP":  50.20,  "ERN":  15.00,
-    "SZL":  18.55,  "ETB": 131.00,  "GMD":  73.00,  "GHS":  15.70,
-    "GNF":8650.00,  "LRD": 194.00,  "LYD":   4.85,  "MGA":4620.00,
-    "MWK":1735.00,  "MRU":  39.50,  "MUR":  46.20,  "MAD":  10.02,
-    "MZN":  64.10,  "NAD":  18.55,  "NGN":1620.00,  "RWF":1415.00,
-    "STN":  22.60,  "SCR":  14.15,  "SLL":22500.0,  "SOS": 572.00,
-    "ZAR":  18.55,  "SSP":1320.00,  "SDG": 510.00,  "TZS":2720.00,
-    "TND":   3.12,  "UGX":3720.00,  "ZMW":  27.20,  "ZWG":  13.60,
-    "KES": 130.50,  "LSL":  18.55,
+    "DZD": 134.50, "AOA": 910.00, "XOF": 603.50, "BWP":  13.70,
+    "BIF":2920.00, "CVE": 100.50, "XAF": 603.50, "KMF": 451.00,
+    "CDF":2820.00, "DJF": 177.70, "EGP":  50.20, "ERN":  15.00,
+    "SZL":  18.55, "ETB": 131.00, "GMD":  73.00, "GHS":  15.70,
+    "GNF":8650.00, "LRD": 194.00, "LYD":   4.85, "MGA":4620.00,
+    "MWK":1735.00, "MRU":  39.50, "MUR":  46.20, "MAD":  10.02,
+    "MZN":  64.10, "NAD":  18.55, "NGN":1620.00, "RWF":1415.00,
+    "STN":  22.60, "SCR":  14.15, "SLL":22500.0, "SOS": 572.00,
+    "ZAR":  18.55, "SSP":1320.00, "SDG": 510.00, "TZS":2720.00,
+    "TND":   3.12, "UGX":3720.00, "ZMW":  27.20, "ZWG":  13.60,
+    "KES": 130.50, "LSL":  18.55,
+}
+
+CB_SOURCES = {
+    "DZD":"Banque d'Algerie","AOA":"Banco Nacional de Angola",
+    "XOF":"BCEAO / BEAC","BWP":"Bank of Botswana",
+    "BIF":"Banque de la Republique du Burundi","CVE":"Banco de Cabo Verde",
+    "XAF":"BEAC","KMF":"Banque Centrale des Comores",
+    "CDF":"Banque Centrale du Congo","DJF":"Banque Centrale de Djibouti",
+    "EGP":"Central Bank of Egypt","ERN":"Bank of Eritrea",
+    "SZL":"Central Bank of Eswatini","ETB":"National Bank of Ethiopia",
+    "GMD":"Central Bank of The Gambia","GHS":"Bank of Ghana",
+    "GNF":"BCRG","LRD":"Central Bank of Liberia",
+    "LYD":"Central Bank of Libya","MGA":"Banque Centrale de Madagascar",
+    "MWK":"Reserve Bank of Malawi","MRU":"Banque Centrale de Mauritanie",
+    "MUR":"Bank of Mauritius","MAD":"Bank Al-Maghrib",
+    "MZN":"Banco de Mocambique","NAD":"Bank of Namibia",
+    "NGN":"Central Bank of Nigeria","RWF":"National Bank of Rwanda",
+    "STN":"BCSTP","SCR":"Central Bank of Seychelles",
+    "SLL":"Bank of Sierra Leone","SOS":"Central Bank of Somalia",
+    "ZAR":"South African Reserve Bank","SSP":"Bank of South Sudan",
+    "SDG":"Central Bank of Sudan","TZS":"Bank of Tanzania",
+    "TND":"Banque Centrale de Tunisie","UGX":"Bank of Uganda",
+    "ZMW":"Bank of Zambia","ZWG":"Reserve Bank of Zimbabwe",
+    "KES":"Central Bank of Kenya","LSL":"Central Bank of Lesotho",
 }
 
 # ── Country definitions ────────────────────────────────────────────────────────
@@ -100,111 +133,247 @@ COUNTRIES = [
 
 REGIONS = ["North Africa","West Africa","East Africa","Central Africa","Southern Africa"]
 
-CB_SOURCES = {
-    "DZD":"Banque d'Algerie",         "AOA":"Banco Nacional de Angola",
-    "XOF":"BCEAO / BEAC",             "BWP":"Bank of Botswana",
-    "BIF":"Banque de la Republique du Burundi","CVE":"Banco de Cabo Verde",
-    "XAF":"BEAC",                     "KMF":"Banque Centrale des Comores",
-    "CDF":"Banque Centrale du Congo","DJF":"Banque Centrale de Djibouti",
-    "EGP":"Central Bank of Egypt",    "ERN":"Bank of Eritrea",
-    "SZL":"Central Bank of Eswatini","ETB":"National Bank of Ethiopia",
-    "GMD":"Central Bank of The Gambia","GHS":"Bank of Ghana",
-    "GNF":"BCRG",                     "LRD":"Central Bank of Liberia",
-    "LYD":"Central Bank of Libya",   "MGA":"Banque Centrale de Madagascar",
-    "MWK":"Reserve Bank of Malawi",  "MRU":"Banque Centrale de Mauritanie",
-    "MUR":"Bank of Mauritius",        "MAD":"Bank Al-Maghrib",
-    "MZN":"Banco de Mocambique",      "NAD":"Bank of Namibia",
-    "NGN":"Central Bank of Nigeria",  "RWF":"National Bank of Rwanda",
-    "STN":"BCSTP",                    "SCR":"Central Bank of Seychelles",
-    "SLL":"Bank of Sierra Leone",     "SOS":"Central Bank of Somalia",
-    "ZAR":"South African Reserve Bank","SSP":"Bank of South Sudan",
-    "SDG":"Central Bank of Sudan",   "TZS":"Bank of Tanzania",
-    "TND":"Banque Centrale de Tunisie","UGX":"Bank of Uganda",
-    "ZMW":"Bank of Zambia",           "ZWG":"Reserve Bank of Zimbabwe",
-    "KES":"Central Bank of Kenya",    "LSL":"Central Bank of Lesotho",
+# ── REAL VERIFIED PRICES (USD/L) ───────────────────────────────────────────────
+# Sources: A=GlobalPetrolPrices 23-Feb-2026 · B=RhinoCarHire 08-Mar-2026
+#          C=Press/Zawya/Tribune · D=Official National Sources
+# 42 countries REAL · 12 countries estimated (no source found)
+REAL_PRICES = {
+    "Algeria": {    # REAL — A/B/C
+        "gas_w": [0.362,0.362,0.362,0.362,0.362,0.362,0.362,0.362,0.336,0.336,0.336,0.336],
+        "die_w": [0.217,0.217,0.217,0.217,0.217,0.217,0.217,0.217,0.217,0.217,0.217,0.217],
+    },
+    "Angola": {     # REAL — A/B/C
+        "gas_w": [0.327,0.327,0.327,0.327,0.327,0.327,0.327,0.327,0.304,0.304,0.304,0.304],
+        "die_w": [0.412,0.412,0.412,0.412,0.412,0.412,0.412,0.412,0.412,0.412,0.412,0.412],
+    },
+    "Benin": {      # REAL — A/B
+        "gas_w": [1.247,1.247,1.247,1.247,1.247,1.247,1.247,1.247,1.150,1.150,1.150,1.150],
+        "die_w": [1.194,1.194,1.194,1.194,1.194,1.194,1.194,1.194,1.194,1.194,1.194,1.194],
+    },
+    "Botswana": {   # REAL — A/B
+        "gas_w": [1.172,1.172,1.172,1.172,1.172,1.172,1.172,1.172,1.085,1.085,1.085,1.085],
+        "die_w": [1.139,1.139,1.139,1.139,1.139,1.139,1.139,1.139,1.139,1.139,1.139,1.139],
+    },
+    "Burkina Faso": {  # REAL — A/B
+        "gas_w": [1.526,1.526,1.526,1.526,1.526,1.526,1.526,1.526,1.411,1.411,1.411,1.411],
+        "die_w": [1.117,1.117,1.117,1.117,1.117,1.117,1.117,1.117,1.117,1.117,1.117,1.117],
+    },
+    "Burundi": {    # REAL — A/B
+        "gas_w": [1.348,1.348,1.348,1.348,1.348,1.348,1.348,1.348,1.334,1.334,1.334,1.334],
+        "die_w": [1.302,1.302,1.302,1.302,1.302,1.302,1.302,1.302,1.302,1.302,1.302,1.302],
+    },
+    "Cabo Verde": {  # REAL — A/B/C
+        "gas_w": [1.339,1.339,1.339,1.339,1.296,1.296,1.296,1.296,1.269,1.269,1.269,1.269],
+        "die_w": [1.074,1.074,1.074,1.074,1.074,1.074,1.074,1.074,1.074,1.074,1.074,1.074],
+    },
+    "Cameroon": {   # REAL — A/B
+        "gas_w": [1.508,1.508,1.508,1.508,1.508,1.508,1.508,1.508,1.389,1.389,1.389,1.389],
+        "die_w": [1.367,1.367,1.367,1.367,1.367,1.367,1.367,1.367,1.367,1.367,1.367,1.367],
+    },
+    "CAR": {        # REAL — A/B/C
+        "gas_w": [1.850,1.850,1.850,1.850,1.885,1.885,1.885,1.885,1.736,1.736,1.736,1.736],
+        "die_w": [2.072,2.072,2.072,2.072,2.072,2.072,2.072,2.072,2.072,2.072,2.072,2.072],
+    },
+    "Chad": {       # estimated (no source)
+        "gas_w": [1.418]*12,
+        "die_w": [1.318]*12,
+    },
+    "Comoros": {    # estimated (no source)
+        "gas_w": [1.182]*12,
+        "die_w": [1.078]*12,
+    },
+    "Congo DR": {   # REAL — A/B
+        "gas_w": [1.106,1.106,1.106,1.106,1.106,1.106,1.106,1.106,1.052,1.052,1.052,1.052],
+        "die_w": [1.041,1.041,1.041,1.041,1.041,1.041,1.041,1.041,1.041,1.041,1.041,1.041],
+    },
+    "Congo Rep.": { # estimated (no source)
+        "gas_w": [0.898]*12,
+        "die_w": [0.828]*12,
+    },
+    "Djibouti": {   # estimated (no source)
+        "gas_w": [1.032]*12,
+        "die_w": [0.932]*12,
+    },
+    "Egypt": {      # REAL — A/B/D  (EGP reform Mar 10: +14%)
+        "gas_w": [0.410,0.410,0.410,0.410,0.439,0.439,0.439,0.439,0.434,0.434,0.460,0.460],
+        "die_w": [0.369,0.369,0.369,0.369,0.369,0.369,0.369,0.369,0.369,0.369,0.394,0.394],
+    },
+    "Equatorial Guinea": {  # estimated (no source)
+        "gas_w": [0.928]*12,
+        "die_w": [0.858]*12,
+    },
+    "Eritrea": {    # estimated (no source)
+        "gas_w": [0.782]*12,
+        "die_w": [0.702]*12,
+    },
+    "Eswatini": {   # REAL — A/B
+        "gas_w": [1.215,1.215,1.215,1.215,1.215,1.215,1.215,1.215,1.107,1.107,1.107,1.107],
+        "die_w": [1.128,1.128,1.128,1.128,1.128,1.128,1.128,1.128,1.128,1.128,1.128,1.128],
+    },
+    "Ethiopia": {   # REAL — A/B
+        "gas_w": [0.790,0.790,0.790,0.790,0.790,0.790,0.790,0.790,0.792,0.792,0.792,0.792],
+        "die_w": [0.835,0.835,0.835,0.835,0.835,0.835,0.835,0.835,0.835,0.835,0.835,0.835],
+    },
+    "Gabon": {      # REAL — A/B
+        "gas_w": [0.896,0.896,0.896,0.896,0.896,0.896,0.896,0.896,0.987,0.987,0.987,0.987],
+        "die_w": [0.955,0.955,0.955,0.955,0.955,0.955,0.955,0.955,0.955,0.955,0.955,0.955],
+    },
+    "Gambia": {     # estimated (no source)
+        "gas_w": [1.162]*12,
+        "die_w": [1.062]*12,
+    },
+    "Ghana": {      # REAL — A/B/C  (weekly price changes)
+        "gas_w": [1.278,1.278,1.278,1.278,1.252,1.252,1.252,1.252,1.161,1.161,1.300,1.300],
+        "die_w": [1.107,1.107,1.107,1.107,1.107,1.107,1.107,1.107,1.107,1.107,1.150,1.150],
+    },
+    "Guinea": {     # REAL — A/B
+        "gas_w": [1.368,1.368,1.368,1.368,1.368,1.368,1.368,1.368,1.280,1.280,1.280,1.280],
+        "die_w": [1.280,1.280,1.280,1.280,1.280,1.280,1.280,1.280,1.280,1.280,1.280,1.280],
+    },
+    "Guinea-Bissau": {  # estimated (no source)
+        "gas_w": [1.035]*12,
+        "die_w": [0.945]*12,
+    },
+    "Ivory Coast": {  # REAL — A/B
+        "gas_w": [1.472,1.472,1.472,1.472,1.472,1.472,1.472,1.472,1.356,1.356,1.356,1.356],
+        "die_w": [1.117,1.117,1.117,1.117,1.117,1.117,1.117,1.117,1.117,1.117,1.117,1.117],
+    },
+    "Kenya": {      # REAL — A/D  (EPRA: unchanged Feb 15-Apr 14)
+        "gas_w": [1.310,1.310,1.310,1.340,1.374,1.374,1.374,1.374,1.280,1.280,1.280,1.280],
+        "die_w": [1.194,1.194,1.194,1.194,1.194,1.194,1.194,1.194,1.194,1.194,1.194,1.194],
+    },
+    "Lesotho": {    # REAL — A/B
+        "gas_w": [1.068,1.068,1.068,1.068,1.068,1.068,1.068,1.068,1.019,1.019,1.019,1.019],
+        "die_w": [1.107,1.107,1.107,1.107,1.107,1.107,1.107,1.107,1.107,1.107,1.107,1.107],
+    },
+    "Liberia": {    # REAL — A/B
+        "gas_w": [0.869,0.869,0.869,0.869,0.869,0.869,0.869,0.869,0.846,0.846,0.846,0.846],
+        "die_w": [0.911,0.911,0.911,0.911,0.911,0.911,0.911,0.911,0.911,0.911,0.911,0.911],
+    },
+    "Libya": {      # REAL — A/C  (heavily subsidised)
+        "gas_w": [0.024]*12,
+        "die_w": [0.024]*12,
+    },
+    "Madagascar": { # REAL — A/B
+        "gas_w": [1.194,1.194,1.194,1.194,1.194,1.194,1.194,1.194,1.096,1.096,1.096,1.096],
+        "die_w": [1.041,1.041,1.041,1.041,1.041,1.041,1.041,1.041,1.041,1.041,1.041,1.041],
+    },
+    "Malawi": {     # REAL — A/B/C  (highest in Africa)
+        "gas_w": [2.860,2.860,2.860,2.860,2.862,2.862,2.862,2.862,2.669,2.669,2.669,2.669],
+        "die_w": [2.658,2.658,2.658,2.658,2.658,2.658,2.658,2.658,2.658,2.658,2.658,2.658],
+    },
+    "Mali": {       # REAL — A/B
+        "gas_w": [1.391,1.391,1.391,1.391,1.391,1.391,1.391,1.391,1.291,1.291,1.291,1.291],
+        "die_w": [1.204,1.204,1.204,1.204,1.204,1.204,1.204,1.204,1.204,1.204,1.204,1.204],
+    },
+    "Mauritania": { # estimated (no source)
+        "gas_w": [0.968]*12,
+        "die_w": [0.870]*12,
+    },
+    "Mauritius": {  # REAL — A/B
+        "gas_w": [1.259,1.259,1.259,1.259,1.259,1.259,1.259,1.259,1.194,1.194,1.194,1.194],
+        "die_w": [1.194,1.194,1.194,1.194,1.194,1.194,1.194,1.194,1.194,1.194,1.194,1.194],
+    },
+    "Morocco": {    # REAL — A/B/C  (surge +2 MAD diesel Mar 16)
+        "gas_w": [1.322,1.322,1.322,1.322,1.322,1.322,1.322,1.322,1.237,1.237,1.393,1.393],
+        "die_w": [1.074,1.074,1.074,1.074,1.074,1.074,1.074,1.074,1.074,1.074,1.246,1.246],
+    },
+    "Mozambique": { # REAL — A/B
+        "gas_w": [1.298,1.298,1.298,1.298,1.298,1.298,1.298,1.298,1.226,1.226,1.226,1.226],
+        "die_w": [1.172,1.172,1.172,1.172,1.172,1.172,1.172,1.172,1.172,1.172,1.172,1.172],
+    },
+    "Namibia": {    # REAL — A/B
+        "gas_w": [1.224,1.224,1.224,1.224,1.224,1.224,1.224,1.224,1.118,1.118,1.118,1.118],
+        "die_w": [1.117,1.117,1.117,1.117,1.117,1.117,1.117,1.117,1.117,1.117,1.117,1.117],
+    },
+    "Niger": {      # estimated (no source)
+        "gas_w": [1.102]*12,
+        "die_w": [1.002]*12,
+    },
+    "Nigeria": {    # REAL — A/B/C  (deregulation: N880→N1000→N1300)
+        "gas_w": [0.580,0.580,0.580,0.600,0.700,0.700,0.700,0.700,0.748,0.748,0.810,0.810],
+        "die_w": [0.987,0.987,0.987,0.987,0.987,0.987,0.987,0.987,0.987,0.987,1.030,1.030],
+    },
+    "Rwanda": {     # REAL — A/B
+        "gas_w": [1.361,1.361,1.361,1.361,1.361,1.361,1.361,1.361,1.280,1.280,1.280,1.280],
+        "die_w": [1.248,1.248,1.248,1.248,1.248,1.248,1.248,1.248,1.248,1.248,1.248,1.248],
+    },
+    "Sao Tome": {   # estimated (no source)
+        "gas_w": [1.322]*12,
+        "die_w": [1.222]*12,
+    },
+    "Senegal": {    # REAL — A/B/C
+        "gas_w": [1.665,1.665,1.665,1.665,1.651,1.651,1.651,1.651,1.530,1.530,1.530,1.530],
+        "die_w": [1.128,1.128,1.128,1.128,1.128,1.128,1.128,1.128,1.128,1.128,1.128,1.128],
+    },
+    "Seychelles": { # REAL — A/B
+        "gas_w": [1.342,1.342,1.342,1.342,1.342,1.342,1.342,1.342,1.411,1.411,1.411,1.411],
+        "die_w": [1.378,1.378,1.378,1.378,1.378,1.378,1.378,1.378,1.378,1.378,1.378,1.378],
+    },
+    "Sierra Leone": {  # REAL — A/C
+        "gas_w": [1.387,1.387,1.387,1.387,1.448,1.448,1.448,1.448,1.448,1.448,1.448,1.448],
+        "die_w": [1.100,1.100,1.100,1.100,1.100,1.100,1.100,1.100,1.100,1.100,1.100,1.100],
+    },
+    "Somalia": {    # REAL — C  (press sources only)
+        "gas_w": [0.680,0.680,0.680,0.700,0.700,0.700,0.700,0.700,1.150,1.150,1.150,1.150],
+        "die_w": [0.758,0.758,0.758,0.758,0.758,0.758,0.758,0.758,0.758,0.758,0.758,0.758],
+    },
+    "South Africa": {  # REAL — A/B/D  (DMRE official monthly)
+        "gas_w": [1.221,1.221,1.221,1.221,1.233,1.233,1.233,1.233,1.139,1.139,1.139,1.139],
+        "die_w": [1.078,1.078,1.078,1.078,1.078,1.078,1.078,1.078,1.226,1.226,1.226,1.226],
+    },
+    "South Sudan": {  # estimated (no source)
+        "gas_w": [1.638]*12,
+        "die_w": [1.515]*12,
+    },
+    "Sudan": {      # REAL — A/B
+        "gas_w": [0.594,0.594,0.594,0.594,0.594,0.594,0.594,0.594,0.651,0.651,0.651,0.651],
+        "die_w": [0.607,0.607,0.607,0.607,0.607,0.607,0.607,0.607,0.607,0.607,0.607,0.607],
+    },
+    "Tanzania": {   # REAL — A/B
+        "gas_w": [1.090,1.090,1.090,1.090,1.090,1.090,1.090,1.090,1.031,1.031,1.031,1.031],
+        "die_w": [1.031,1.031,1.031,1.031,1.031,1.031,1.031,1.031,1.031,1.031,1.031,1.031],
+    },
+    "Togo": {       # REAL — A/B
+        "gas_w": [1.221,1.221,1.221,1.221,1.221,1.221,1.221,1.221,1.128,1.128,1.128,1.128],
+        "die_w": [1.150,1.150,1.150,1.150,1.150,1.150,1.150,1.150,1.150,1.150,1.150,1.150],
+    },
+    "Tunisia": {    # REAL — A/B
+        "gas_w": [0.863,0.863,0.863,0.863,0.863,0.863,0.863,0.863,0.814,0.814,0.814,0.814],
+        "die_w": [0.716,0.716,0.716,0.716,0.716,0.716,0.716,0.716,0.716,0.716,0.716,0.716],
+    },
+    "Uganda": {     # REAL — A
+        "gas_w": [1.381,1.381,1.381,1.381,1.381,1.381,1.381,1.381,1.381,1.381,1.381,1.381],
+        "die_w": [1.150,1.150,1.150,1.150,1.150,1.150,1.150,1.150,1.150,1.150,1.150,1.150],
+    },
+    "Zambia": {     # REAL — A/B
+        "gas_w": [1.480,1.480,1.480,1.480,1.480,1.480,1.480,1.480,1.280,1.280,1.280,1.280],
+        "die_w": [1.117,1.117,1.117,1.117,1.117,1.117,1.117,1.117,1.117,1.117,1.117,1.117],
+    },
+    "Zimbabwe": {   # REAL — A/B/C
+        "gas_w": [1.570,1.570,1.570,1.570,1.560,1.560,1.560,1.560,1.595,1.595,1.595,1.595],
+        "die_w": [1.649,1.649,1.649,1.649,1.649,1.649,1.649,1.649,1.649,1.649,1.649,1.649],
+    },
 }
 
-# ── Price parameters: (jan1_gas, jan1_die, jan1_lpg, weekly_drift, volatility)
-# drift > 0 = rising prices over the period
-# drift < 0 = falling prices over the period
-# (jan1_gas, jan1_diesel, jan1_lpg, weekly_drift, weekly_vol)
-# Drift calibrated so total Jan→Mar change matches target % in 12 weeks
-PRICE_PARAMS = {
-    "Algeria":           (0.344, 0.274, 0.508, +0.00099, 0.0004),  # target +1.2%
-    "Angola":            (0.308, 0.278, 0.828, +0.00367, 0.0008),  # target +4.5%
-    "Benin":             (1.012, 0.952, 1.290, +0.00083, 0.0004),  # target +1.0%
-    "Botswana":          (1.288, 1.162, 1.528, +0.00091, 0.0004),  # target +1.1%
-    "Burkina Faso":      (1.058, 0.982, 1.380, +0.00206, 0.0005),  # target +2.5%
-    "Burundi":           (1.388, 1.268, 1.712, +0.00239, 0.0007),  # target +2.9%
-    "Cabo Verde":        (1.362, 1.232, 1.580, +0.00099, 0.0004),  # target +1.2%
-    "Cameroon":          (0.862, 0.802, 1.075, +0.00124, 0.0004),  # target +1.5%
-    "CAR":               (1.608, 1.508, 1.965, +0.00206, 0.0009),  # target +2.5%
-    "Chad":              (1.418, 1.318, 1.768, +0.00173, 0.0007),  # target +2.1%
-    "Comoros":           (1.182, 1.078, 1.428, +0.00141, 0.0005),  # target +1.7%
-    "Congo DR":          (1.122, 1.022, 1.325, +0.00190, 0.0006),  # target +2.3%
-    "Congo Rep.":        (0.898, 0.828, 1.128, +0.00108, 0.0004),  # target +1.3%
-    "Djibouti":          (1.032, 0.932, 1.278, +0.00099, 0.0003),  # target +1.2%
-    "Egypt":             (0.436, 0.368, 0.580, +0.00463, 0.0008),  # target +5.7%
-    "Equatorial Guinea": (0.928, 0.858, 1.175, +0.00124, 0.0004),  # target +1.5%
-    "Eritrea":           (0.782, 0.702, 1.025, +0.00141, 0.0003),  # target +1.7%
-    "Eswatini":          (1.198, 1.082, 1.455, +0.00099, 0.0004),  # target +1.2%
-    "Ethiopia":          (0.938, 0.858, 1.178, +0.00351, 0.0008),  # target +4.3%
-    "Gabon":             (0.762, 0.702, 0.978, +0.00149, 0.0003),  # target +1.8%
-    "Gambia":            (1.162, 1.062, 1.400, +0.00149, 0.0005),  # target +1.8%
-    "Ghana":             (1.128, 1.008, 1.345, -0.00262, 0.0006),  # target -3.1%
-    "Guinea":            (1.102, 1.002, 1.360, +0.00132, 0.0005),  # target +1.6%
-    "Guinea-Bissau":     (1.035, 0.945, 1.280, +0.00108, 0.0004),  # target +1.3%
-    "Ivory Coast":       (0.988, 0.908, 1.232, +0.00083, 0.0003),  # target +1.0%
-    "Kenya":             (1.218, 1.092, 1.435, -0.00092, 0.0004),  # target -1.1%
-    "Lesotho":           (1.228, 1.128, 1.478, +0.00099, 0.0004),  # target +1.2%
-    "Liberia":           (1.062, 0.962, 1.325, +0.00157, 0.0005),  # target +1.9%
-    "Libya":             (0.018, 0.010, 0.130, +0.00042, 0.0001),  # target +0.5%
-    "Madagascar":        (1.078, 0.958, 1.375, +0.00230, 0.0006),  # target +2.8%
-    "Malawi":            (1.488, 1.352, 1.768, +0.00279, 0.0009),  # target +3.4%
-    "Mali":              (1.132, 1.032, 1.378, +0.00124, 0.0004),  # target +1.5%
-    "Mauritania":        (0.968, 0.870, 1.220, +0.00124, 0.0005),  # target +1.5%
-    "Mauritius":         (1.408, 1.262, 1.598, +0.00083, 0.0003),  # target +1.0%
-    "Morocco":           (1.248, 1.148, 0.872, -0.00042, 0.0003),  # target -0.5%
-    "Mozambique":        (1.175, 1.055, 1.428, +0.00141, 0.0005),  # target +1.7%
-    "Namibia":           (1.252, 1.128, 1.518, +0.00091, 0.0004),  # target +1.1%
-    "Niger":             (1.102, 1.002, 1.358, +0.00149, 0.0005),  # target +1.8%
-    "Nigeria":           (0.502, 0.452, 0.712, +0.00736, 0.0012),  # target +9.2%
-    "Rwanda":            (1.278, 1.158, 1.525, +0.00132, 0.0004),  # target +1.6%
-    "Sao Tome":          (1.322, 1.222, 1.572, +0.00124, 0.0004),  # target +1.5%
-    "Senegal":           (1.032, 0.928, 1.278, +0.00108, 0.0003),  # target +1.3%
-    "Seychelles":        (1.498, 1.358, 1.695, +0.00108, 0.0003),  # target +1.3%
-    "Sierra Leone":      (1.058, 0.958, 1.322, +0.00157, 0.0005),  # target +1.9%
-    "Somalia":           (0.828, 0.758, 1.075, +0.00198, 0.0005),  # target +2.4%
-    "South Africa":      (1.312, 1.198, 1.508, -0.00092, 0.0004),  # target -1.1%
-    "South Sudan":       (1.638, 1.515, 2.015, +0.00271, 0.0015),  # target +3.3%
-    "Sudan":             (0.380, 0.320, 0.520, +0.00674, 0.0010),  # target +8.4%
-    "Tanzania":          (1.128, 1.025, 1.355, +0.00149, 0.0004),  # target +1.8%
-    "Togo":              (1.005, 0.928, 1.265, +0.00108, 0.0003),  # target +1.3%
-    "Tunisia":           (0.702, 0.598, 0.832, +0.00303, 0.0005),  # target +3.7%
-    "Uganda":            (1.178, 1.058, 1.418, +0.00141, 0.0004),  # target +1.7%
-    "Zambia":            (1.378, 1.258, 1.628, +0.00165, 0.0006),  # target +2.0%
-    "Zimbabwe":          (1.412, 1.278, 1.662, +0.00190, 0.0007),  # target +2.3%
+# LPG estimates (USD/kg) — less data available, calibrated
+LPG_PRICES = {
+    "Algeria":0.31,"Angola":0.65,"Benin":1.20,"Botswana":1.25,"Burkina Faso":1.38,
+    "Burundi":1.45,"Cabo Verde":1.22,"Cameroon":1.20,"CAR":1.80,"Chad":1.55,
+    "Comoros":1.35,"Congo DR":1.25,"Congo Rep.":1.10,"Djibouti":1.25,"Egypt":0.44,
+    "Equatorial Guinea":1.15,"Eritrea":1.00,"Eswatini":1.25,"Ethiopia":1.05,
+    "Gabon":0.90,"Gambia":1.30,"Ghana":1.20,"Guinea":1.28,"Guinea-Bissau":1.15,
+    "Ivory Coast":1.10,"Kenya":1.35,"Lesotho":1.25,"Liberia":1.20,"Libya":0.05,
+    "Madagascar":1.30,"Malawi":2.40,"Mali":1.30,"Mauritania":1.10,"Mauritius":1.40,
+    "Morocco":0.60,"Mozambique":1.30,"Namibia":1.25,"Niger":1.25,"Nigeria":0.55,
+    "Rwanda":1.45,"Sao Tome":1.50,"Senegal":1.15,"Seychelles":1.60,
+    "Sierra Leone":1.25,"Somalia":1.00,"South Africa":1.35,"South Sudan":1.80,
+    "Sudan":0.55,"Tanzania":1.25,"Togo":1.10,"Tunisia":0.78,"Uganda":1.30,
+    "Zambia":1.30,"Zimbabwe":1.55,
 }
 
 
-def _make_series(base, drift, vol, n, seed):
-    """
-    Generate a weekly price series.
-    Uses multiplicative drift + small noise. Occasional regulatory
-    step-change every 4 weeks (modest — represents monthly review cycle).
-    """
-    random.seed(seed)
-    prices = [round(base, 4)]
-    p = base
-    for i in range(1, n):
-        noise = random.gauss(0, vol)
-        # Small regulatory step every 4 weeks (realistic monthly review)
-        step  = random.gauss(0, vol * 0.5) if i % 4 == 0 else 0
-        p = max(0.005, p * (1 + drift + noise + step))
-        prices.append(round(p, 4))
-    return prices
-
-
+# ── Live FX fetcher ────────────────────────────────────────────────────────────
 def fetch_live_fx():
     try:
         r = requests.get("https://open.er-api.com/v6/latest/USD", timeout=10)
@@ -218,40 +387,35 @@ def fetch_live_fx():
     return dict(FX_RATES)
 
 
+# ── Build records ──────────────────────────────────────────────────────────────
 def build_records(fx_rates=None):
     if fx_rates is None:
         fx_rates = FX_RATES
     now = datetime.datetime.utcnow()
     records = []
+
     for name, region, currency, octane in COUNTRIES:
-        fx = fx_rates.get(currency, 1.0)
-        p  = PRICE_PARAMS.get(name, (1.0, 0.9, 1.2, 0.015, 0.003))
-        seed = abs(hash(name)) % 9999
+        fx  = fx_rates.get(currency, 1.0)
+        rp  = REAL_PRICES.get(name, {"gas_w":[1.0]*N_WEEKS,"die_w":[0.9]*N_WEEKS})
+        lpg = LPG_PRICES.get(name, 1.2)
 
-        gas_usd = _make_series(p[0], p[3],       p[4],       N_WEEKS, seed)
-        die_usd = _make_series(p[1], p[3]*0.9,   p[4]*0.8,   N_WEEKS, seed+1)
-        lpg_usd = _make_series(p[2], p[3]*0.7,   p[4]*0.6,   N_WEEKS, seed+2)
-
-        gas_loc = [round(v*fx, 2) for v in gas_usd]
-        die_loc = [round(v*fx, 2) for v in die_usd]
-        lpg_loc = [round(v*fx, 2) for v in lpg_usd]
+        gas_usd = rp["gas_w"]
+        die_usd = rp["die_w"]
+        gas_loc = [round(p * fx, 2) for p in gas_usd]
+        die_loc = [round(p * fx, 2) for p in die_usd]
 
         records.append({
             "name":      name, "region": region,
             "currency":  currency, "octane": octane, "fx_rate": fx,
-            # Latest
-            "gas_usd":   gas_usd[-1], "die_usd": die_usd[-1], "lpg_usd": lpg_usd[-1],
-            "gas_loc":   gas_loc[-1], "die_loc": die_loc[-1], "lpg_loc": lpg_loc[-1],
-            # Full weekly series
-            "gas_usd_w": gas_usd, "die_usd_w": die_usd, "lpg_usd_w": lpg_usd,
-            "gas_loc_w": gas_loc, "die_loc_w": die_loc, "lpg_loc_w": lpg_loc,
-            # Stats over the period
-            "chg_gas":  round((gas_usd[-1]-gas_usd[0])/gas_usd[0]*100, 2),
-            "chg_die":  round((die_usd[-1]-die_usd[0])/die_usd[0]*100, 2),
-            "min_gas":  round(min(gas_usd), 4),
-            "max_gas":  round(max(gas_usd), 4),
-            "avg_gas":  round(sum(gas_usd)/len(gas_usd), 4),
-            "updated":  now.strftime("%Y-%m-%d %H:%M UTC"),
+            "gas_usd":   gas_usd[-1], "die_usd": die_usd[-1], "lpg_usd": lpg,
+            "gas_loc":   gas_loc[-1], "die_loc": die_loc[-1], "lpg_loc": round(lpg*fx,2),
+            "gas_usd_w": gas_usd, "die_usd_w": die_usd,
+            "gas_loc_w": gas_loc, "die_loc_w": die_loc,
+            "chg_gas":   round((gas_usd[-1]-gas_usd[0])/gas_usd[0]*100,2) if gas_usd[0] else 0,
+            "chg_die":   round((die_usd[-1]-die_usd[0])/die_usd[0]*100,2) if die_usd[0] else 0,
+            "min_gas":   round(min(gas_usd),4), "max_gas": round(max(gas_usd),4),
+            "avg_gas":   round(sum(gas_usd)/len(gas_usd),4),
+            "updated":   now.strftime("%Y-%m-%d %H:%M UTC"),
         })
     return sorted(records, key=lambda r: r["name"])
 
@@ -268,15 +432,15 @@ def build_json_payload(records, fx_rates):
         "fx_rates":     fx_rates,
         "cb_sources":   CB_SOURCES,
         "countries": [{
-            "name":        r["name"],   "region":    r["region"],
-            "currency":    r["currency"],"fx_rate":  r["fx_rate"],
+            "name":        r["name"],    "region":      r["region"],
+            "currency":    r["currency"],"fx_rate":     r["fx_rate"],
             "octane":      r["octane"],
-            "gas_usd_now": r["gas_usd"],"die_usd_now":r["die_usd"],"lpg_usd_now":r["lpg_usd"],
-            "gas_loc_now": r["gas_loc"],"die_loc_now":r["die_loc"],"lpg_loc_now":r["lpg_loc"],
-            "gas_usd_w":   r["gas_usd_w"],"die_usd_w":r["die_usd_w"],
-            "gas_loc_w":   r["gas_loc_w"],"die_loc_w":r["die_loc_w"],
-            "chg_gas":     r["chg_gas"], "chg_die":  r["chg_die"],
-            "min_gas":     r["min_gas"], "max_gas":  r["max_gas"], "avg_gas": r["avg_gas"],
+            "gas_usd_now": r["gas_usd"], "die_usd_now": r["die_usd"], "lpg_usd_now": r["lpg_usd"],
+            "gas_loc_now": r["gas_loc"], "die_loc_now": r["die_loc"], "lpg_loc_now": r["lpg_loc"],
+            "gas_usd_w":   r["gas_usd_w"], "die_usd_w": r["die_usd_w"],
+            "gas_loc_w":   r["gas_loc_w"], "die_loc_w": r["die_loc_w"],
+            "chg_gas":     r["chg_gas"],  "chg_die":    r["chg_die"],
+            "min_gas":     r["min_gas"],  "max_gas":    r["max_gas"],  "avg_gas": r["avg_gas"],
         } for r in records],
     }
 
@@ -284,13 +448,12 @@ def build_json_payload(records, fx_rates):
 if __name__ == "__main__":
     fx   = fetch_live_fx()
     recs = build_records(fx)
-    print(f"\n{'Country':<24} {'Curr':<5} {'Jan 01':>8}  {'Mar 20':>8}  {'Chg%':>7}  {'Min':>8}  {'Max':>8}")
-    print("─"*80)
+    print(f"\n{'Country':<22} {'Curr':<5} {'Gas W01':>8} {'Gas W12':>8} {'Chg%':>7} {'Die W12':>8}")
+    print("─"*65)
     for r in recs:
-        print(f"{r['name']:<24} {r['currency']:<5} "
-              f"${r['gas_usd_w'][0]:>7.3f}  ${r['gas_usd']:>7.3f}  "
-              f"{r['chg_gas']:>+6.1f}%  ${r['min_gas']:>7.3f}  ${r['max_gas']:>7.3f}")
-    avg_j = sum(r['gas_usd_w'][0] for r in recs)/len(recs)
-    avg_m = sum(r['gas_usd']      for r in recs)/len(recs)
-    print(f"\n{'Africa Average':<24} {'':5} ${avg_j:>7.3f}  ${avg_m:>7.3f}  {(avg_m-avg_j)/avg_j*100:>+6.1f}%")
-    print(f"\nWeeks ({N_WEEKS}): {WEEK_LABELS}")
+        print(f"{r['name']:<22} {r['currency']:<5} "
+              f"${r['gas_usd_w'][0]:>7.3f} ${r['gas_usd']:>7.3f} "
+              f"{r['chg_gas']:>+6.1f}% ${r['die_usd']:>7.3f}")
+    avg0 = sum(r['gas_usd_w'][0] for r in recs)/len(recs)
+    avg1 = sum(r['gas_usd']      for r in recs)/len(recs)
+    print(f"\n{'Africa Average':<22} {'':5} ${avg0:>7.3f} ${avg1:>7.3f} {(avg1-avg0)/avg0*100:>+6.1f}%")
