@@ -2,23 +2,15 @@ name: 🌍 Africa Fuel Tracker — Daily Update
 
 on:
   schedule:
-    - cron: '0 6 * * *'     # every day at 06:00 UTC
-
+    - cron: '0 6 * * *'
   push:
-    branches: [ main ]       # also on every git push
-
-  workflow_dispatch:          # manual trigger from Actions tab
-    inputs:
-      reason:
-        description: 'Reason for manual run'
-        required: false
-        default: 'Manual update'
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   collect-and-deploy:
-    name: Collect real prices · Build Excel & Dashboard · Deploy
+    name: Collect prices · Build Excel & Dashboard · Deploy
     runs-on: ubuntu-latest
-
     permissions:
       contents: write
 
@@ -34,45 +26,131 @@ jobs:
           cache: 'pip'
 
       - name: 📦 Install dependencies
-        run: |
-          pip install --upgrade pip
-          pip install openpyxl pandas requests beautifulsoup4 lxml
+        run: pip install --upgrade pip openpyxl pandas requests beautifulsoup4 lxml
 
-      - name: 🌐 Collect real prices from official sources
+      # ── DIAGNOSTIC: see exactly what GPP returns ─────────────────────────
+      - name: 🔍 Diagnostic — GPP Africa page
         run: |
-          echo "Collecting real fuel prices..."
-          echo "Sources: GlobalPetrolPrices.com + National Regulatory Portals + World Bank"
-          python src/pipeline_ci.py
+          python3 << 'PYEOF'
+          import requests, re, sys
+          from bs4 import BeautifulSoup
 
-      - name: 📊 Show data quality report
+          print("=" * 65)
+          print("DIAGNOSTIC: GlobalPetrolPrices.com Africa gasoline page")
+          print("=" * 65)
+
+          hdrs = {
+              "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+              "Accept": "text/html,application/xhtml+xml;q=0.9,*/*;q=0.8",
+              "Accept-Language": "en-US,en;q=0.9",
+              "Referer": "https://www.google.com/",
+              "DNT": "1",
+          }
+          try:
+              r = requests.get(
+                  "https://www.globalpetrolprices.com/gasoline_prices/Africa/",
+                  headers=hdrs, timeout=20, allow_redirects=True
+              )
+              print(f"HTTP status : {r.status_code}")
+              print(f"Content-Type: {r.headers.get('Content-Type','?')}")
+              print(f"Size        : {len(r.content):,} bytes")
+              print(f"Cloudflare  : {'YES - page blocked' if 'cf-ray' in str(r.headers).lower() or 'Just a moment' in r.text[:1000] else 'Not detected'}")
+              print(f"Bot check   : {'YES' if 'checking your browser' in r.text[:2000].lower() else 'No'}")
+
+              print("\n--- JS variables found ---")
+              for m in re.finditer(r'var\s+(\w+)\s*=\s*(\[|\{)', r.text):
+                  print(f"  var {m.group(1)} = {m.group(2)}...")
+
+              print("\n--- Price-like patterns ---")
+              prices = re.findall(r'\b\d\.\d{3}\b', r.text[:50000])
+              print(f"  Numbers like 1.234: {len(prices)} found")
+              if prices:
+                  print(f"  Examples: {prices[:10]}")
+
+              print("\n--- Tables ---")
+              soup = BeautifulSoup(r.text, 'lxml')
+              for t in soup.find_all('table'):
+                  print(f"  id={t.get('id','?')} class={t.get('class','?')[:50]}")
+                  for row in t.find_all('tr')[:2]:
+                      print(f"    {row.get_text('|',True)[:120]}")
+
+              print("\n--- First 3000 chars of HTML ---")
+              print(r.text[:3000])
+
+          except Exception as e:
+              print(f"ERROR: {type(e).__name__}: {e}")
+          PYEOF
+
+      # ── DIAGNOSTIC: Nigeria history page ─────────────────────────────────
+      - name: 🔍 Diagnostic — GPP Nigeria history
         run: |
-          if [ -f docs/last_update.txt ]; then
-            echo "=== Data Quality Report ==="
-            cat docs/last_update.txt
-          fi
-          if [ -f data/prices_db.json ]; then
-            echo ""
-            echo "=== DB Stats ==="
-            python3 -c "
+          python3 << 'PYEOF'
+          import requests, re
+          from bs4 import BeautifulSoup
+
+          print("=" * 65)
+          print("DIAGNOSTIC: Nigeria /gasoline_prices/ history page")
+          print("=" * 65)
+
+          hdrs = {
+              "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+              "Accept": "text/html,application/xhtml+xml;q=0.9,*/*;q=0.8",
+              "Accept-Language": "en-US,en;q=0.9",
+              "Referer": "https://www.globalpetrolprices.com/",
+          }
+          try:
+              r = requests.get(
+                  "https://www.globalpetrolprices.com/Nigeria/gasoline_prices/",
+                  headers=hdrs, timeout=20
+              )
+              print(f"HTTP status : {r.status_code}")
+              print(f"Size        : {len(r.content):,} bytes")
+              print(f"Cloudflare  : {'YES' if 'cf-ray' in str(r.headers).lower() else 'No'}")
+
+              print("\n--- ALL script blocks (first 500 chars each) ---")
+              soup = BeautifulSoup(r.text, 'lxml')
+              for i, script in enumerate(soup.find_all('script')):
+                  content = (script.string or '').strip()
+                  if len(content) > 50:
+                      print(f"\n  Script {i+1} ({len(content)} chars):")
+                      print(f"  {content[:500]}")
+
+              print("\n--- itemsData search ---")
+              idx = r.text.find('itemsData')
+              if idx >= 0:
+                  print(f"  Found at position {idx}")
+                  print(f"  Context: {r.text[idx:idx+300]}")
+              else:
+                  print("  'itemsData' NOT found in page")
+
+              print("\n--- Any date-like strings (2026-) ---")
+              dates = re.findall(r'2026-\d{2}-\d{2}', r.text)
+              print(f"  Dates found: {dates[:10]}")
+
+          except Exception as e:
+              print(f"ERROR: {type(e).__name__}: {e}")
+          PYEOF
+
+      # ── MAIN PIPELINE ─────────────────────────────────────────────────────
+      - name: ⚙️ Run pipeline (collect + build + generate)
+        run: python src/pipeline_ci.py
+
+      - name: 📊 Data quality report
+        run: |
+          [ -f docs/last_update.txt ] && cat docs/last_update.txt
+          python3 -c "
           import json
           db = json.load(open('data/prices_db.json'))
           entries = db.get('entries', [])
-          countries = set(e['country'] for e in entries)
-          live = [e for e in entries if e.get('status') == 'live']
-          print(f'Total entries  : {len(entries)}')
-          print(f'Countries      : {len(countries)}/54')
-          print(f'Live entries   : {len(live)}')
-          print(f'Last run       : {db.get(\"last_run\", \"unknown\")}')
+          print(f'DB entries: {len(entries)} | Countries: {len(set(e[\"country\"] for e in entries))}/54')
           "
-          fi
 
-      - name: 💾 Commit & push updated files
+      - name: 💾 Commit & push
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add docs/index.html docs/africa_fuel_prices.xlsx docs/last_update.txt
           git add data/prices_db.json || true
           git diff --cached --quiet \
-            && echo "No changes to commit" \
-            || (git commit -m "🔄 Real data update: $(date -u '+%d %b %Y %H:%M UTC')" \
-                && git push)
+            && echo "No changes" \
+            || (git commit -m "🔄 Update: $(date -u '+%d %b %Y %H:%M UTC')" && git push)
