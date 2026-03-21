@@ -1,0 +1,78 @@
+name: 🌍 Africa Fuel Tracker — Daily Update
+
+on:
+  schedule:
+    - cron: '0 6 * * *'     # every day at 06:00 UTC
+
+  push:
+    branches: [ main ]       # also on every git push
+
+  workflow_dispatch:          # manual trigger from Actions tab
+    inputs:
+      reason:
+        description: 'Reason for manual run'
+        required: false
+        default: 'Manual update'
+
+jobs:
+  collect-and-deploy:
+    name: Collect real prices · Build Excel & Dashboard · Deploy
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🐍 Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: 📦 Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install openpyxl pandas requests beautifulsoup4 lxml
+
+      - name: 🌐 Collect real prices from official sources
+        run: |
+          echo "Collecting real fuel prices..."
+          echo "Sources: GlobalPetrolPrices.com + National Regulatory Portals + World Bank"
+          python src/pipeline_ci.py
+
+      - name: 📊 Show data quality report
+        run: |
+          if [ -f docs/last_update.txt ]; then
+            echo "=== Data Quality Report ==="
+            cat docs/last_update.txt
+          fi
+          if [ -f data/prices_db.json ]; then
+            echo ""
+            echo "=== DB Stats ==="
+            python3 -c "
+          import json
+          db = json.load(open('data/prices_db.json'))
+          entries = db.get('entries', [])
+          countries = set(e['country'] for e in entries)
+          live = [e for e in entries if e.get('status') == 'live']
+          print(f'Total entries  : {len(entries)}')
+          print(f'Countries      : {len(countries)}/54')
+          print(f'Live entries   : {len(live)}')
+          print(f'Last run       : {db.get(\"last_run\", \"unknown\")}')
+          "
+          fi
+
+      - name: 💾 Commit & push updated files
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/index.html docs/africa_fuel_prices.xlsx docs/last_update.txt
+          git add data/prices_db.json || true
+          git diff --cached --quiet \
+            && echo "No changes to commit" \
+            || (git commit -m "🔄 Real data update: $(date -u '+%d %b %Y %H:%M UTC')" \
+                && git push)
