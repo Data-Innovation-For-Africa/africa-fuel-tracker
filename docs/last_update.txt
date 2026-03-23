@@ -1,8 +1,8 @@
-Last updated : 23 March 2026 — 09:10 UTC
-Countries    : 54/54
-Live data    : 42
+Last updated : 23 March 2026 — 11:26 UTC
+Countries    : 42/54
+Live data    : 41
 Verified data: 42
-Estimated    : 12
+Estimated    : 0
 FX currencies: 42
 Sources      : RhinoCarHire.com · TradingEconomics · Official Portals
 Period       : 2026-01-01 → 2026-03-21
