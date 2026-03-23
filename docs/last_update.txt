@@ -1,7 +1,8 @@
-Last updated : 23 March 2026 — 07:01 UTC
-Countries    : 54
-Real verified: 8 (sources A=GPP, B=RhinoCarHire, C=Press, D=Official)
-Estimated    : 0 (12 countries, no confirmed source available)
-Period       : 05 Jan 2026 — 21 Mar 2026 (12 weekly snapshots)
+Last updated : 23 March 2026 — 09:10 UTC
+Countries    : 54/54
+Live data    : 42
+Verified data: 42
+Estimated    : 12
 FX currencies: 42
-Sources      : GlobalPetrolPrices.com · RhinoCarHire.com · Zawya · Vanguard · gov.za · EPRA · NNPC · EGP
+Sources      : RhinoCarHire.com · TradingEconomics · Official Portals
+Period       : 2026-01-01 → 2026-03-21
