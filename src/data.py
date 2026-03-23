@@ -61,7 +61,7 @@ FX_RATES = {
     "MZN":  64.10, "NAD":  18.55, "NGN":1620.00, "RWF":1415.00,
     "STN":  22.60, "SCR":  14.15, "SLL":22500.0, "SOS": 572.00,
     "ZAR":  18.55, "SSP":1320.00, "SDG": 510.00, "TZS":2720.00,
-    "TND":   3.12, "UGX":3720.00, "ZMW":  27.20, "ZWG":  13.60,
+    "TND":   2.921, "UGX":3720.00, "ZMW":  27.20, "ZWG":  13.60,
     "KES": 130.50, "LSL":  18.55,
 }
 
@@ -85,60 +85,55 @@ CB_SOURCES = {
 
 # ── Country definitions ────────────────────────────────────────────────────────
 COUNTRIES = [
-    ("Algeria",           "North Africa",    "DZD", 95),
-    ("Angola",            "Southern Africa", "AOA", 91),
-    ("Benin",             "West Africa",     "XOF", 91),
-    ("Botswana",          "Southern Africa", "BWP", 93),
-    ("Burkina Faso",      "West Africa",     "XOF", 91),
-    ("Burundi",           "East Africa",     "BIF", 91),
-    ("Cabo Verde",        "West Africa",     "CVE", 91),
-    ("Cameroon",          "Central Africa",  "XAF", 91),
-    ("CAR",               "Central Africa",  "XAF", 91),
-    ("Chad",              "Central Africa",  "XAF", 91),
-    ("Comoros",           "East Africa",     "KMF", 91),
-    ("Congo DR",          "Central Africa",  "CDF", 91),
-    ("Congo Rep.",        "Central Africa",  "XAF", 91),
-    ("Djibouti",          "East Africa",     "DJF", 91),
-    ("Egypt",             "North Africa",    "EGP", 92),
-    ("Equatorial Guinea", "Central Africa",  "XAF", 91),
-    ("Eritrea",           "East Africa",     "ERN", 91),
-    ("Eswatini",          "Southern Africa", "SZL", 93),
-    ("Ethiopia",          "East Africa",     "ETB", 91),
-    ("Gabon",             "Central Africa",  "XAF", 91),
-    ("Gambia",            "West Africa",     "GMD", 91),
-    ("Ghana",             "West Africa",     "GHS", 91),
-    ("Guinea",            "West Africa",     "GNF", 91),
-    ("Guinea-Bissau",     "West Africa",     "XOF", 91),
-    ("Ivory Coast",       "West Africa",     "XOF", 91),
-    ("Kenya",             "East Africa",     "KES", 93),
-    ("Lesotho",           "Southern Africa", "LSL", 93),
-    ("Liberia",           "West Africa",     "LRD", 91),
-    ("Libya",             "North Africa",    "LYD", 95),
-    ("Madagascar",        "Southern Africa", "MGA", 91),
-    ("Malawi",            "Southern Africa", "MWK", 91),
-    ("Mali",              "West Africa",     "XOF", 91),
-    ("Mauritania",        "North Africa",    "MRU", 91),
-    ("Mauritius",         "East Africa",     "MUR", 95),
-    ("Morocco",           "North Africa",    "MAD", 95),
-    ("Mozambique",        "Southern Africa", "MZN", 91),
-    ("Namibia",           "Southern Africa", "NAD", 93),
-    ("Niger",             "West Africa",     "XOF", 91),
-    ("Nigeria",           "West Africa",     "NGN", 91),
-    ("Rwanda",            "East Africa",     "RWF", 91),
-    ("Sao Tome",          "Central Africa",  "STN", 91),
-    ("Senegal",           "West Africa",     "XOF", 91),
-    ("Seychelles",        "East Africa",     "SCR", 95),
-    ("Sierra Leone",      "West Africa",     "SLL", 91),
-    ("Somalia",           "East Africa",     "SOS", 91),
-    ("South Africa",      "Southern Africa", "ZAR", 95),
-    ("South Sudan",       "East Africa",     "SSP", 91),
-    ("Sudan",             "North Africa",    "SDG", 91),
-    ("Tanzania",          "East Africa",     "TZS", 91),
-    ("Togo",              "West Africa",     "XOF", 91),
-    ("Tunisia",           "North Africa",    "TND", 95),
-    ("Uganda",            "East Africa",     "UGX", 91),
-    ("Zambia",            "Southern Africa", "ZMW", 93),
-    ("Zimbabwe",          "Southern Africa", "ZWG", 91),
+    # ── 42 pays couverts par GlobalPetrolPrices.com ──────────────────────────
+    # (name, region, currency, octane)
+    # ── Afrique du Nord (5) ──────────────────────────────────────────────────
+    ("Algeria",       "North Africa",    "DZD", 95),
+    ("Egypt",         "North Africa",    "EGP", 92),
+    ("Libya",         "North Africa",    "LYD", 95),
+    ("Morocco",       "North Africa",    "MAD", 95),
+    ("Tunisia",       "North Africa",    "TND", 95),
+    # ── Afrique de l'Ouest (12) ──────────────────────────────────────────────
+    ("Benin",         "West Africa",     "XOF", 91),
+    ("Burkina Faso",  "West Africa",     "XOF", 91),
+    ("Cabo Verde",    "West Africa",     "CVE", 91),
+    ("Ghana",         "West Africa",     "GHS", 91),
+    ("Guinea",        "West Africa",     "GNF", 91),
+    ("Ivory Coast",   "West Africa",     "XOF", 91),
+    ("Liberia",       "West Africa",     "LRD", 91),
+    ("Mali",          "West Africa",     "XOF", 91),
+    ("Niger",         "West Africa",     "XOF", 91),
+    ("Nigeria",       "West Africa",     "NGN", 91),
+    ("Senegal",       "West Africa",     "XOF", 91),
+    ("Sierra Leone",  "West Africa",     "SLL", 91),
+    ("Togo",          "West Africa",     "XOF", 91),
+    # ── Afrique de l'Est (9) ─────────────────────────────────────────────────
+    ("Burundi",       "East Africa",     "BIF", 91),
+    ("Ethiopia",      "East Africa",     "ETB", 91),
+    ("Kenya",         "East Africa",     "KES", 93),
+    ("Madagascar",    "East Africa",     "MGA", 91),
+    ("Malawi",        "East Africa",     "MWK", 91),
+    ("Mauritius",     "East Africa",     "MUR", 95),
+    ("Rwanda",        "East Africa",     "RWF", 91),
+    ("Seychelles",    "East Africa",     "SCR", 95),
+    ("Uganda",        "East Africa",     "UGX", 91),
+    # ── Afrique Centrale (5) ─────────────────────────────────────────────────
+    ("CAR",           "Central Africa",  "XAF", 91),
+    ("Cameroon",      "Central Africa",  "XAF", 91),
+    ("Congo DR",      "Central Africa",  "CDF", 91),
+    ("Gabon",         "Central Africa",  "XAF", 91),
+    ("Sudan",         "North Africa",    "SDG", 91),
+    # ── Afrique Australe (10) ────────────────────────────────────────────────
+    ("Angola",        "Southern Africa", "AOA", 91),
+    ("Botswana",      "Southern Africa", "BWP", 93),
+    ("Eswatini",      "Southern Africa", "SZL", 93),
+    ("Lesotho",       "Southern Africa", "LSL", 93),
+    ("Mozambique",    "Southern Africa", "MZN", 91),
+    ("Namibia",       "Southern Africa", "NAD", 93),
+    ("South Africa",  "Southern Africa", "ZAR", 95),
+    ("Tanzania",      "East Africa",     "TZS", 91),
+    ("Zambia",        "Southern Africa", "ZMW", 93),
+    ("Zimbabwe",      "Southern Africa", "ZWG", 91),
 ]
 
 REGIONS = ["North Africa","West Africa","East Africa","Central Africa","Southern Africa"]
@@ -191,13 +186,13 @@ PRICE_DATA = {
     "Sudan":            (0.59,    0.60,    0.60,     0.55,    0.56,    0.56,    "B"),
     "Tanzania":         (0.91,    0.95,    0.95,     None,    None,    None,    "B"),
     "Togo":             (1.04,    1.04,    1.04,     None,    None,    None,    "B"),
-    "Tunisia":          (0.75,    0.75,    0.75,     0.65,    0.66,    0.66,    "B"),
+    "Tunisia":          (0.863,   0.863,   0.863,    0.716,   0.716,   0.716,   "B"),  # STIR regulated — fixed TND price (2.521 TND/L gas, 2.091 TND/L diesel)
     "Zambia":           (1.23,    1.18,    1.18,     None,    None,    None,    "B"),
     "Zimbabwe":         (1.31,    1.47,    1.47,     None,    None,    None,    "B"),
 
     # Source B + D (official validated)
     "Egypt":            (0.38,    0.40,    0.40,     0.31,    0.34,    0.34,    "B/D"),
-    "South Africa":     (1.04,    1.05,    1.05,     None,    None,    None,    "B/D"),
+    "South Africa":     (1.14,    1.14,    1.14,     1.24,    1.24,    1.27,    "B/D"),  # GPP 16-Mar: gas ZAR 19.89=$1.19/L, diesel ZAR 21.27=$1.27/L
     "Kenya":            (1.18,    1.18,    1.18,     None,    None,    None,    "B/D"),
 
     # Source B + C (press validated — weekly changes)
@@ -299,6 +294,13 @@ def _build_gas_weekly(name):
 
     jan_eur, feb_eur, mar_eur = pd[0], pd[1], pd[2]
 
+    # Tunisia: marché régulé — prix TND FIXE par décret gouvernemental
+    # Source: GlobalPetrolPrices.com (23-Feb-2026 + 09-Mar-2026) = $0.870/L = 2.53 TND/L
+    # GPP note: "A long flat line means that the government fixes the prices"
+    # Aucun décret de changement confirmé Jan–Mar 2026 → prix constant
+    if name == "Tunisia":
+        return [0.870] * N_WEEKS   # $0.870/L = 2.53 TND/L — GPP verified
+
     # Nigeria: weekly breakdown press-verified
     if name == "Nigeria":
         # Jan: N880→N1000 mi-janvier; Feb: N1100-N1150; Mar: N1300 à partir du 10
@@ -329,6 +331,11 @@ def _build_die_weekly(name):
     if name == "Libya":
         die_usd = 0.15 / FX_RATES["LYD"]
         return [round(die_usd, 4)] * N_WEEKS
+
+    # Tunisia diesel: GPP Africa MENA snapshot + RhinoCarHire verified
+    # Diesel ~$0.716/L = ~2.09 TND/L (price-regulated, flat line on GPP)
+    if name == "Tunisia":
+        return [0.716] * N_WEEKS   # $0.716/L — GPP/RhinoCarHire verified
 
     if pd is None or pd[3] is None:
         fb = ESTIMATE_FALLBACK.get(name)

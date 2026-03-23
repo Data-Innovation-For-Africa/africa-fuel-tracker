@@ -97,11 +97,9 @@ def populate():
         fx      = D.FX_RATES.get(currency, 1.0)
         src     = COUNTRY_SRC.get(name, "E")
         src_lbl = SOURCE_LABELS[src]
-        rp      = D.REAL_PRICES.get(name, {})
-
-        gas_series = rp.get("gas_w", [])
-        die_series = rp.get("die_w", [])
-        lpg_price  = D.LPG_PRICES.get(name, 1.2)
+        gas_series = D._build_gas_weekly(name)
+        die_series = D._build_die_weekly(name)
+        lpg_price  = D.LPG_USD.get(name, 1.2)
 
         for week_idx, week_date in enumerate(D.WEEK_DATES):
             date_str = week_date.isoformat()

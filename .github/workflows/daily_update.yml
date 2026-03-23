@@ -1,14 +1,12 @@
-name: 🌍 Africa Fuel Tracker — Daily Update
+name: 🌍 Africa Fuel Tracker — Weekly Update
 
 on:
   schedule:
-    - cron: '0 6 * * *'
+    - cron: '0 7 * * 1'   # Chaque LUNDI 07:00 UTC (GPP publie le lundi)
+    - cron: '0 6 * * *'   # Aussi chaque jour 06:00 UTC (prix actuels)
   push:
     branches: [ main ]
   workflow_dispatch:
-
-env:
-  ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
 
 jobs:
   collect-and-deploy:
@@ -27,12 +25,19 @@ jobs:
           cache: 'pip'
 
       - name: 📦 Install dependencies
-        run: pip install --upgrade pip openpyxl pandas requests beautifulsoup4 lxml
+        run: |
+          pip install --upgrade pip
+          pip install openpyxl pandas requests beautifulsoup4 lxml playwright
+
+      - name: 🎭 Install Playwright Chromium
+        run: |
+          playwright install chromium
+          playwright install-deps chromium
 
       - name: ⚙️ Run pipeline
         run: python src/pipeline_ci.py
 
-      - name: 📊 Data quality report
+      - name: 📊 Report
         run: |
           cat docs/last_update.txt
           python3 -c "
@@ -41,14 +46,10 @@ jobs:
           db = json.load(open('data/prices_db.json'))
           entries = db.get('entries',[])
           gas = [e for e in entries if e['fuel_type']=='gasoline']
-          today = __import__('datetime').date.today().isoformat()
-          today_gas = [e for e in gas if e['date']==today]
-          srcs = Counter(e.get('src_code','?') for e in today_gas)
-          all_c = set(e['country'] for e in gas)
-          print(f'Today collected  : {len(today_gas)}/54')
-          print(f'D(official)={srcs.get(\"D\",0)} C(press)={srcs.get(\"C\",0)} B(Rhino)={srcs.get(\"B\",0)} A(TE/Claude)={srcs.get(\"A\",0)} last_known={srcs.get(\"last_known\",0)}')
-          print(f'Historical cover : {len(all_c)}/54 countries')
-          print(f'Total DB entries : {len(entries)}')
+          countries = set(e['country'] for e in gas)
+          srcs = Counter(e.get('src_code','?') for e in gas)
+          print(f'Gas entries : {len(gas)} | Countries: {len(countries)}/54')
+          print(f'Sources: D={srcs.get(\"D\",0)} C={srcs.get(\"C\",0)} B={srcs.get(\"B\",0)} A={srcs.get(\"A\",0)} E={srcs.get(\"E\",0)}')
           "
 
       - name: 💾 Commit & push
