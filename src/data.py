@@ -186,7 +186,7 @@ PRICE_DATA = {
     "Sudan":            (0.59,    0.60,    0.60,     0.55,    0.56,    0.56,    "B"),
     "Tanzania":         (0.91,    0.95,    0.95,     None,    None,    None,    "B"),
     "Togo":             (1.04,    1.04,    1.04,     None,    None,    None,    "B"),
-    "Tunisia":          (0.863,   0.863,   0.863,    0.716,   0.716,   0.716,   "B"),  # STIR regulated — fixed TND price (2.521 TND/L gas, 2.091 TND/L diesel)
+    "Tunisia":          (0.863,   0.863,   0.863,    0.757,   0.757,   0.757,   "B"),  # STIR regulated — GPP: gas=2.53 TND=$0.870/L  die=2.205 TND=$0.757/L
     "Zambia":           (1.23,    1.18,    1.18,     None,    None,    None,    "B"),
     "Zimbabwe":         (1.31,    1.47,    1.47,     None,    None,    None,    "B"),
 
@@ -324,6 +324,24 @@ def _build_gas_weekly(name):
     return _eur_to_weekly_usd(jan_eur, feb_eur, mar_eur)
 
 
+# ── GPP Diesel Prices — Africa Feb/Mar 2026 ────────────────────────────────
+# Source: GlobalPetrolPrices.com Africa diesel page 09-Feb-2026
+# These are VERIFIED diesel prices distinct from gasoline
+GPP_DIESEL = {
+    "Benin":        1.243,  "Botswana":     1.041,  "Burkina Faso": 1.177,
+    "Burundi":      1.288,  "CAR":          2.291,  "Cameroon":     1.365,
+    "Congo DR":     0.862,  "Eswatini":     1.199,  "Ghana":        1.100,
+    "Guinea":       1.341,  "Kenya":        1.279,  "Lesotho":      1.156,
+    "Madagascar":   1.550,  "Malawi":       2.015,  "Mali":         1.250,
+    "Mauritius":    1.276,  "Morocco":      1.317,  "Mozambique":   1.235,
+    "Namibia":      1.102,  "Rwanda":       1.199,  "Seychelles":   1.330,
+    "Sierra Leone": 1.361,  "South Africa": 1.270,  "Tanzania":     1.012,
+    "Togo":         1.181,  "Uganda":       1.314,  "Zambia":       1.021,
+    "Cabo Verde":   1.121,  "Niger":        1.002,  "Senegal":      1.298,
+    "Ivory Coast":  1.166,  "Zimbabwe":     1.381,
+}
+
+
 def _build_die_weekly(name):
     """Construit la série hebdomadaire USD/L diesel."""
     pd = PRICE_DATA.get(name)
@@ -332,10 +350,11 @@ def _build_die_weekly(name):
         die_usd = 0.15 / FX_RATES["LYD"]
         return [round(die_usd, 4)] * N_WEEKS
 
-    # Tunisia diesel: GPP Africa MENA snapshot + RhinoCarHire verified
-    # Diesel ~$0.716/L = ~2.09 TND/L (price-regulated, flat line on GPP)
+    # Tunisia diesel: GPP confirmed 2.205-2.21 TND/L (regulated flat price)
+    # Source: GPP 13-Oct-2025 = 2.205 TND · oilpricez.com Mar-2026 = 2.21 TND
+    # USD = 2.21 / 2.9183 = $0.757/L
     if name == "Tunisia":
-        return [0.716] * N_WEEKS   # $0.716/L — GPP/RhinoCarHire verified
+        return [0.757] * N_WEEKS   # $0.757/L = 2.21 TND/L — GPP verified
 
     if pd is None or pd[3] is None:
         fb = ESTIMATE_FALLBACK.get(name)
@@ -343,7 +362,9 @@ def _build_die_weekly(name):
             dj, dm = fb[2], fb[3]
             step = (dm - dj) / 11
             return [round(dj + i * step, 4) for i in range(N_WEEKS)]
-        # Fallback: 85% du prix essence
+        # Fallback: use GPP verified diesel if available, else 87% of gas
+        if name in GPP_DIESEL:
+            return [GPP_DIESEL[name]] * N_WEEKS
         gas_w = _build_gas_weekly(name)
         return [round(p * 0.87, 4) for p in gas_w]
 
