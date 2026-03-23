@@ -3,374 +3,662 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Africa Fuel Price Intelligence 2026</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<title>AfricaFuelWatch 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
-:root{
-  --bg:#07111E;--bg2:#0B1826;--panel:#0E1E2E;--panel2:#132435;
-  --bord:#1A3347;--bord2:#214059;
-  --green:#00A86A;--green2:#00CC85;
-  --gold:#F5A300;--gold2:#FFBE33;
-  --red:#E8394A;--blue:#1A8FD8;--cyan:#00C4CF;
-  --amber:#E87C1A;--purple:#8066D6;
-  --txt:#E8EEF4;--txt2:#7A9BB5;--txt3:#3E6480;
-  --r:10px;--rl:16px;
+/* ═══════════════════════════ TOKENS ═══════════════════════════ */
+:root {
+  --g0:#00A86A; --g1:#00CC85; --g2:#00E695; --g3:#E8F9F2;
+  --gold:#F5A300; --gold2:#FFBE33; --gold3:#FFF4D6;
+  --red:#E8394A; --red2:#FF6B78; --blue:#1A8FD8; --cyan:#00C4CF;
+  --amber:#E87C1A; --purple:#8B5CF6;
+  --bg:#07111E; --bg1:#0B1826; --bg2:#0E1E2E;
+  --s1:#132435; --s2:#1A3347; --s3:#214059; --s4:#2D5A7A;
+  --t1:#E8EEF4; --t2:#9EC8E0; --t3:#5A8FAF; --t4:#2D5A7A;
+  --r4:4px; --r8:8px; --r12:12px; --r16:16px; --r24:24px; --r99:99px;
+  --sh: 0 4px 24px rgba(0,0,0,.4);
+  --sh-g: 0 4px 24px rgba(0,168,106,.25);
 }
+
+/* ═══════════════════════════ RESET ═══════════════════════════ */
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;
-  overflow-x:hidden;min-height:100vh;font-size:14px;line-height:1.5}
-body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
-  background:radial-gradient(ellipse 70% 40% at 50% 0%,rgba(0,168,106,.06),transparent 60%)}
-::-webkit-scrollbar{width:5px;height:5px}
-::-webkit-scrollbar-thumb{background:#1A3347;border-radius:9px}
-/* HEADER */
-header{position:sticky;top:0;z-index:200;height:60px;
-  background:rgba(7,17,30,.93);backdrop-filter:blur(20px);
-  border-bottom:1px solid var(--bord);
-  padding:0 1.75rem;display:flex;align-items:center;justify-content:space-between}
-.logo{display:flex;align-items:center;gap:.75rem}
-.logo-badge{width:36px;height:36px;border-radius:9px;
-  background:linear-gradient(135deg,#00A86A,#007A4D);
-  display:flex;align-items:center;justify-content:center;font-size:1.1rem;
-  box-shadow:0 0 24px rgba(0,168,106,.3)}
-.logo-text{font-size:.95rem;font-weight:700;letter-spacing:-.01em}
-.logo-text em{font-style:normal;color:var(--green)}
-.logo-sub{font-size:.64rem;color:var(--txt2);font-weight:400;display:block;margin-top:.05rem}
-.hdr-right{display:flex;align-items:center;gap:1rem}
-.hdr-meta{font-family:'IBM Plex Mono',monospace;font-size:.67rem;color:var(--txt2);text-align:right;line-height:1.6}
-.live-badge{display:flex;align-items:center;gap:.35rem;background:rgba(0,168,106,.1);
-  border:1px solid rgba(0,168,106,.3);border-radius:99px;padding:.22rem .7rem;
-  font-family:'IBM Plex Mono',monospace;font-size:.67rem;color:var(--green)}
-.dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(0,168,106,.5)}50%{box-shadow:0 0 0 5px rgba(0,168,106,0)}}
-.hdr-dl{display:flex;align-items:center;gap:.45rem;padding:.3rem .85rem;border-radius:8px;
-  background:linear-gradient(135deg,#007A4D,#00A86A);border:none;color:#fff;
-  font-family:'Inter',sans-serif;font-size:.73rem;font-weight:600;cursor:pointer;
-  text-decoration:none;transition:.2s;white-space:nowrap}
-.hdr-dl:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,168,106,.4)}
-/* TICKER */
-.ticker{background:rgba(14,30,46,.95);border-bottom:1px solid var(--bord);
-  height:34px;overflow:hidden;display:flex;align-items:center}
-.ticker-label{flex-shrink:0;padding:0 1rem;font-size:.64rem;font-weight:700;
-  color:var(--green);letter-spacing:.08em;text-transform:uppercase;
-  border-right:1px solid var(--bord);height:100%;display:flex;align-items:center;
-  white-space:nowrap;background:rgba(0,168,106,.05)}
-.ticker-outer{flex:1;overflow:hidden}
-.ticker-track{display:flex;align-items:center;animation:tkscroll 90s linear infinite;white-space:nowrap}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--t1);font-family:'Outfit',sans-serif;
+  overflow-x:hidden;min-height:100vh;line-height:1.5}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:var(--bg1)}
+::-webkit-scrollbar-thumb{background:var(--s3);border-radius:99px}
+a{color:inherit;text-decoration:none}
+button{cursor:pointer;font-family:'Outfit',sans-serif;border:none;outline:none}
+input,select{font-family:'Outfit',sans-serif;outline:none}
+canvas{display:block}
+
+/* ═══════════════════════════ LAYOUT ═══════════════════════════ */
+.page{display:flex;flex-direction:column;min-height:100vh}
+.wrap{width:100%;max-width:1440px;margin:0 auto;padding:0 1.5rem}
+
+/* ═══════════════════════════ NAV ═══════════════════════════ */
+nav{
+  position:sticky;top:0;z-index:500;height:56px;
+  background:rgba(7,17,30,.96);backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--s2);
+}
+.nav-inner{
+  height:100%;display:flex;align-items:center;
+  justify-content:space-between;gap:1rem;
+}
+.nav-brand{display:flex;align-items:center;gap:.6rem;flex-shrink:0}
+.brand-icon{
+  width:34px;height:34px;border-radius:10px;
+  background:linear-gradient(135deg,var(--g0),#007A4D);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;box-shadow:var(--sh-g);flex-shrink:0;
+}
+.brand-name{font-size:.9rem;font-weight:800;letter-spacing:-.02em}
+.brand-name span{color:var(--g0)}
+.brand-tag{
+  font-size:.6rem;font-weight:600;letter-spacing:.06em;
+  color:var(--g0);background:rgba(0,168,106,.1);
+  border:1px solid rgba(0,168,106,.25);border-radius:var(--r99);
+  padding:.12rem .5rem;text-transform:uppercase;
+}
+.nav-right{display:flex;align-items:center;gap:.6rem}
+.nav-meta{
+  font-size:.67rem;color:var(--t3);
+  font-family:'JetBrains Mono',monospace;
+  display:none;
+}
+@media(min-width:640px){.nav-meta{display:block}}
+.live-dot{
+  display:flex;align-items:center;gap:.35rem;
+  background:rgba(0,168,106,.1);border:1px solid rgba(0,168,106,.3);
+  border-radius:var(--r99);padding:.2rem .6rem;
+  font-size:.65rem;font-weight:600;color:var(--g0);
+  font-family:'JetBrains Mono',monospace;letter-spacing:.02em;
+}
+.pulse{width:6px;height:6px;border-radius:50%;background:var(--g0);
+  animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+.btn-dl-nav{
+  display:flex;align-items:center;gap:.4rem;
+  padding:.32rem .75rem;border-radius:var(--r8);
+  background:var(--g0);color:#fff;
+  font-size:.73rem;font-weight:700;transition:.15s;
+  white-space:nowrap;
+}
+.btn-dl-nav:hover{background:var(--g1);transform:translateY(-1px)}
+.btn-dl-nav svg{flex-shrink:0}
+
+/* ═══════════════════════════ TICKER ═══════════════════════════ */
+.ticker{
+  background:var(--bg1);border-bottom:1px solid var(--s2);
+  height:32px;overflow:hidden;display:flex;align-items:center;
+  flex-shrink:0;
+}
+.ticker-lbl{
+  flex-shrink:0;padding:0 .75rem;height:100%;
+  display:flex;align-items:center;gap:.4rem;
+  background:rgba(0,168,106,.08);border-right:1px solid var(--s2);
+  font-size:.62rem;font-weight:700;letter-spacing:.08em;
+  color:var(--g0);text-transform:uppercase;white-space:nowrap;
+}
+.ticker-body{flex:1;overflow:hidden;position:relative}
+.ticker-body::before,.ticker-body::after{
+  content:'';position:absolute;top:0;bottom:0;width:32px;z-index:2;pointer-events:none;
+}
+.ticker-body::before{left:0;background:linear-gradient(90deg,var(--bg1),transparent)}
+.ticker-body::after{right:0;background:linear-gradient(270deg,var(--bg1),transparent)}
+.ticker-track{
+  display:flex;align-items:center;white-space:nowrap;
+  animation:ticker 120s linear infinite;
+}
 .ticker-track:hover{animation-play-state:paused}
-@keyframes tkscroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-.ti{display:inline-flex;align-items:center;gap:.45rem;padding:0 1.1rem;height:34px;
-  border-right:1px solid rgba(26,51,71,.5);font-size:.72rem}
-.ti-name{font-weight:600}.ti-price{font-family:'IBM Plex Mono',monospace;color:var(--green);font-weight:500}
-.ti-cur{color:var(--txt3);font-size:.62rem}
-.ti-up{color:#E8394A}.ti-dn{color:#00CC85}.ti-fl{color:var(--txt3)}
-/* LAYOUT */
-.wrap{max-width:1400px;margin:0 auto;padding:1.5rem 1.75rem 3rem}
-/* HERO */
-.hero{background:linear-gradient(135deg,#0B1E31,#0E2A3D);border:1px solid var(--bord);
-  border-radius:var(--rl);padding:2rem;margin-bottom:1.5rem;
-  display:grid;grid-template-columns:1fr auto;gap:2rem;align-items:start;
-  position:relative;overflow:hidden}
-.hero::after{content:'';position:absolute;top:-60px;right:-60px;width:280px;height:280px;
-  border-radius:50%;background:radial-gradient(circle,rgba(0,168,106,.07),transparent 70%);pointer-events:none}
-.hero-title{font-size:1.65rem;font-weight:800;line-height:1.2;margin-bottom:.55rem;
-  background:linear-gradient(135deg,#E8EEF4,#9EC8E0);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.hero-sub{font-size:.87rem;color:var(--txt2);line-height:1.6;max-width:560px;margin-bottom:1rem}
-.chips{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:1.2rem}
-.chip{display:inline-flex;align-items:center;gap:.32rem;padding:.26rem .72rem;border-radius:99px;font-size:.71rem;font-weight:500}
-.chip-g{background:rgba(0,168,106,.1);border:1px solid rgba(0,168,106,.25);color:var(--green)}
-.chip-y{background:rgba(245,163,0,.1);border:1px solid rgba(245,163,0,.25);color:var(--gold)}
-.chip-b{background:rgba(26,143,216,.1);border:1px solid rgba(26,143,216,.25);color:var(--blue)}
-.dl-hero{display:inline-flex;align-items:center;gap:.65rem;padding:.65rem 1.4rem;
-  border-radius:10px;background:linear-gradient(135deg,#007A4D,#00A86A,#00CC85);
-  background-size:200% auto;animation:shimmer 3s linear infinite;
-  border:none;color:#fff;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:700;
-  cursor:pointer;text-decoration:none;box-shadow:0 4px 20px rgba(0,168,106,.3);transition:.2s}
-@keyframes shimmer{0%{background-position:0% center}100%{background-position:200% center}}
-.dl-hero:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,168,106,.45);animation:none}
-.hero-kpis{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;min-width:295px}
-.hkpi{background:rgba(7,17,30,.6);border:1px solid var(--bord);border-radius:var(--r);padding:.9rem 1rem}
-.hkpi-label{font-size:.66rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--txt2);margin-bottom:.3rem}
-.hkpi-value{font-size:1.28rem;font-weight:800;font-family:'IBM Plex Mono',monospace;line-height:1}
-.hkpi-sub{font-size:.7rem;color:var(--txt2);margin-top:.25rem}
-/* SECTION */
-.sec-title{font-size:.73rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;
-  color:var(--txt2);padding:.4rem 0 .85rem;display:flex;align-items:center;gap:.6rem}
-.sec-bdg{background:rgba(0,168,106,.12);border:1px solid rgba(0,168,106,.25);
-  color:var(--green);padding:.14rem .52rem;border-radius:99px;font-size:.62rem;font-weight:700;letter-spacing:.04em}
-/* REGION CARDS */
-.reg-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.85rem;margin-bottom:1.5rem}
-.rc{background:var(--panel);border:1px solid var(--bord);border-radius:var(--r);
-  padding:1rem;position:relative;overflow:hidden;transition:.2s}
-.rc:hover{border-color:var(--bord2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
-.rc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
-.rc-na::before{background:var(--gold)}.rc-wa::before{background:var(--green)}
-.rc-ea::before{background:var(--blue)}.rc-ca::before{background:var(--amber)}.rc-sa::before{background:var(--red)}
-.rc-name{font-size:.7rem;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem}
-.rc-price{font-size:1.35rem;font-weight:800;font-family:'IBM Plex Mono',monospace;line-height:1;margin-bottom:.3rem}
-.rc-meta{font-size:.66rem;color:var(--txt3);margin-bottom:.65rem}
-.rc-bar-bg{background:var(--bg);border-radius:99px;height:4px;overflow:hidden}
-.rc-bar-fill{height:100%;border-radius:99px;transition:width .6s}
-.rc-chg{font-size:.7rem;margin-top:.4rem;font-weight:600}
-/* CARD */
-.card{background:var(--panel);border:1px solid var(--bord);border-radius:var(--rl);
-  padding:1.25rem 1.35rem;margin-bottom:1.25rem}
-.card-title{font-size:.76rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;
-  color:var(--txt2);margin-bottom:1rem;display:flex;align-items:center;
-  justify-content:space-between;gap:.75rem;flex-wrap:wrap}
-.chart-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:1.25rem;margin-bottom:1.25rem}
-.chart-wrap{height:280px;position:relative}
-/* TOGGLE */
-.tog{display:inline-flex;background:var(--bg);border:1px solid var(--bord);
-  border-radius:8px;padding:3px;gap:2px;margin-bottom:.85rem}
-.tog-btn{padding:.3rem .85rem;border-radius:6px;border:none;background:transparent;
-  color:var(--txt2);font-size:.74rem;font-weight:500;cursor:pointer;
-  font-family:'Inter',sans-serif;transition:.15s;white-space:nowrap}
-.tog-btn.on{background:var(--green);color:#fff;box-shadow:0 2px 8px rgba(0,168,106,.3)}
-.tog-btn:hover:not(.on){background:var(--bord);color:var(--txt)}
-/* RANKINGS */
-.rank-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem}
-.rank-item{display:flex;align-items:center;gap:.8rem;padding:.55rem .7rem;
-  border-radius:8px;border:1px solid transparent;cursor:pointer;transition:.12s}
-.rank-item:hover{background:var(--bg);border-color:var(--bord)}
-.rank-num{width:26px;height:26px;border-radius:6px;background:var(--bg);border:1px solid var(--bord);
-  display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:var(--txt2);flex-shrink:0}
-.rank-item:nth-child(-n+3) .rank-num{background:rgba(245,163,0,.1);border-color:rgba(245,163,0,.3);color:var(--gold)}
-.rank-name{font-size:.8rem;font-weight:600;flex:1}
-.rank-price{font-family:'IBM Plex Mono',monospace;font-size:.8rem;font-weight:600}
-.rank-bar-bg{height:3px;background:var(--bg);border-radius:99px;flex:1;margin-left:.5rem}
-.rank-bar-fill{height:100%;border-radius:99px}
-/* FX */
-.fx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:.55rem;max-height:270px;overflow-y:auto}
-.fx-item{background:var(--bg);border:1px solid var(--bord);border-radius:8px;padding:.6rem .8rem;
-  display:flex;align-items:center;justify-content:space-between}
-.fx-code{font-family:'IBM Plex Mono',monospace;font-size:.74rem;font-weight:600;color:var(--green)}
-.fx-main{font-family:'IBM Plex Mono',monospace;font-size:.77rem;font-weight:500;color:var(--txt)}
-.fx-inv{font-size:.61rem;color:var(--txt3);display:block;margin-top:.1rem}
-/* FILTERS */
-.filters{display:flex;flex-wrap:wrap;align-items:center;gap:.45rem;
-  padding-bottom:.8rem;border-bottom:1px solid var(--bord);margin-bottom:.8rem}
-.fb{padding:.28rem .82rem;border-radius:99px;font-size:.72rem;font-weight:500;
-  border:1px solid var(--bord);background:transparent;color:var(--txt2);
-  cursor:pointer;font-family:'Inter',sans-serif;transition:.12s}
-.fb.on{background:var(--green);border-color:var(--green);color:#fff}
-.fb:hover:not(.on){border-color:var(--bord2);color:var(--txt)}
-.sort-sel{padding:.28rem .65rem;border-radius:8px;font-size:.72rem;
-  border:1px solid var(--bord);background:var(--bg);color:var(--txt);
-  font-family:'Inter',sans-serif;cursor:pointer;outline:none}
-.sort-sel:focus{border-color:var(--green)}
-.srch-wrap{position:relative;margin-left:auto}
-.srch-ico{position:absolute;left:.62rem;top:50%;transform:translateY(-50%);font-size:.78rem;color:var(--txt3);pointer-events:none}
-.srch{padding:.28rem .65rem .28rem 1.9rem;border-radius:8px;font-size:.72rem;
-  border:1px solid var(--bord);background:var(--bg);color:var(--txt);
-  font-family:'Inter',sans-serif;width:185px;outline:none;transition:.2s}
-.srch:focus{border-color:var(--green);width:215px}
-.srch::placeholder{color:var(--txt3)}
-/* TABLE */
-.tbl-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-size:.77rem}
-thead th{background:var(--bg);border-bottom:2px solid var(--bord);padding:.52rem .72rem;
-  font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;
-  color:var(--txt2);text-align:left;white-space:nowrap;cursor:pointer;user-select:none;position:sticky;top:0}
-thead th:hover{color:var(--green)}
-thead th.sorted{color:var(--green);border-bottom-color:var(--green)}
-tbody tr{border-bottom:1px solid rgba(26,51,71,.5);cursor:pointer;transition:.1s}
+@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.ti{
+  display:inline-flex;align-items:center;gap:.45rem;
+  padding:0 1rem;height:32px;
+  border-right:1px solid rgba(33,64,89,.5);font-size:.7rem;
+}
+.ti-n{font-weight:600}
+.ti-p{font-family:'JetBrains Mono',monospace;color:var(--g0);font-weight:500}
+.ti-c{font-size:.6rem;color:var(--t4)}
+.up{color:var(--red)}.dn{color:var(--g1)}.fl{color:var(--t4)}
+
+/* ═══════════════════════════ MAIN ═══════════════════════════ */
+main{flex:1;padding:1.25rem 0 3rem}
+
+/* ═══════════════════════════ HERO ═══════════════════════════ */
+.hero{
+  background:linear-gradient(135deg,#0B1E31 0%,#0E2A3D 60%,#0A1E2D 100%);
+  border:1px solid var(--s2);border-radius:var(--r16);
+  padding:1.5rem;margin-bottom:1.25rem;position:relative;overflow:hidden;
+}
+.hero-glow{
+  position:absolute;top:-80px;right:-80px;width:300px;height:300px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(0,168,106,.07) 0%,transparent 70%);
+  pointer-events:none;
+}
+.hero-grid{display:grid;grid-template-columns:1fr;gap:1.25rem}
+@media(min-width:768px){.hero-grid{grid-template-columns:1fr auto;align-items:start}}
+.hero-title{
+  font-size:clamp(1.3rem,4vw,1.8rem);font-weight:900;line-height:1.15;
+  margin-bottom:.5rem;letter-spacing:-.03em;
+  background:linear-gradient(135deg,#E8EEF4 0%,#9EC8E0 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.hero-sub{
+  font-size:.85rem;color:var(--t2);line-height:1.6;
+  max-width:580px;margin-bottom:1rem;
+}
+.hero-tags{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1.1rem}
+.tag{
+  display:inline-flex;align-items:center;gap:.3rem;
+  padding:.22rem .65rem;border-radius:var(--r99);font-size:.68rem;font-weight:600;
+}
+.tag-g{background:rgba(0,168,106,.1);border:1px solid rgba(0,168,106,.2);color:var(--g0)}
+.tag-y{background:rgba(245,163,0,.1);border:1px solid rgba(245,163,0,.2);color:var(--gold)}
+.tag-b{background:rgba(26,143,216,.1);border:1px solid rgba(26,143,216,.2);color:var(--blue)}
+.btn-dl{
+  display:inline-flex;align-items:center;gap:.6rem;
+  padding:.65rem 1.35rem;border-radius:var(--r12);
+  background:linear-gradient(135deg,#007A4D,var(--g0));
+  color:#fff;font-size:.85rem;font-weight:700;
+  box-shadow:var(--sh-g);transition:.2s;
+}
+.btn-dl:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,168,106,.4)}
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.kpi{
+  background:rgba(7,17,30,.7);border:1px solid var(--s2);
+  border-radius:var(--r12);padding:.85rem 1rem;
+}
+.kpi-label{font-size:.62rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.06em;color:var(--t3);margin-bottom:.25rem}
+.kpi-value{font-size:1.2rem;font-weight:900;font-family:'JetBrains Mono',monospace;line-height:1.1}
+.kpi-sub{font-size:.67rem;color:var(--t3);margin-top:.2rem;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ═══════════════════════════ SECTION ═══════════════════════════ */
+.sec-head{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:.75rem;flex-wrap:wrap;margin-bottom:.85rem;
+}
+.sec-title{
+  font-size:.72rem;font-weight:800;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--t3);
+  display:flex;align-items:center;gap:.5rem;
+}
+.sec-pill{
+  background:rgba(0,168,106,.1);border:1px solid rgba(0,168,106,.2);
+  color:var(--g0);padding:.1rem .48rem;border-radius:var(--r99);
+  font-size:.6rem;font-weight:800;letter-spacing:.04em;
+}
+
+/* ═══════════════════════════ REGION STRIP ═══════════════════════════ */
+.reg-strip{
+  display:grid;gap:.6rem;margin-bottom:1.25rem;
+  grid-template-columns:repeat(2,1fr);
+}
+@media(min-width:480px){.reg-strip{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:900px){.reg-strip{grid-template-columns:repeat(5,1fr)}}
+.rc{
+  background:var(--s1);border:1px solid var(--s2);
+  border-radius:var(--r12);padding:.85rem 1rem;
+  position:relative;overflow:hidden;transition:.2s;
+}
+.rc:hover{border-color:var(--s3);transform:translateY(-2px);box-shadow:var(--sh)}
+.rc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.rc-na::before{background:var(--gold)}
+.rc-wa::before{background:var(--g0)}
+.rc-ea::before{background:var(--blue)}
+.rc-ca::before{background:var(--amber)}
+.rc-sa::before{background:var(--red)}
+.rc-name{font-size:.62rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.05em;color:var(--t3);margin-bottom:.4rem}
+.rc-price{font-size:1.2rem;font-weight:900;font-family:'JetBrains Mono',monospace;line-height:1;margin-bottom:.25rem}
+.rc-count{font-size:.63rem;color:var(--t4);margin-bottom:.5rem}
+.rc-bar{background:var(--bg);border-radius:99px;height:3px;overflow:hidden;margin-bottom:.35rem}
+.rc-fill{height:100%;border-radius:99px;transition:width .8s ease}
+.rc-chg{font-size:.67rem;font-weight:600}
+
+/* ═══════════════════════════ CARD ═══════════════════════════ */
+.card{
+  background:var(--s1);border:1px solid var(--s2);
+  border-radius:var(--r16);padding:1.1rem 1.15rem;margin-bottom:1.1rem;
+}
+.card-head{
+  font-size:.71rem;font-weight:800;text-transform:uppercase;
+  letter-spacing:.05em;color:var(--t3);
+  margin-bottom:.9rem;display:flex;align-items:center;
+  justify-content:space-between;gap:.5rem;flex-wrap:wrap;
+}
+
+/* ═══════════════════════════ CHARTS LAYOUT ═══════════════════════════ */
+.chart-row{display:grid;grid-template-columns:1fr;gap:1.1rem;margin-bottom:1.1rem}
+@media(min-width:900px){.chart-row{grid-template-columns:3fr 2fr}}
+.chart-box{height:260px;position:relative}
+@media(min-width:640px){.chart-box{height:300px}}
+
+/* ═══════════════════════════ TOGGLES ═══════════════════════════ */
+.tog{
+  display:inline-flex;background:var(--bg);
+  border:1px solid var(--s2);border-radius:var(--r8);
+  padding:2px;gap:2px;flex-wrap:wrap;
+}
+.tog-btn{
+  padding:.26rem .7rem;border-radius:6px;background:transparent;
+  color:var(--t3);font-size:.7rem;font-weight:600;
+  font-family:'Outfit',sans-serif;transition:.12s;white-space:nowrap;
+}
+.tog-btn.on{background:var(--g0);color:#fff;box-shadow:0 2px 8px rgba(0,168,106,.3)}
+.tog-btn:hover:not(.on){background:var(--s2);color:var(--t1)}
+
+/* ═══════════════════════════ RANKINGS ═══════════════════════════ */
+.rank-row{display:grid;grid-template-columns:1fr;gap:1.1rem;margin-bottom:1.1rem}
+@media(min-width:640px){.rank-row{grid-template-columns:1fr 1fr}}
+.rank-list{display:flex;flex-direction:column;gap:.3rem}
+.rank-item{
+  display:flex;align-items:center;gap:.65rem;
+  padding:.5rem .65rem;border-radius:var(--r8);
+  border:1px solid transparent;cursor:pointer;transition:.12s;
+}
+.rank-item:hover{background:var(--bg1);border-color:var(--s2)}
+.rank-n{
+  width:24px;height:24px;border-radius:6px;
+  background:var(--bg);border:1px solid var(--s2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.67rem;font-weight:700;color:var(--t3);flex-shrink:0;
+}
+.rank-item:nth-child(-n+3) .rank-n{
+  background:rgba(245,163,0,.1);border-color:rgba(245,163,0,.3);color:var(--gold);
+}
+.rank-name{font-size:.78rem;font-weight:600;flex:1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rank-right{display:flex;flex-direction:column;align-items:flex-end;gap:.12rem;flex-shrink:0}
+.rank-price{font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:600}
+.rank-bar-bg{height:2px;background:var(--bg);border-radius:99px;width:60px}
+.rank-bar-fg{height:100%;border-radius:99px;transition:width .4s}
+
+/* ═══════════════════════════ FX PANEL ═══════════════════════════ */
+.fx-wrap{
+  display:grid;gap:.45rem;
+  grid-template-columns:repeat(2,1fr);
+  max-height:240px;overflow-y:auto;
+}
+@media(min-width:480px){.fx-wrap{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:768px){.fx-wrap{grid-template-columns:repeat(4,1fr)}}
+@media(min-width:1100px){.fx-wrap{grid-template-columns:repeat(6,1fr)}}
+.fx-card{
+  background:var(--bg1);border:1px solid var(--s2);
+  border-radius:var(--r8);padding:.5rem .65rem;
+  display:flex;align-items:center;justify-content:space-between;gap:.4rem;
+}
+.fx-code{font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:600;color:var(--g0)}
+.fx-rate{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--t1);font-weight:500}
+.fx-inv{font-size:.58rem;color:var(--t4);display:block;margin-top:.08rem}
+
+/* ═══════════════════════════ TABLE SECTION ═══════════════════════════ */
+.tbl-controls{
+  display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;
+  padding-bottom:.75rem;border-bottom:1px solid var(--s2);margin-bottom:.75rem;
+}
+.fb{
+  padding:.24rem .7rem;border-radius:var(--r99);font-size:.7rem;font-weight:600;
+  border:1px solid var(--s2);background:transparent;color:var(--t3);
+  font-family:'Outfit',sans-serif;transition:.12s;white-space:nowrap;
+}
+.fb.on{background:var(--g0);border-color:var(--g0);color:#fff}
+.fb:hover:not(.on){border-color:var(--s3);color:var(--t1)}
+.ctrl-right{display:flex;align-items:center;gap:.5rem;margin-left:auto;flex-wrap:wrap}
+.sort-sel{
+  padding:.24rem .6rem;border-radius:var(--r8);font-size:.7rem;
+  border:1px solid var(--s2);background:var(--bg);color:var(--t1);
+  font-family:'Outfit',sans-serif;transition:.12s;
+  appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235A8FAF' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right .5rem center;
+  padding-right:1.75rem;
+}
+.sort-sel:focus{border-color:var(--g0)}
+.srch-wrap{position:relative}
+.srch-ico{
+  position:absolute;left:.55rem;top:50%;transform:translateY(-50%);
+  color:var(--t4);pointer-events:none;font-size:.8rem;
+}
+.srch{
+  padding:.24rem .6rem .24rem 1.75rem;border-radius:var(--r8);font-size:.7rem;
+  border:1px solid var(--s2);background:var(--bg);color:var(--t1);
+  font-family:'Outfit',sans-serif;width:150px;transition:.2s;
+}
+@media(min-width:480px){.srch{width:180px}}
+.srch:focus{border-color:var(--g0);width:200px}
+.srch::placeholder{color:var(--t4)}
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tbl-wrap::-webkit-scrollbar{height:4px}
+table{width:100%;border-collapse:collapse;font-size:.76rem;min-width:600px}
+thead th{
+  background:var(--bg);border-bottom:2px solid var(--s2);
+  padding:.45rem .65rem;font-size:.64rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.04em;color:var(--t3);
+  text-align:left;white-space:nowrap;cursor:pointer;
+  position:sticky;top:0;z-index:2;user-select:none;
+}
+thead th:hover{color:var(--g0)}
+thead th.sorted{color:var(--g0);border-bottom-color:var(--g0)}
+tbody tr{border-bottom:1px solid rgba(26,51,71,.4);cursor:pointer;transition:.1s}
 tbody tr:hover{background:rgba(0,168,106,.04)}
-tbody tr:last-child{border-bottom:none}
-td{padding:.5rem .72rem;white-space:nowrap;vertical-align:middle}
-.cn{font-weight:600}
-.rt{font-size:.64rem;font-weight:600;padding:.16rem .52rem;border-radius:99px;border:1px solid}
+td{padding:.45rem .65rem;white-space:nowrap;vertical-align:middle}
+.cn{font-weight:700}
+.rt{font-size:.61rem;font-weight:600;padding:.12rem .45rem;border-radius:var(--r99);border:1px solid}
 .rt-na{color:var(--gold);border-color:rgba(245,163,0,.3);background:rgba(245,163,0,.07)}
-.rt-wa{color:var(--green);border-color:rgba(0,168,106,.3);background:rgba(0,168,106,.07)}
+.rt-wa{color:var(--g0);border-color:rgba(0,168,106,.3);background:rgba(0,168,106,.07)}
 .rt-ea{color:var(--blue);border-color:rgba(26,143,216,.3);background:rgba(26,143,216,.07)}
 .rt-ca{color:var(--amber);border-color:rgba(232,124,26,.3);background:rgba(232,124,26,.07)}
 .rt-sa{color:var(--red);border-color:rgba(232,57,74,.3);background:rgba(232,57,74,.07)}
-.cur-tag{font-family:'IBM Plex Mono',monospace;font-size:.67rem;font-weight:500;
-  padding:.14rem .42rem;border-radius:5px;
-  background:rgba(0,168,106,.08);color:var(--green);border:1px solid rgba(0,168,106,.2)}
-.mono{font-family:'IBM Plex Mono',monospace;font-weight:500}
-.up{color:#E8394A;font-weight:600}.dn{color:#00CC85;font-weight:600}.fl{color:var(--txt3)}
-.lev-h{color:#E8394A;font-size:.67rem;font-weight:700}
-.lev-m{color:var(--gold);font-size:.67rem;font-weight:700}
-.lev-l{color:var(--green);font-size:.67rem;font-weight:700}
-.pb-out{height:3px;background:var(--bg);border-radius:99px;margin-top:.22rem;min-width:45px}
-.pb-in{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--green),var(--blue))}
-/* MODAL */
-.ov{display:none;position:fixed;inset:0;z-index:300;
-  background:rgba(7,17,30,.85);backdrop-filter:blur(10px);
-  align-items:center;justify-content:center;padding:1.5rem}
+.cur{
+  font-family:'JetBrains Mono',monospace;font-size:.63rem;font-weight:500;
+  padding:.1rem .38rem;border-radius:4px;
+  background:rgba(0,168,106,.08);color:var(--g0);
+  border:1px solid rgba(0,168,106,.18);
+}
+.mono{font-family:'JetBrains Mono',monospace;font-weight:500}
+.up2{color:var(--red);font-weight:700}
+.dn2{color:var(--g1);font-weight:700}
+.fl2{color:var(--t4)}
+.lev-h{color:var(--red);font-size:.63rem;font-weight:800;letter-spacing:.02em}
+.lev-m{color:var(--gold);font-size:.63rem;font-weight:800;letter-spacing:.02em}
+.lev-l{color:var(--g0);font-size:.63rem;font-weight:800;letter-spacing:.02em}
+.pb{height:2px;background:var(--bg);border-radius:99px;margin-top:.18rem;min-width:40px;max-width:70px}
+.pb-f{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--g0),var(--blue))}
+.cnt-badge{font-family:'JetBrains Mono',monospace;font-size:.67rem;
+  font-weight:600;color:var(--g0);background:rgba(0,168,106,.1);
+  border:1px solid rgba(0,168,106,.2);border-radius:var(--r99);
+  padding:.1rem .5rem;white-space:nowrap}
+
+/* ═══════════════════════════ MODAL ═══════════════════════════ */
+.ov{
+  display:none;position:fixed;inset:0;z-index:600;
+  background:rgba(7,17,30,.88);backdrop-filter:blur(12px);
+  align-items:flex-end;justify-content:center;padding:0;
+}
+@media(min-width:640px){.ov{align-items:center;padding:1.5rem}}
 .ov.open{display:flex}
-.modal{background:var(--panel2);border:1px solid var(--bord2);border-radius:var(--rl);
-  width:100%;max-width:700px;max-height:90vh;overflow-y:auto;
-  box-shadow:0 24px 64px rgba(0,0,0,.6)}
-.m-hdr{background:linear-gradient(135deg,#0B1E31,#0E2A3D);padding:1.25rem 1.5rem;
-  border-bottom:1px solid var(--bord);display:flex;align-items:flex-start;
-  justify-content:space-between;border-radius:var(--rl) var(--rl) 0 0;position:sticky;top:0;z-index:5}
-.m-title{font-size:1.1rem;font-weight:800}
-.m-meta{font-size:.74rem;color:var(--txt2);margin-top:.22rem}
-.m-fx{font-size:.69rem;color:var(--green);font-family:'IBM Plex Mono',monospace;margin-top:.38rem}
-.mx-btn{width:32px;height:32px;border-radius:8px;border:1px solid var(--bord);
-  background:transparent;color:var(--txt2);font-size:1.1rem;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;transition:.12s;flex-shrink:0}
-.mx-btn:hover{background:var(--bord);color:var(--txt)}
-.m-body{padding:1.25rem 1.5rem}
-.m-stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;margin-bottom:1.2rem}
-.m-stat{background:var(--bg);border:1px solid var(--bord);border-radius:var(--r);padding:.78rem 1rem}
-.m-sl{font-size:.66rem;color:var(--txt2);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.33rem}
-.m-sv{font-size:1.08rem;font-weight:800;font-family:'IBM Plex Mono',monospace}
-.m-tabs{display:flex;gap:.45rem;margin-bottom:.8rem}
-.mtab{padding:.32rem .88rem;border-radius:99px;font-size:.74rem;font-weight:500;
-  border:1px solid var(--bord);background:transparent;color:var(--txt2);
-  cursor:pointer;font-family:'Inter',sans-serif;transition:.12s}
-.mtab.on{background:var(--green);border-color:var(--green);color:#fff}
-.m-chart{height:220px;position:relative}
-/* FOOTER */
-footer{border-top:1px solid var(--bord);padding:1.2rem 1.75rem;text-align:center;
-  font-family:'IBM Plex Mono',monospace;font-size:.63rem;color:var(--txt3);line-height:1.8}
-footer strong{color:var(--txt2)}
-/* FLOATING DL */
-.dl-float{position:fixed;bottom:1.75rem;right:1.75rem;z-index:99;
-  display:flex;align-items:center;gap:.62rem;padding:.68rem 1.15rem .68rem 1rem;
-  border-radius:14px;background:linear-gradient(135deg,#007A4D,#00A86A);
-  border:1px solid rgba(0,204,133,.25);color:#fff;
-  font-family:'Inter',sans-serif;font-size:.79rem;font-weight:700;
-  cursor:pointer;text-decoration:none;box-shadow:0 8px 28px rgba(0,168,106,.4);
-  animation:floatY 3s ease-in-out infinite;transition:.2s}
+.modal{
+  background:var(--s1);border:1px solid var(--s2);
+  width:100%;max-width:680px;
+  max-height:92vh;overflow-y:auto;
+  border-radius:var(--r16) var(--r16) 0 0;
+  box-shadow:0 -8px 48px rgba(0,0,0,.6);
+}
+@media(min-width:640px){.modal{border-radius:var(--r16);box-shadow:var(--sh)}}
+.m-bar{
+  width:36px;height:4px;background:var(--s3);border-radius:99px;
+  margin:10px auto 0;display:block;
+}
+@media(min-width:640px){.m-bar{display:none}}
+.m-head{
+  padding:1rem 1.25rem;border-bottom:1px solid var(--s2);
+  background:linear-gradient(135deg,#0B1E31,#0E2A3D);
+  border-radius:var(--r16) var(--r16) 0 0;
+  position:sticky;top:0;z-index:2;
+  display:flex;align-items:flex-start;justify-content:space-between;
+}
+.m-title{font-size:1.05rem;font-weight:800;letter-spacing:-.02em}
+.m-sub{font-size:.72rem;color:var(--t2);margin-top:.18rem}
+.m-fx{font-size:.66rem;color:var(--g0);font-family:'JetBrains Mono',monospace;margin-top:.3rem}
+.m-close{
+  width:30px;height:30px;border-radius:8px;
+  border:1px solid var(--s2);background:transparent;
+  color:var(--t3);font-size:1rem;
+  display:flex;align-items:center;justify-content:center;
+  transition:.12s;flex-shrink:0;
+}
+.m-close:hover{background:var(--s2);color:var(--t1)}
+.m-body{padding:1rem 1.25rem 1.5rem}
+.m-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:.55rem;margin-bottom:1rem}
+@media(min-width:400px){.m-stats{grid-template-columns:repeat(3,1fr)}}
+.m-stat{background:var(--bg1);border:1px solid var(--s2);border-radius:var(--r12);padding:.7rem .85rem}
+.m-sl{font-size:.62rem;color:var(--t3);font-weight:700;text-transform:uppercase;
+  letter-spacing:.04em;margin-bottom:.28rem}
+.m-sv{font-size:1rem;font-weight:800;font-family:'JetBrains Mono',monospace}
+.m-tabs{display:flex;gap:.4rem;margin-bottom:.75rem}
+.mtab{
+  padding:.28rem .8rem;border-radius:var(--r99);font-size:.72rem;font-weight:600;
+  border:1px solid var(--s2);background:transparent;color:var(--t3);
+  font-family:'Outfit',sans-serif;transition:.12s;
+}
+.mtab.on{background:var(--g0);border-color:var(--g0);color:#fff}
+.m-chart{height:200px;position:relative}
+
+/* ═══════════════════════════ FOOTER ═══════════════════════════ */
+footer{
+  border-top:1px solid var(--s2);padding:1rem 1.5rem;
+  font-size:.62rem;color:var(--t4);
+  font-family:'JetBrains Mono',monospace;
+  text-align:center;line-height:1.8;
+}
+footer strong{color:var(--t3)}
+
+/* ═══════════════════════════ FLOAT BTN ═══════════════════════════ */
+.dl-float{
+  position:fixed;bottom:1.25rem;right:1.25rem;z-index:400;
+  display:flex;align-items:center;gap:.5rem;
+  padding:.6rem 1rem;border-radius:var(--r12);
+  background:linear-gradient(135deg,#007A4D,var(--g0));
+  color:#fff;font-size:.75rem;font-weight:700;
+  box-shadow:0 6px 24px rgba(0,168,106,.4);
+  animation:floatY 3s ease-in-out infinite;
+  transition:.2s;
+}
 @keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
-.dl-float:hover{animation:none;transform:translateY(-3px) scale(1.03);box-shadow:0 14px 40px rgba(0,168,106,.55)}
-.dl-float-bdg{position:absolute;top:-8px;right:-8px;background:var(--gold);color:#000;
-  border-radius:99px;font-size:.56rem;font-weight:800;padding:.14rem .38rem;
-  font-family:'IBM Plex Mono',monospace;border:2px solid var(--bg);box-shadow:0 2px 8px rgba(245,163,0,.5)}
+.dl-float:hover{animation:none;transform:translateY(-2px) scale(1.04)}
+.dl-float-badge{
+  position:absolute;top:-7px;right:-7px;
+  background:var(--gold);color:#000;border-radius:99px;
+  font-size:.52rem;font-weight:900;padding:.1rem .35rem;
+  font-family:'JetBrains Mono',monospace;
+  border:2px solid var(--bg);letter-spacing:.03em;
+}
+
+/* ═══════════════════════════ MOBILE TABLE HINT ═══════════════════════════ */
+.tbl-hint{
+  display:flex;align-items:center;gap:.4rem;
+  font-size:.65rem;color:var(--t4);margin-bottom:.5rem;
+  padding:.35rem .6rem;background:rgba(26,143,216,.06);
+  border:1px solid rgba(26,143,216,.15);border-radius:var(--r8);
+}
+@media(min-width:900px){.tbl-hint{display:none}}
 </style>
 </head>
-<body>
-<header>
-  <div class="logo">
-    <div class="logo-badge">⛽</div>
-    <div>
-      <div class="logo-text">AFRICA<em>FUEL</em>WATCH</div>
-      <span class="logo-sub">Pan-African Fuel Price Intelligence</span>
+<body class="page">
+
+<!-- NAV -->
+<nav>
+  <div class="wrap nav-inner">
+    <div class="nav-brand">
+      <div class="brand-icon">⛽</div>
+      <div>
+        <div class="brand-name">Africa<span>Fuel</span>Watch</div>
+      </div>
+      <div class="brand-tag">2026</div>
+    </div>
+    <div class="nav-right">
+      <div class="nav-meta" id="navMeta">42 countries · Jan–Mar 2026</div>
+      <div class="live-dot"><span class="pulse"></span>LIVE</div>
+      <a class="btn-dl-nav" href="africa_fuel_prices.xlsx" download="Africa_Fuel_Prices_2026.xlsx">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Excel
+      </a>
     </div>
   </div>
-  <div class="hdr-right">
-    <div class="hdr-meta" id="hMeta">Loading...</div>
-    <div class="live-badge"><span class="dot"></span>LIVE</div>
-    <a class="hdr-dl" href="africa_fuel_prices.xlsx" download="Africa_Fuel_Prices_2026.xlsx">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-      Excel
-    </a>
-  </div>
-</header>
+</nav>
+
+<!-- TICKER -->
 <div class="ticker">
-  <div class="ticker-label">⛽ LIVE PRICES</div>
-  <div class="ticker-outer"><div class="ticker-track" id="tickerTrack"></div></div>
+  <div class="ticker-lbl">
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="var(--g0)"><circle cx="12" cy="12" r="10"/></svg>
+    PRICES
+  </div>
+  <div class="ticker-body">
+    <div class="ticker-track" id="tickerTrack"></div>
+  </div>
 </div>
+
+<!-- MAIN -->
+<main>
 <div class="wrap">
-<div class="hero">
-  <div>
-    <div class="hero-title">Africa Fuel Price Intelligence</div>
-    <div class="hero-sub">Real-time monitoring across <strong>42 African nations</strong> in <strong>USD/L</strong> and <strong>national currency</strong> using period-accurate exchange rates. Verified weekly by GlobalPetrolPrices.com and official regulatory portals.</div>
-    <div class="chips">
-      <span class="chip chip-g">⛽ 42 Countries · GPP Verified</span>
-      <span class="chip chip-y">🌍 5 Regions</span>
-      <span class="chip chip-b">💱 Period-Accurate FX</span>
-      <span class="chip chip-g">🔄 Weekly Auto-Update</span>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-grid">
+      <div>
+        <div class="hero-title">Africa Fuel<br>Price Intelligence</div>
+        <div class="hero-sub">Real-time monitoring of gasoline, diesel &amp; LPG across <strong>42 African nations</strong> — in USD and local currency with period-accurate exchange rates.</div>
+        <div class="hero-tags">
+          <span class="tag tag-g">⛽ 42 Countries</span>
+          <span class="tag tag-y">🌍 5 Regions</span>
+          <span class="tag tag-b">💱 Live FX Rates</span>
+          <span class="tag tag-g">🔄 Weekly Updates</span>
+        </div>
+        <a class="btn-dl" href="africa_fuel_prices.xlsx" download="Africa_Fuel_Prices_2026.xlsx">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download Full Report
+          <span style="opacity:.75;font-size:.75rem;font-weight:500">XLSX</span>
+        </a>
+      </div>
+      <div class="kpi-grid" id="kpiGrid"></div>
     </div>
-    <a class="dl-hero" href="africa_fuel_prices.xlsx" download="Africa_Fuel_Prices_2026.xlsx">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-      Download Excel Report
-      <span style="font-weight:400;opacity:.82;font-size:.74rem;margin-left:.2rem">42 countries · USD + local currency</span>
-    </a>
   </div>
-  <div class="hero-kpis" id="hKpis"></div>
-</div>
-<div class="sec-title">Regional Overview <span class="sec-bdg">5 REGIONS · GPP DATA</span></div>
-<div class="reg-grid" id="regGrid"></div>
-<div class="chart-grid">
+
+  <!-- REGIONS -->
+  <div class="sec-head">
+    <div class="sec-title">Regional Overview <span class="sec-pill">5 REGIONS</span></div>
+  </div>
+  <div class="reg-strip" id="regStrip"></div>
+
+  <!-- CHARTS -->
+  <div class="chart-row">
+    <div class="card">
+      <div class="card-head">
+        Weekly Trend — Key Markets
+        <div class="tog" id="lineTog">
+          <button class="tog-btn on" data-v="usd">Gas USD</button>
+          <button class="tog-btn" data-v="loc">Local</button>
+          <button class="tog-btn" data-v="die">Diesel</button>
+        </div>
+      </div>
+      <div class="chart-box"><canvas id="lineChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-head">Regional Averages</div>
+      <div class="chart-box"><canvas id="barChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- RANKINGS -->
+  <div class="rank-row">
+    <div class="card">
+      <div class="card-head">
+        🔴 Most Expensive Gas
+        <div class="tog" id="topTog">
+          <button class="tog-btn on" data-v="usd">USD</button>
+          <button class="tog-btn" data-v="loc">Local</button>
+        </div>
+      </div>
+      <div class="rank-list" id="topList"></div>
+    </div>
+    <div class="card">
+      <div class="card-head">
+        🟢 Most Affordable Gas
+        <div class="tog" id="botTog">
+          <button class="tog-btn on" data-v="usd">USD</button>
+          <button class="tog-btn" data-v="loc">Local</button>
+        </div>
+      </div>
+      <div class="rank-list" id="botList"></div>
+    </div>
+  </div>
+
+  <!-- FX -->
   <div class="card">
-    <div class="card-title">Weekly Price Trend — Key Markets <span class="sec-bdg" style="margin:0">JAN–MAR 2026</span></div>
-    <div class="tog" id="lineTog">
-      <button class="tog-btn on" data-v="usd">Gasoline USD/L</button>
-      <button class="tog-btn" data-v="loc">Local Currency/L</button>
-      <button class="tog-btn" data-v="die">Diesel USD/L</button>
+    <div class="card-head">
+      💱 Exchange Rates
+      <span style="font-size:.62rem;color:var(--t4);font-weight:400">Local currency per 1 USD</span>
     </div>
-    <div class="chart-wrap"><canvas id="lineChart"></canvas></div>
+    <div class="fx-wrap" id="fxWrap"></div>
   </div>
+
+  <!-- TABLE -->
   <div class="card">
-    <div class="card-title">Regional Average <span class="sec-bdg" style="margin:0">GAS vs DIESEL</span></div>
-    <div class="chart-wrap"><canvas id="barChart"></canvas></div>
-  </div>
-</div>
-<div class="rank-grid">
-  <div class="card">
-    <div class="card-title">🔴 Most Expensive Gasoline
-      <div class="tog" id="topTog" style="margin:0"><button class="tog-btn on" data-v="usd">USD</button><button class="tog-btn" data-v="loc">Local</button></div>
+    <div class="card-head">
+      All 42 Countries
+      <span class="cnt-badge" id="cntBadge">42</span>
     </div>
-    <div id="topList"></div>
-  </div>
-  <div class="card">
-    <div class="card-title">🟢 Most Affordable Gasoline
-      <div class="tog" id="botTog" style="margin:0"><button class="tog-btn on" data-v="usd">USD</button><button class="tog-btn" data-v="loc">Local</button></div>
+    <div class="tog" id="tblTog" style="margin-bottom:.75rem">
+      <button class="tog-btn on" data-v="usd">USD/L</button>
+      <button class="tog-btn" data-v="loc">Local/L</button>
+      <button class="tog-btn" data-v="both">Both</button>
     </div>
-    <div id="botList"></div>
-  </div>
-</div>
-<div class="card">
-  <div class="card-title">💱 Exchange Rates — Period-Accurate <span class="sec-bdg" style="margin:0">LOCAL CURRENCY PER 1 USD</span></div>
-  <div class="fx-grid" id="fxGrid"></div>
-</div>
-<div class="card">
-  <div class="card-title">All 42 Countries — Complete Price Table <span class="sec-bdg" id="cntBdg" style="margin:0">42 COUNTRIES</span></div>
-  <div class="tog" id="tblTog">
-    <button class="tog-btn on" data-v="usd">USD/L</button>
-    <button class="tog-btn" data-v="loc">Local Currency/L</button>
-    <button class="tog-btn" data-v="both">Both Currencies</button>
-  </div>
-  <div class="filters">
-    <button class="fb on" data-r="all">All Regions</button>
-    <button class="fb" data-r="North Africa">North Africa</button>
-    <button class="fb" data-r="West Africa">West Africa</button>
-    <button class="fb" data-r="East Africa">East Africa</button>
-    <button class="fb" data-r="Central Africa">Central Africa</button>
-    <button class="fb" data-r="Southern Africa">Southern Africa</button>
-    <select class="sort-sel" id="sortSel">
-      <option value="name">Sort: Name A–Z</option>
-      <option value="gas_desc">Gas: High → Low</option>
-      <option value="gas_asc">Gas: Low → High</option>
-      <option value="chg_desc">Change: Biggest ↑</option>
-      <option value="chg_asc">Change: Biggest ↓</option>
-      <option value="fx_desc">FX Rate: Highest</option>
-    </select>
-    <div class="srch-wrap">
-      <span class="srch-ico">🔍</span>
-      <input class="srch" id="srchInp" placeholder="Search country, currency…">
+    <div class="tbl-controls">
+      <button class="fb on" data-r="all">All</button>
+      <button class="fb" data-r="North Africa">N. Africa</button>
+      <button class="fb" data-r="West Africa">W. Africa</button>
+      <button class="fb" data-r="East Africa">E. Africa</button>
+      <button class="fb" data-r="Central Africa">Central</button>
+      <button class="fb" data-r="Southern Africa">Southern</button>
+      <div class="ctrl-right">
+        <select class="sort-sel" id="sortSel">
+          <option value="name">Name A–Z</option>
+          <option value="gas_desc">Gas ↓</option>
+          <option value="gas_asc">Gas ↑</option>
+          <option value="chg_desc">Change ↑</option>
+          <option value="chg_asc">Change ↓</option>
+        </select>
+        <div class="srch-wrap">
+          <span class="srch-ico">🔍</span>
+          <input class="srch" id="srchInp" placeholder="Search…">
+        </div>
+      </div>
+    </div>
+    <div class="tbl-hint">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      Scroll right for more columns · Tap a row for details
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr id="tHead"></tr></thead>
+        <tbody id="tBody"></tbody>
+      </table>
     </div>
   </div>
-  <div class="tbl-wrap">
-    <table><thead><tr id="tHead"></tr></thead><tbody id="tBody"></tbody></table>
-  </div>
-</div>
-</div>
+
+</div><!-- /wrap -->
+</main>
+
+<!-- FOOTER -->
 <footer>
   <strong>AFRICAFUELWATCH 2026</strong> &nbsp;·&nbsp;
-  Source: GlobalPetrolPrices.com · Official Regulatory Portals · National Central Banks &nbsp;·&nbsp;
+  Source: GlobalPetrolPrices.com · Official Regulatory Portals &nbsp;·&nbsp;
   <span id="ftTime"></span>
 </footer>
+
+<!-- MODAL -->
 <div class="ov" id="modalOv">
-  <div class="modal">
-    <div class="m-hdr">
+  <div class="modal" id="modalBox">
+    <span class="m-bar"></span>
+    <div class="m-head">
       <div>
-        <div class="m-title" id="mTitle">Country</div>
-        <div class="m-meta" id="mMeta"></div>
+        <div class="m-title" id="mTitle"></div>
+        <div class="m-sub" id="mSub"></div>
         <div class="m-fx" id="mFx"></div>
       </div>
-      <button class="mx-btn" id="mxBtn">✕</button>
+      <button class="m-close" id="mClose">✕</button>
     </div>
     <div class="m-body">
-      <div class="m-stat-grid" id="mGrid"></div>
+      <div class="m-stats" id="mStats"></div>
       <div class="m-tabs" id="mTabs">
         <button class="mtab on" data-tab="gas">⛽ Gasoline</button>
         <button class="mtab" data-tab="die">🚛 Diesel</button>
@@ -379,13 +667,17 @@ footer strong{color:var(--txt2)}
     </div>
   </div>
 </div>
+
+<!-- FLOAT -->
 <a class="dl-float" href="africa_fuel_prices.xlsx" download="Africa_Fuel_Prices_2026.xlsx">
-  <span class="dl-float-bdg">XLSX</span>
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-  Download Excel
+  <span class="dl-float-badge">XLSX</span>
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+  Download
 </a>
+
 <script>
 'use strict';
+<<<<<<< Updated upstream
 const D={"updated":"23 March 2026 — 12:12 UTC","period":"01 Jan 2026 — 21 Mar 2026","period_start":"2026-01-01","period_end":"2026-03-21","week_labels":["05 Jan","12 Jan","19 Jan","26 Jan","02 Feb","09 Feb","16 Feb","23 Feb","02 Mar","09 Mar","16 Mar","21 Mar"],"n_weeks":12,"fx_rates":{"DZD":132.030471,"AOA":920.173836,"XOF":567.458383,"BWP":13.685731,"BIF":2973.478145,"CVE":95.388568,"XAF":567.458383,"KMF":425.593787,"CDF":2271.865535,"DJF":177.721,"EGP":52.260748,"ERN":15,"SZL":17.056096,"ETB":155.991755,"GMD":74.187323,"GHS":10.942196,"GNF":8762.367954,"LRD":182.949169,"LYD":6.384576,"MGA":4159.198135,"MWK":1743.592306,"MRU":39.958994,"MUR":46.456446,"MAD":9.361336,"MZN":63.592665,"NAD":17.056096,"NGN":1356.44293,"RWF":1458.129101,"STN":21.194576,"SCR":13.880458,"SLL":24597.158802,"SOS":571.660967,"ZAR":17.053859,"SSP":4581.917868,"SDG":544.717652,"TZS":2590.03315,"TND":2.918309,"UGX":3776.042542,"ZMW":19.536613,"ZWG":25.3126,"KES":129.16035,"LSL":17.056096},"cb_sources":{"DZD":"Banque d'Algerie","AOA":"Banco Nacional de Angola","XOF":"BCEAO","BWP":"Bank of Botswana","BIF":"BRB Burundi","CVE":"Banco de Cabo Verde","XAF":"BEAC","KMF":"BC Comores","CDF":"BCC Congo","DJF":"BC Djibouti","EGP":"Central Bank of Egypt","ERN":"Bank of Eritrea","SZL":"CB Eswatini","ETB":"NBE Ethiopia","GMD":"CB Gambia","GHS":"Bank of Ghana","GNF":"BCRG Guinea","LRD":"CB Liberia","LYD":"CB Libya","MGA":"BCM Madagascar","MWK":"RBM Malawi","MRU":"BCM Mauritanie","MUR":"BOM Mauritius","MAD":"Bank Al-Maghrib","MZN":"BM Mozambique","NAD":"BON Namibia","NGN":"CBN Nigeria","RWF":"NBR Rwanda","STN":"BCSTP","SCR":"CBS Seychelles","SLL":"BSL Sierra Leone","SOS":"CBS Somalia","ZAR":"SARB South Africa","SSP":"BSS South Sudan","SDG":"CBS Sudan","TZS":"BOT Tanzania","TND":"BCT Tunisie","UGX":"BOU Uganda","ZMW":"BOZ Zambia","ZWG":"RBZ Zimbabwe","KES":"CBK Kenya","LSL":"CBL Lesotho"},"countries":[{"name":"Algeria","region":"North Africa","currency":"DZD","fx_rate":132.030471,"octane":95,"src":"?","gas_usd_now":0.3363,"die_usd_now":0.217,"lpg_usd_now":0.31,"gas_loc_now":44.4,"die_loc_now":28.65,"lpg_loc_now":40.93,"gas_usd_w":[0.3202,0.3202,0.3202,0.3202,0.3224,0.3224,0.3224,0.3224,0.3363,0.3363,0.3363,0.3363],"die_usd_w":[0.1963,0.1963,0.1963,0.1963,0.208,0.208,0.208,0.208,0.217,0.217,0.217,0.217],"gas_loc_w":[42.28,42.28,42.28,42.28,42.57,42.57,42.57,42.57,44.4,44.4,44.4,44.4],"die_loc_w":[25.92,25.92,25.92,25.92,27.46,27.46,27.46,27.46,28.65,28.65,28.65,28.65],"chg_gas":5.03,"chg_die":10.55,"min_gas":0.3202,"max_gas":0.3363,"avg_gas":0.3263},{"name":"Angola","region":"Southern Africa","currency":"AOA","fx_rate":920.173836,"octane":91,"src":"?","gas_usd_now":0.3038,"die_usd_now":0.4123,"lpg_usd_now":0.65,"gas_loc_now":279.55,"die_loc_now":379.39,"lpg_loc_now":598.11,"gas_usd_w":[0.2892,0.2892,0.2892,0.2892,0.2912,0.2912,0.2912,0.2912,0.3038,0.3038,0.3038,0.3038],"die_usd_w":[0.3822,0.3822,0.3822,0.3822,0.3952,0.3952,0.3952,0.3952,0.4123,0.4123,0.4123,0.4123],"gas_loc_w":[266.11,266.11,266.11,266.11,267.95,267.95,267.95,267.95,279.55,279.55,279.55,279.55],"die_loc_w":[351.69,351.69,351.69,351.69,363.65,363.65,363.65,363.65,379.39,379.39,379.39,379.39],"chg_gas":5.05,"chg_die":7.88,"min_gas":0.2892,"max_gas":0.3038,"avg_gas":0.2947},{"name":"Benin","region":"West Africa","currency":"XOF","fx_rate":567.458383,"octane":91,"src":"?","gas_usd_now":1.1501,"die_usd_now":1.0006,"lpg_usd_now":1.2,"gas_loc_now":652.63,"die_loc_now":567.8,"lpg_loc_now":680.95,"gas_usd_w":[1.095,1.095,1.095,1.095,1.1024,1.1024,1.1024,1.1024,1.1501,1.1501,1.1501,1.1501],"die_usd_w":[0.9526,0.9526,0.9526,0.9526,0.9591,0.9591,0.9591,0.9591,1.0006,1.0006,1.0006,1.0006],"gas_loc_w":[621.37,621.37,621.37,621.37,625.57,625.57,625.57,625.57,652.63,652.63,652.63,652.63],"die_loc_w":[540.56,540.56,540.56,540.56,544.25,544.25,544.25,544.25,567.8,567.8,567.8,567.8],"chg_gas":5.03,"chg_die":5.04,"min_gas":1.095,"max_gas":1.1501,"avg_gas":1.1158},{"name":"Botswana","region":"Southern Africa","currency":"BWP","fx_rate":13.685731,"octane":93,"src":"?","gas_usd_now":1.085,"die_usd_now":0.9439,"lpg_usd_now":1.25,"gas_loc_now":14.85,"die_loc_now":12.92,"lpg_loc_now":17.11,"gas_usd_w":[1.0227,1.0227,1.0227,1.0227,1.04,1.04,1.04,1.04,1.085,1.085,1.085,1.085],"die_usd_w":[0.8897,0.8897,0.8897,0.8897,0.9048,0.9048,0.9048,0.9048,0.9439,0.9439,0.9439,0.9439],"gas_loc_w":[14.0,14.0,14.0,14.0,14.23,14.23,14.23,14.23,14.85,14.85,14.85,14.85],"die_loc_w":[12.18,12.18,12.18,12.18,12.38,12.38,12.38,12.38,12.92,12.92,12.92,12.92],"chg_gas":6.09,"chg_die":6.09,"min_gas":1.0227,"max_gas":1.085,"avg_gas":1.0492},{"name":"Burkina Faso","region":"West Africa","currency":"XOF","fx_rate":567.458383,"octane":91,"src":"?","gas_usd_now":1.4105,"die_usd_now":1.2271,"lpg_usd_now":1.38,"gas_loc_now":800.4,"die_loc_now":696.33,"lpg_loc_now":783.09,"gas_usd_w":[1.3429,1.3429,1.3429,1.3429,1.352,1.352,1.352,1.352,1.4105,1.4105,1.4105,1.4105],"die_usd_w":[1.1683,1.1683,1.1683,1.1683,1.1762,1.1762,1.1762,1.1762,1.2271,1.2271,1.2271,1.2271],"gas_loc_w":[762.04,762.04,762.04,762.04,767.2,767.2,767.2,767.2,800.4,800.4,800.4,800.4],"die_loc_w":[662.96,662.96,662.96,662.96,667.44,667.44,667.44,667.44,696.33,696.33,696.33,696.33],"chg_gas":5.03,"chg_die":5.03,"min_gas":1.3429,"max_gas":1.4105,"avg_gas":1.3685},{"name":"Burundi","region":"East Africa","currency":"BIF","fx_rate":2973.478145,"octane":91,"src":"?","gas_usd_now":1.3345,"die_usd_now":1.161,"lpg_usd_now":1.45,"gas_loc_now":3968.11,"die_loc_now":3452.21,"lpg_loc_now":4311.54,"gas_usd_w":[1.1776,1.1776,1.1776,1.1776,1.2792,1.2792,1.2792,1.2792,1.3345,1.3345,1.3345,1.3345],"die_usd_w":[1.0245,1.0245,1.0245,1.0245,1.1129,1.1129,1.1129,1.1129,1.161,1.161,1.161,1.161],"gas_loc_w":[3501.57,3501.57,3501.57,3501.57,3803.67,3803.67,3803.67,3803.67,3968.11,3968.11,3968.11,3968.11],"die_loc_w":[3046.33,3046.33,3046.33,3046.33,3309.18,3309.18,3309.18,3309.18,3452.21,3452.21,3452.21,3452.21],"chg_gas":13.32,"chg_die":13.32,"min_gas":1.1776,"max_gas":1.3345,"avg_gas":1.2638},{"name":"CAR","region":"Central Africa","currency":"XAF","fx_rate":567.458383,"octane":91,"src":"?","gas_usd_now":1.736,"die_usd_now":1.5103,"lpg_usd_now":1.8,"gas_loc_now":985.11,"die_loc_now":857.03,"lpg_loc_now":1021.43,"gas_usd_w":[1.6528,1.6528,1.6528,1.6528,1.664,1.664,1.664,1.664,1.736,1.736,1.736,1.736],"die_usd_w":[1.4379,1.4379,1.4379,1.4379,1.4477,1.4477,1.4477,1.4477,1.5103,1.5103,1.5103,1.5103],"gas_loc_w":[937.9,937.9,937.9,937.9,944.25,944.25,944.25,944.25,985.11,985.11,985.11,985.11],"die_loc_w":[815.95,815.95,815.95,815.95,821.51,821.51,821.51,821.51,857.03,857.03,857.03,857.03],"chg_gas":5.03,"chg_die":5.04,"min_gas":1.6528,"max_gas":1.736,"avg_gas":1.6843},{"name":"Cabo Verde","region":"West Africa","currency":"CVE","fx_rate":95.388568,"octane":91,"src":"?","gas_usd_now":1.2694,"die_usd_now":1.1044,"lpg_usd_now":1.22,"gas_loc_now":121.09,"die_loc_now":105.35,"lpg_loc_now":116.37,"gas_usd_w":[1.1363,1.1363,1.1363,1.1363,1.2168,1.2168,1.2168,1.2168,1.2694,1.2694,1.2694,1.2694],"die_usd_w":[0.9886,0.9886,0.9886,0.9886,1.0586,1.0586,1.0586,1.0586,1.1044,1.1044,1.1044,1.1044],"gas_loc_w":[108.39,108.39,108.39,108.39,116.07,116.07,116.07,116.07,121.09,121.09,121.09,121.09],"die_loc_w":[94.3,94.3,94.3,94.3,100.98,100.98,100.98,100.98,105.35,105.35,105.35,105.35],"chg_gas":11.71,"chg_die":11.71,"min_gas":1.1363,"max_gas":1.2694,"avg_gas":1.2075},{"name":"Cameroon","region":"Central Africa","currency":"XAF","fx_rate":567.458383,"octane":91,"src":"?","gas_usd_now":1.3888,"die_usd_now":1.2083,"lpg_usd_now":1.2,"gas_loc_now":788.09,"die_loc_now":685.66,"lpg_loc_now":680.95,"gas_usd_w":[1.3222,1.3222,1.3222,1.3222,1.3312,1.3312,1.3312,1.3312,1.3888,1.3888,1.3888,1.3888],"die_usd_w":[1.1503,1.1503,1.1503,1.1503,1.1581,1.1581,1.1581,1.1581,1.2083,1.2083,1.2083,1.2083],"gas_loc_w":[750.29,750.29,750.29,750.29,755.4,755.4,755.4,755.4,788.09,788.09,788.09,788.09],"die_loc_w":[652.75,652.75,652.75,652.75,657.17,657.17,657.17,657.17,685.66,685.66,685.66,685.66],"chg_gas":5.04,"chg_die":5.04,"min_gas":1.3222,"max_gas":1.3888,"avg_gas":1.3474},{"name":"Congo DR","region":"Central Africa","currency":"CDF","fx_rate":2271.865535,"octane":91,"src":"?","gas_usd_now":1.0524,"die_usd_now":0.9156,"lpg_usd_now":1.25,"gas_loc_now":2390.91,"die_loc_now":2080.12,"lpg_loc_now":2839.83,"gas_usd_w":[0.9297,0.9297,0.9297,0.9297,1.0088,1.0088,1.0088,1.0088,1.0524,1.0524,1.0524,1.0524],"die_usd_w":[0.8088,0.8088,0.8088,0.8088,0.8777,0.8777,0.8777,0.8777,0.9156,0.9156,0.9156,0.9156],"gas_loc_w":[2112.15,2112.15,2112.15,2112.15,2291.86,2291.86,2291.86,2291.86,2390.91,2390.91,2390.91,2390.91],"die_loc_w":[1837.48,1837.48,1837.48,1837.48,1994.02,1994.02,1994.02,1994.02,2080.12,2080.12,2080.12,2080.12],"chg_gas":13.2,"chg_die":13.2,"min_gas":0.9297,"max_gas":1.0524,"avg_gas":0.997},{"name":"Egypt","region":"North Africa","currency":"EGP","fx_rate":52.260748,"octane":92,"src":"?","gas_usd_now":0.434,"die_usd_now":0.3689,"lpg_usd_now":0.44,"gas_loc_now":22.68,"die_loc_now":19.28,"lpg_loc_now":22.99,"gas_usd_w":[0.3925,0.3925,0.3925,0.3925,0.416,0.416,0.416,0.416,0.434,0.434,0.434,0.434],"die_usd_w":[0.3202,0.3202,0.3202,0.3202,0.3536,0.3536,0.3536,0.3536,0.3689,0.3689,0.3689,0.3689],"gas_loc_w":[20.51,20.51,20.51,20.51,21.74,21.74,21.74,21.74,22.68,22.68,22.68,22.68],"die_loc_w":[16.73,16.73,16.73,16.73,18.48,18.48,18.48,18.48,19.28,19.28,19.28,19.28],"chg_gas":10.57,"chg_die":15.21,"min_gas":0.3925,"max_gas":0.434,"avg_gas":0.4142},{"name":"Eswatini","region":"Southern Africa","currency":"SZL","fx_rate":17.056096,"octane":93,"src":"?","gas_usd_now":1.1067,"die_usd_now":0.9628,"lpg_usd_now":1.25,"gas_loc_now":18.88,"die_loc_now":16.42,"lpg_loc_now":21.32,"gas_usd_w":[1.0537,1.0537,1.0537,1.0537,1.0608,1.0608,1.0608,1.0608,1.1067,1.1067,1.1067,1.1067],"die_usd_w":[0.9167,0.9167,0.9167,0.9167,0.9229,0.9229,0.9229,0.9229,0.9628,0.9628,0.9628,0.9628],"gas_loc_w":[17.97,17.97,17.97,17.97,18.09,18.09,18.09,18.09,18.88,18.88,18.88,18.88],"die_loc_w":[15.64,15.64,15.64,15.64,15.74,15.74,15.74,15.74,16.42,16.42,16.42,16.42],"chg_gas":5.03,"chg_die":5.03,"min_gas":1.0537,"max_gas":1.1067,"avg_gas":1.0737},{"name":"Ethiopia","region":"East Africa","currency":"ETB","fx_rate":155.991755,"octane":91,"src":"?","gas_usd_now":0.792,"die_usd_now":0.8355,"lpg_usd_now":1.05,"gas_loc_now":123.55,"die_loc_now":130.33,"lpg_loc_now":163.79,"gas_usd_w":[0.6818,0.6818,0.6818,0.6818,0.7592,0.7592,0.7592,0.7592,0.792,0.792,0.792,0.792],"die_usd_w":[0.6301,0.6301,0.6301,0.6301,0.8008,0.8008,0.8008,0.8008,0.8355,0.8355,0.8355,0.8355],"gas_loc_w":[106.36,106.36,106.36,106.36,118.43,118.43,118.43,118.43,123.55,123.55,123.55,123.55],"die_loc_w":[98.29,98.29,98.29,98.29,124.92,124.92,124.92,124.92,130.33,130.33,130.33,130.33],"chg_gas":16.16,"chg_die":32.6,"min_gas":0.6818,"max_gas":0.792,"avg_gas":0.7443},{"name":"Gabon","region":"Central Africa","currency":"XAF","fx_rate":567.458383,"octane":91,"src":"?","gas_usd_now":0.9873,"die_usd_now":0.9548,"lpg_usd_now":0.9,"gas_loc_now":560.25,"die_loc_now":541.81,"lpg_loc_now":510.71,"gas_usd_w":[0.94,0.94,0.94,0.94,0.9464,0.9464,0.9464,0.9464,0.9873,0.9873,0.9873,0.9873],"die_usd_w":[0.909,0.909,0.909,0.909,0.9152,0.9152,0.9152,0.9152,0.9548,0.9548,0.9548,0.9548],"gas_loc_w":[533.41,533.41,533.41,533.41,537.04,537.04,537.04,537.04,560.25,560.25,560.25,560.25],"die_loc_w":[515.82,515.82,515.82,515.82,519.34,519.34,519.34,519.34,541.81,541.81,541.81,541.81],"chg_gas":5.03,"chg_die":5.04,"min_gas":0.94,"max_gas":0.9873,"avg_gas":0.9579},{"name":"Ghana","region":"West Africa","currency":"GHS","fx_rate":10.942196,"octane":91,"src":"?","gas_usd_now":1.1609,"die_usd_now":1.01,"lpg_usd_now":1.2,"gas_loc_now":12.7,"die_loc_now":11.05,"lpg_loc_now":13.13,"gas_usd_w":[1.1053,1.1053,1.1053,1.1053,1.1128,1.1128,1.1128,1.1128,1.1609,1.1609,1.1609,1.1609],"die_usd_w":[0.9616,0.9616,0.9616,0.9616,0.9681,0.9681,0.9681,0.9681,1.01,1.01,1.01,1.01],"gas_loc_w":[12.09,12.09,12.09,12.09,12.18,12.18,12.18,12.18,12.7,12.7,12.7,12.7],"die_loc_w":[10.52,10.52,10.52,10.52,10.59,10.59,10.59,10.59,11.05,11.05,11.05,11.05],"chg_gas":5.03,"chg_die":5.03,"min_gas":1.1053,"max_gas":1.1609,"avg_gas":1.1263},{"name":"Guinea","region":"West Africa","currency":"GNF","fx_rate":8762.367954,"octane":91,"src":"?","gas_usd_now":1.2803,"die_usd_now":1.1139,"lpg_usd_now":1.28,"gas_loc_now":11218.46,"die_loc_now":9760.4,"lpg_loc_now":11215.83,"gas_usd_w":[1.1879,1.1879,1.1879,1.1879,1.2272,1.2272,1.2272,1.2272,1.2803,1.2803,1.2803,1.2803],"die_usd_w":[1.0335,1.0335,1.0335,1.0335,1.0677,1.0677,1.0677,1.0677,1.1139,1.1139,1.1139,1.1139],"gas_loc_w":[10408.82,10408.82,10408.82,10408.82,10753.18,10753.18,10753.18,10753.18,11218.46,11218.46,11218.46,11218.46],"die_loc_w":[9055.91,9055.91,9055.91,9055.91,9355.58,9355.58,9355.58,9355.58,9760.4,9760.4,9760.4,9760.4],"chg_gas":7.78,"chg_die":7.78,"min_gas":1.1879,"max_gas":1.2803,"avg_gas":1.2318},{"name":"Ivory Coast","region":"West Africa","currency":"XOF","fx_rate":567.458383,"octane":91,"src":"?","gas_usd_now":1.3562,"die_usd_now":1.1799,"lpg_usd_now":1.1,"gas_loc_now":769.59,"die_loc_now":669.54,"lpg_loc_now":624.2,"gas_usd_w":[1.2912,1.2912,1.2912,1.2912,1.3,1.3,1.3,1.3,1.3562,1.3562,1.3562,1.3562],"die_usd_w":[1.1233,1.1233,1.1233,1.1233,1.131,1.131,1.131,1.131,1.1799,1.1799,1.1799,1.1799],"gas_loc_w":[732.7,732.7,732.7,732.7,737.7,737.7,737.7,737.7,769.59,769.59,769.59,769.59],"die_loc_w":[637.43,637.43,637.43,637.43,641.8,641.8,641.8,641.8,669.54,669.54,669.54,669.54],"chg_gas":5.03,"chg_die":5.04,"min_gas":1.2912,"max_gas":1.3562,"avg_gas":1.3158},{"name":"Kenya","region":"East Africa","currency":"KES","fx_rate":129.16035,"octane":93,"src":"?","gas_usd_now":1.2803,"die_usd_now":1.1139,"lpg_usd_now":1.35,"gas_loc_now":165.36,"die_loc_now":143.87,"lpg_loc_now":174.37,"gas_usd_w":[1.2189,1.2189,1.2189,1.2189,1.2272,1.2272,1.2272,1.2272,1.2803,1.2803,1.2803,1.2803],"die_usd_w":[1.0604,1.0604,1.0604,1.0604,1.0677,1.0677,1.0677,1.0677,1.1139,1.1139,1.1139,1.1139],"gas_loc_w":[157.43,157.43,157.43,157.43,158.51,158.51,158.51,158.51,165.36,165.36,165.36,165.36],"die_loc_w":[136.96,136.96,136.96,136.96,137.9,137.9,137.9,137.9,143.87,143.87,143.87,143.87],"chg_gas":5.04,"chg_die":5.05,"min_gas":1.2189,"max_gas":1.2803,"avg_gas":1.2421},{"name":"Lesotho","region":"Southern Africa","currency":"LSL","fx_rate":17.056096,"octane":93,"src":"?","gas_usd_now":1.0199,"die_usd_now":0.8873,"lpg_usd_now":1.25,"gas_loc_now":17.4,"die_loc_now":15.13,"lpg_loc_now":21.32,"gas_usd_w":[0.9607,0.9607,0.9607,0.9607,0.9776,0.9776,0.9776,0.9776,1.0199,1.0199,1.0199,1.0199],"die_usd_w":[0.8358,0.8358,0.8358,0.8358,0.8505,0.8505,0.8505,0.8505,0.8873,0.8873,0.8873,0.8873],"gas_loc_w":[16.39,16.39,16.39,16.39,16.67,16.67,16.67,16.67,17.4,17.4,17.4,17.4],"die_loc_w":[14.26,14.26,14.26,14.26,14.51,14.51,14.51,14.51,15.13,15.13,15.13,15.13],"chg_gas":6.16,"chg_die":6.16,"min_gas":0.9607,"max_gas":1.0199,"avg_gas":0.9861},{"name":"Liberia","region":"West Africa","currency":"LRD","fx_rate":182.949169,"octane":91,"src":"?","gas_usd_now":0.8463,"die_usd_now":0.9114,"lpg_usd_now":1.2,"gas_loc_now":154.83,"die_loc_now":166.74,"lpg_loc_now":219.54,"gas_usd_w":[0.7334,0.7334,0.7334,0.7334,0.8112,0.8112,0.8112,0.8112,0.8463,0.8463,0.8463,0.8463],"die_usd_w":[0.7954,0.7954,0.7954,0.7954,0.8736,0.8736,0.8736,0.8736,0.9114,0.9114,0.9114,0.9114],"gas_loc_w":[134.17,134.17,134.17,134.17,148.41,148.41,148.41,148.41,154.83,154.83,154.83,154.83],"die_loc_w":[145.52,145.52,145.52,145.52,159.82,159.82,159.82,159.82,166.74,166.74,166.74,166.74],"chg_gas":15.39,"chg_die":14.58,"min_gas":0.7334,"max_gas":0.8463,"avg_gas":0.797},{"name":"Libya","region":"North Africa","currency":"LYD","fx_rate":6.384576,"octane":95,"src":"?","gas_usd_now":0.0309,"die_usd_now":0.0309,"lpg_usd_now":0.05,"gas_loc_now":0.2,"die_loc_now":0.2,"lpg_loc_now":0.32,"gas_usd_w":[0.0309,0.0309,0.0309,0.0309,0.0309,0.0309,0.0309,0.0309,0.0309,0.0309,0.0309,0.0309],"die_usd_w":[0.0309,0.0309,0.0309,0.0309,0.0309,0.0309,0.0309,0.0309,0.0309,0.0309,0.0309,0.0309],"gas_loc_w":[0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2],"die_loc_w":[0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2],"chg_gas":0.0,"chg_die":0.0,"min_gas":0.0309,"max_gas":0.0309,"avg_gas":0.0309},{"name":"Madagascar","region":"East Africa","currency":"MGA","fx_rate":4159.198135,"octane":91,"src":"?","gas_usd_now":1.0958,"die_usd_now":0.9533,"lpg_usd_now":1.3,"gas_loc_now":4557.65,"die_loc_now":3964.96,"lpg_loc_now":5406.96,"gas_usd_w":[0.971,0.971,0.971,0.971,1.0504,1.0504,1.0504,1.0504,1.0958,1.0958,1.0958,1.0958],"die_usd_w":[0.8448,0.8448,0.8448,0.8448,0.9138,0.9138,0.9138,0.9138,0.9533,0.9533,0.9533,0.9533],"gas_loc_w":[4038.58,4038.58,4038.58,4038.58,4368.82,4368.82,4368.82,4368.82,4557.65,4557.65,4557.65,4557.65],"die_loc_w":[3513.69,3513.69,3513.69,3513.69,3800.68,3800.68,3800.68,3800.68,3964.96,3964.96,3964.96,3964.96],"chg_gas":12.85,"chg_die":12.84,"min_gas":0.971,"max_gas":1.0958,"avg_gas":1.0391},{"name":"Malawi","region":"East Africa","currency":"MWK","fx_rate":1743.592306,"octane":91,"src":"?","gas_usd_now":2.6691,"die_usd_now":2.3221,"lpg_usd_now":2.4,"gas_loc_now":4653.82,"die_loc_now":4048.8,"lpg_loc_now":4184.62,"gas_usd_w":[2.4792,2.4792,2.4792,2.4792,2.5584,2.5584,2.5584,2.5584,2.6691,2.6691,2.6691,2.6691],"die_usd_w":[2.1569,2.1569,2.1569,2.1569,2.2258,2.2258,2.2258,2.2258,2.3221,2.3221,2.3221,2.3221],"gas_loc_w":[4322.71,4322.71,4322.71,4322.71,4460.81,4460.81,4460.81,4460.81,4653.82,4653.82,4653.82,4653.82],"die_loc_w":[3760.75,3760.75,3760.75,3760.75,3880.89,3880.89,3880.89,3880.89,4048.8,4048.8,4048.8,4048.8],"chg_gas":7.66,"chg_die":7.66,"min_gas":2.4792,"max_gas":2.6691,"avg_gas":2.5689},{"name":"Mali","region":"West Africa","currency":"XOF","fx_rate":567.458383,"octane":91,"src":"?","gas_usd_now":1.2911,"die_usd_now":1.1233,"lpg_usd_now":1.3,"gas_loc_now":732.65,"die_loc_now":637.43,"lpg_loc_now":737.7,"gas_usd_w":[1.2189,1.2189,1.2189,1.2189,1.2376,1.2376,1.2376,1.2376,1.2911,1.2911,1.2911,1.2911],"die_usd_w":[1.0604,1.0604,1.0604,1.0604,1.0767,1.0767,1.0767,1.0767,1.1233,1.1233,1.1233,1.1233],"gas_loc_w":[691.68,691.68,691.68,691.68,702.29,702.29,702.29,702.29,732.65,732.65,732.65,732.65],"die_loc_w":[601.73,601.73,601.73,601.73,610.98,610.98,610.98,610.98,637.43,637.43,637.43,637.43],"chg_gas":5.92,"chg_die":5.93,"min_gas":1.2189,"max_gas":1.2911,"avg_gas":1.2492},{"name":"Mauritius","region":"East Africa","currency":"MUR","fx_rate":46.456446,"octane":95,"src":"?","gas_usd_now":1.1935,"die_usd_now":1.0383,"lpg_usd_now":1.4,"gas_loc_now":55.45,"die_loc_now":48.24,"lpg_loc_now":65.04,"gas_usd_w":[1.1156,1.1156,1.1156,1.1156,1.144,1.144,1.144,1.144,1.1935,1.1935,1.1935,1.1935],"die_usd_w":[0.9706,0.9706,0.9706,0.9706,0.9953,0.9953,0.9953,0.9953,1.0383,1.0383,1.0383,1.0383],"gas_loc_w":[51.83,51.83,51.83,51.83,53.15,53.15,53.15,53.15,55.45,55.45,55.45,55.45],"die_loc_w":[45.09,45.09,45.09,45.09,46.24,46.24,46.24,46.24,48.24,48.24,48.24,48.24],"chg_gas":6.98,"chg_die":6.98,"min_gas":1.1156,"max_gas":1.1935,"avg_gas":1.151},{"name":"Morocco","region":"North Africa","currency":"MAD","fx_rate":9.361336,"octane":95,"src":"?","gas_usd_now":1.3853,"die_usd_now":1.2052,"lpg_usd_now":0.6,"gas_loc_now":12.97,"die_loc_now":11.28,"lpg_loc_now":5.62,"gas_usd_w":[1.157,1.157,1.157,1.157,1.1856,1.1856,1.1856,1.1856,1.2369,1.2369,1.3853,1.3853],"die_usd_w":[1.0066,1.0066,1.0066,1.0066,1.0315,1.0315,1.0315,1.0315,1.0761,1.0761,1.2052,1.2052],"gas_loc_w":[10.83,10.83,10.83,10.83,11.1,11.1,11.1,11.1,11.58,11.58,12.97,12.97],"die_loc_w":[9.42,9.42,9.42,9.42,9.66,9.66,9.66,9.66,10.07,10.07,11.28,11.28],"chg_gas":19.73,"chg_die":19.73,"min_gas":1.157,"max_gas":1.3853,"avg_gas":1.2179},{"name":"Mozambique","region":"Southern Africa","currency":"MZN","fx_rate":63.592665,"octane":91,"src":"?","gas_usd_now":1.226,"die_usd_now":1.0666,"lpg_usd_now":1.3,"gas_loc_now":77.96,"die_loc_now":67.83,"lpg_loc_now":82.67,"gas_usd_w":[1.1363,1.1363,1.1363,1.1363,1.1752,1.1752,1.1752,1.1752,1.226,1.226,1.226,1.226],"die_usd_w":[0.9886,0.9886,0.9886,0.9886,1.0224,1.0224,1.0224,1.0224,1.0666,1.0666,1.0666,1.0666],"gas_loc_w":[72.26,72.26,72.26,72.26,74.73,74.73,74.73,74.73,77.96,77.96,77.96,77.96],"die_loc_w":[62.87,62.87,62.87,62.87,65.02,65.02,65.02,65.02,67.83,67.83,67.83,67.83],"chg_gas":7.89,"chg_die":7.89,"min_gas":1.1363,"max_gas":1.226,"avg_gas":1.1792},{"name":"Namibia","region":"Southern Africa","currency":"NAD","fx_rate":17.056096,"octane":93,"src":"?","gas_usd_now":1.1176,"die_usd_now":0.9723,"lpg_usd_now":1.25,"gas_loc_now":19.06,"die_loc_now":16.58,"lpg_loc_now":21.32,"gas_usd_w":[1.064,1.064,1.064,1.064,1.0712,1.0712,1.0712,1.0712,1.1176,1.1176,1.1176,1.1176],"die_usd_w":[0.9257,0.9257,0.9257,0.9257,0.9319,0.9319,0.9319,0.9319,0.9723,0.9723,0.9723,0.9723],"gas_loc_w":[18.15,18.15,18.15,18.15,18.27,18.27,18.27,18.27,19.06,19.06,19.06,19.06],"die_loc_w":[15.79,15.79,15.79,15.79,15.89,15.89,15.89,15.89,16.58,16.58,16.58,16.58],"chg_gas":5.04,"chg_die":5.03,"min_gas":1.064,"max_gas":1.1176,"avg_gas":1.0843},{"name":"Niger","region":"West Africa","currency":"XOF","fx_rate":567.458383,"octane":91,"src":"?","gas_usd_now":1.102,"die_usd_now":1.002,"lpg_usd_now":1.25,"gas_loc_now":625.34,"die_loc_now":568.59,"lpg_loc_now":709.32,"gas_usd_w":[1.102,1.102,1.102,1.102,1.102,1.102,1.102,1.102,1.102,1.102,1.102,1.102],"die_usd_w":[1.002,1.002,1.002,1.002,1.002,1.002,1.002,1.002,1.002,1.002,1.002,1.002],"gas_loc_w":[625.34,625.34,625.34,625.34,625.34,625.34,625.34,625.34,625.34,625.34,625.34,625.34],"die_loc_w":[568.59,568.59,568.59,568.59,568.59,568.59,568.59,568.59,568.59,568.59,568.59,568.59],"chg_gas":0.0,"chg_die":0.0,"min_gas":1.102,"max_gas":1.102,"avg_gas":1.102},{"name":"Nigeria","region":"West Africa","currency":"NGN","fx_rate":1356.44293,"octane":91,"src":"?","gas_usd_now":0.786,"die_usd_now":0.9873,"lpg_usd_now":0.55,"gas_loc_now":1066.16,"die_loc_now":1339.22,"lpg_loc_now":746.04,"gas_usd_w":[0.5062,0.5366,0.5568,0.6817,0.7176,0.732,0.732,0.7463,0.7261,0.7336,0.7785,0.786],"die_usd_w":[0.5785,0.5785,0.5785,0.5785,0.9464,0.9464,0.9464,0.9464,0.9873,0.9873,0.9873,0.9873],"gas_loc_w":[686.63,727.87,755.27,924.69,973.38,992.92,992.92,1012.31,984.91,995.09,1055.99,1066.16],"die_loc_w":[784.7,784.7,784.7,784.7,1283.74,1283.74,1283.74,1283.74,1339.22,1339.22,1339.22,1339.22],"chg_gas":55.27,"chg_die":70.67,"min_gas":0.5062,"max_gas":0.786,"avg_gas":0.6861},{"name":"Rwanda","region":"East Africa","currency":"RWF","fx_rate":1458.129101,"octane":91,"src":"?","gas_usd_now":1.2803,"die_usd_now":1.1139,"lpg_usd_now":1.45,"gas_loc_now":1866.84,"die_loc_now":1624.21,"lpg_loc_now":2114.29,"gas_usd_w":[1.1879,1.1879,1.1879,1.1879,1.2272,1.2272,1.2272,1.2272,1.2803,1.2803,1.2803,1.2803],"die_usd_w":[1.0335,1.0335,1.0335,1.0335,1.0677,1.0677,1.0677,1.0677,1.1139,1.1139,1.1139,1.1139],"gas_loc_w":[1732.11,1732.11,1732.11,1732.11,1789.42,1789.42,1789.42,1789.42,1866.84,1866.84,1866.84,1866.84],"die_loc_w":[1506.98,1506.98,1506.98,1506.98,1556.84,1556.84,1556.84,1556.84,1624.21,1624.21,1624.21,1624.21],"chg_gas":7.78,"chg_die":7.78,"min_gas":1.1879,"max_gas":1.2803,"avg_gas":1.2318},{"name":"Senegal","region":"West Africa","currency":"XOF","fx_rate":567.458383,"octane":91,"src":"?","gas_usd_now":1.5298,"die_usd_now":1.3309,"lpg_usd_now":1.15,"gas_loc_now":868.1,"die_loc_now":755.23,"lpg_loc_now":652.58,"gas_usd_w":[1.4565,1.4565,1.4565,1.4565,1.4664,1.4664,1.4664,1.4664,1.5298,1.5298,1.5298,1.5298],"die_usd_w":[1.2672,1.2672,1.2672,1.2672,1.2758,1.2758,1.2758,1.2758,1.3309,1.3309,1.3309,1.3309],"gas_loc_w":[826.5,826.5,826.5,826.5,832.12,832.12,832.12,832.12,868.1,868.1,868.1,868.1],"die_loc_w":[719.08,719.08,719.08,719.08,723.96,723.96,723.96,723.96,755.23,755.23,755.23,755.23],"chg_gas":5.03,"chg_die":5.03,"min_gas":1.4565,"max_gas":1.5298,"avg_gas":1.4842},{"name":"Seychelles","region":"East Africa","currency":"SCR","fx_rate":13.880458,"octane":95,"src":"?","gas_usd_now":1.4105,"die_usd_now":1.2271,"lpg_usd_now":1.6,"gas_loc_now":19.58,"die_loc_now":17.03,"lpg_loc_now":22.21,"gas_usd_w":[1.3016,1.3016,1.3016,1.3016,1.352,1.352,1.352,1.352,1.4105,1.4105,1.4105,1.4105],"die_usd_w":[1.1324,1.1324,1.1324,1.1324,1.1762,1.1762,1.1762,1.1762,1.2271,1.2271,1.2271,1.2271],"gas_loc_w":[18.07,18.07,18.07,18.07,18.77,18.77,18.77,18.77,19.58,19.58,19.58,19.58],"die_loc_w":[15.72,15.72,15.72,15.72,16.33,16.33,16.33,16.33,17.03,17.03,17.03,17.03],"chg_gas":8.37,"chg_die":8.36,"min_gas":1.3016,"max_gas":1.4105,"avg_gas":1.3547},{"name":"Sierra Leone","region":"West Africa","currency":"SLL","fx_rate":24597.158802,"octane":91,"src":"?","gas_usd_now":1.448,"die_usd_now":1.1,"lpg_usd_now":1.25,"gas_loc_now":35616.69,"die_loc_now":27056.87,"lpg_loc_now":30746.45,"gas_usd_w":[1.387,1.3925,1.3981,1.4036,1.4092,1.4147,1.4203,1.4258,1.4314,1.4369,1.4425,1.448],"die_usd_w":[1.1,1.1,1.1,1.1,1.1,1.1,1.1,1.1,1.1,1.1,1.1,1.1],"gas_loc_w":[34116.26,34251.54,34389.29,34524.57,34662.32,34797.6,34935.34,35070.63,35208.37,35343.66,35481.4,35616.69],"die_loc_w":[27056.87,27056.87,27056.87,27056.87,27056.87,27056.87,27056.87,27056.87,27056.87,27056.87,27056.87,27056.87],"chg_gas":4.4,"chg_die":0.0,"min_gas":1.387,"max_gas":1.448,"avg_gas":1.4175},{"name":"South Africa","region":"Southern Africa","currency":"ZAR","fx_rate":17.053859,"octane":95,"src":"?","gas_usd_now":1.2369,"die_usd_now":1.378,"lpg_usd_now":1.35,"gas_loc_now":21.09,"die_loc_now":23.5,"lpg_loc_now":23.02,"gas_usd_w":[1.1776,1.1776,1.1776,1.1776,1.1856,1.1856,1.1856,1.1856,1.2369,1.2369,1.2369,1.2369],"die_usd_w":[1.2809,1.2809,1.2809,1.2809,1.2896,1.2896,1.2896,1.2896,1.378,1.378,1.378,1.378],"gas_loc_w":[20.08,20.08,20.08,20.08,20.22,20.22,20.22,20.22,21.09,21.09,21.09,21.09],"die_loc_w":[21.84,21.84,21.84,21.84,21.99,21.99,21.99,21.99,23.5,23.5,23.5,23.5],"chg_gas":5.04,"chg_die":7.58,"min_gas":1.1776,"max_gas":1.2369,"avg_gas":1.2},{"name":"Sudan","region":"North Africa","currency":"SDG","fx_rate":544.717652,"octane":91,"src":"?","gas_usd_now":0.651,"die_usd_now":0.6076,"lpg_usd_now":0.55,"gas_loc_now":354.61,"die_loc_now":330.97,"lpg_loc_now":299.59,"gas_usd_w":[0.6095,0.6095,0.6095,0.6095,0.624,0.624,0.624,0.624,0.651,0.651,0.651,0.651],"die_usd_w":[0.5682,0.5682,0.5682,0.5682,0.5824,0.5824,0.5824,0.5824,0.6076,0.6076,0.6076,0.6076],"gas_loc_w":[332.01,332.01,332.01,332.01,339.9,339.9,339.9,339.9,354.61,354.61,354.61,354.61],"die_loc_w":[309.51,309.51,309.51,309.51,317.24,317.24,317.24,317.24,330.97,330.97,330.97,330.97],"chg_gas":6.81,"chg_die":6.93,"min_gas":0.6095,"max_gas":0.651,"avg_gas":0.6282},{"name":"Tanzania","region":"East Africa","currency":"TZS","fx_rate":2590.03315,"octane":91,"src":"?","gas_usd_now":1.0307,"die_usd_now":0.8967,"lpg_usd_now":1.25,"gas_loc_now":2669.55,"die_loc_now":2322.48,"lpg_loc_now":3237.54,"gas_usd_w":[0.94,0.94,0.94,0.94,0.988,0.988,0.988,0.988,1.0307,1.0307,1.0307,1.0307],"die_usd_w":[0.8178,0.8178,0.8178,0.8178,0.8596,0.8596,0.8596,0.8596,0.8967,0.8967,0.8967,0.8967],"gas_loc_w":[2434.63,2434.63,2434.63,2434.63,2558.95,2558.95,2558.95,2558.95,2669.55,2669.55,2669.55,2669.55],"die_loc_w":[2118.13,2118.13,2118.13,2118.13,2226.39,2226.39,2226.39,2226.39,2322.48,2322.48,2322.48,2322.48],"chg_gas":9.65,"chg_die":9.65,"min_gas":0.94,"max_gas":1.0307,"avg_gas":0.9862},{"name":"Togo","region":"West Africa","currency":"XOF","fx_rate":567.458383,"octane":91,"src":"?","gas_usd_now":1.1284,"die_usd_now":0.9817,"lpg_usd_now":1.1,"gas_loc_now":640.32,"die_loc_now":557.07,"lpg_loc_now":624.2,"gas_usd_w":[1.0743,1.0743,1.0743,1.0743,1.0816,1.0816,1.0816,1.0816,1.1284,1.1284,1.1284,1.1284],"die_usd_w":[0.9346,0.9346,0.9346,0.9346,0.941,0.941,0.941,0.941,0.9817,0.9817,0.9817,0.9817],"gas_loc_w":[609.62,609.62,609.62,609.62,613.76,613.76,613.76,613.76,640.32,640.32,640.32,640.32],"die_loc_w":[530.35,530.35,530.35,530.35,533.98,533.98,533.98,533.98,557.07,557.07,557.07,557.07],"chg_gas":5.04,"chg_die":5.04,"min_gas":1.0743,"max_gas":1.1284,"avg_gas":1.0948},{"name":"Tunisia","region":"North Africa","currency":"TND","fx_rate":2.918309,"octane":95,"src":"?","gas_usd_now":0.87,"die_usd_now":0.716,"lpg_usd_now":0.78,"gas_loc_now":2.54,"die_loc_now":2.09,"lpg_loc_now":2.28,"gas_usd_w":[0.87,0.87,0.87,0.87,0.87,0.87,0.87,0.87,0.87,0.87,0.87,0.87],"die_usd_w":[0.716,0.716,0.716,0.716,0.716,0.716,0.716,0.716,0.716,0.716,0.716,0.716],"gas_loc_w":[2.54,2.54,2.54,2.54,2.54,2.54,2.54,2.54,2.54,2.54,2.54,2.54],"die_loc_w":[2.09,2.09,2.09,2.09,2.09,2.09,2.09,2.09,2.09,2.09,2.09,2.09],"chg_gas":0.0,"chg_die":0.0,"min_gas":0.87,"max_gas":0.87,"avg_gas":0.87},{"name":"Uganda","region":"East Africa","currency":"UGX","fx_rate":3776.042542,"octane":91,"src":"?","gas_usd_now":1.381,"die_usd_now":1.15,"lpg_usd_now":1.3,"gas_loc_now":5214.71,"die_loc_now":4342.45,"lpg_loc_now":4908.86,"gas_usd_w":[1.381,1.381,1.381,1.381,1.381,1.381,1.381,1.381,1.381,1.381,1.381,1.381],"die_usd_w":[1.15,1.15,1.15,1.15,1.15,1.15,1.15,1.15,1.15,1.15,1.15,1.15],"gas_loc_w":[5214.71,5214.71,5214.71,5214.71,5214.71,5214.71,5214.71,5214.71,5214.71,5214.71,5214.71,5214.71],"die_loc_w":[4342.45,4342.45,4342.45,4342.45,4342.45,4342.45,4342.45,4342.45,4342.45,4342.45,4342.45,4342.45],"chg_gas":0.0,"chg_die":0.0,"min_gas":1.381,"max_gas":1.381,"avg_gas":1.381},{"name":"Zambia","region":"Southern Africa","currency":"ZMW","fx_rate":19.536613,"octane":93,"src":"?","gas_usd_now":1.2803,"die_usd_now":1.1139,"lpg_usd_now":1.3,"gas_loc_now":25.01,"die_loc_now":21.76,"lpg_loc_now":25.4,"gas_usd_w":[1.2706,1.2706,1.2706,1.2706,1.2272,1.2272,1.2272,1.2272,1.2803,1.2803,1.2803,1.2803],"die_usd_w":[1.1054,1.1054,1.1054,1.1054,1.0677,1.0677,1.0677,1.0677,1.1139,1.1139,1.1139,1.1139],"gas_loc_w":[24.82,24.82,24.82,24.82,23.98,23.98,23.98,23.98,25.01,25.01,25.01,25.01],"die_loc_w":[21.6,21.6,21.6,21.6,20.86,20.86,20.86,20.86,21.76,21.76,21.76,21.76],"chg_gas":0.76,"chg_die":0.77,"min_gas":1.2272,"max_gas":1.2803,"avg_gas":1.2594},{"name":"Zimbabwe","region":"Southern Africa","currency":"ZWG","fx_rate":25.3126,"octane":91,"src":"?","gas_usd_now":1.5949,"die_usd_now":1.3876,"lpg_usd_now":1.55,"gas_loc_now":40.37,"die_loc_now":35.12,"lpg_loc_now":39.23,"gas_usd_w":[1.3532,1.3532,1.3532,1.3532,1.5288,1.5288,1.5288,1.5288,1.5949,1.5949,1.5949,1.5949],"die_usd_w":[1.1773,1.1773,1.1773,1.1773,1.3301,1.3301,1.3301,1.3301,1.3876,1.3876,1.3876,1.3876],"gas_loc_w":[34.25,34.25,34.25,34.25,38.7,38.7,38.7,38.7,40.37,40.37,40.37,40.37],"die_loc_w":[29.8,29.8,29.8,29.8,33.67,33.67,33.67,33.67,35.12,35.12,35.12,35.12],"chg_gas":17.86,"chg_die":17.86,"min_gas":1.3532,"max_gas":1.5949,"avg_gas":1.4923}],"data_quality_summary":{"live":41,"verified":1,"estimated":0,"total":42}};
 let data=JSON.parse(JSON.stringify(D.countries));
 let filtered=[...data],region='all',tblCur='usd',topCur='usd',botCur='usd',lineCur='usd';
@@ -408,225 +700,448 @@ window.addEventListener('DOMContentLoaded',()=>{
   buildLineChart();buildBarChart();
   buildRankings('top');buildRankings('bot');
   buildFxGrid();buildTableHead();renderTable();
+=======
+const D = {"updated":"23 March 2026 — 16:01 UTC","period":"01 Jan 2026 — 21 Mar 2026","period_start":"2026-01-01","period_end":"2026-03-21","week_labels":["05 Jan","12 Jan","19 Jan","26 Jan","02 Feb","09 Feb","16 Feb","23 Feb","02 Mar","09 Mar","16 Mar","21 Mar"],"n_weeks":12,"fx_rates":{"DZD":134.5,"AOA":910.0,"XOF":603.5,"BWP":13.7,"BIF":2920.0,"CVE":100.5,"XAF":603.5,"KMF":451.0,"CDF":2820.0,"DJF":177.7,"EGP":50.2,"ERN":15.0,"SZL":18.55,"ETB":131.0,"GMD":73.0,"GHS":15.7,"GNF":8650.0,"LRD":194.0,"LYD":4.85,"MGA":4620.0,"MWK":1735.0,"MRU":39.5,"MUR":46.2,"MAD":10.02,"MZN":64.1,"NAD":18.55,"NGN":1620.0,"RWF":1415.0,"STN":22.6,"SCR":14.15,"SLL":22500.0,"SOS":572.0,"ZAR":18.55,"SSP":1320.0,"SDG":510.0,"TZS":2720.0,"TND":2.921,"UGX":3720.0,"ZMW":27.2,"ZWG":13.6,"KES":130.5,"LSL":18.55},"cb_sources":{"DZD":"Banque d'Algerie","AOA":"Banco Nacional de Angola","XOF":"BCEAO","BWP":"Bank of Botswana","BIF":"BRB Burundi","CVE":"Banco de Cabo Verde","XAF":"BEAC","KMF":"BC Comores","CDF":"BCC Congo","DJF":"BC Djibouti","EGP":"Central Bank of Egypt","ERN":"Bank of Eritrea","SZL":"CB Eswatini","ETB":"NBE Ethiopia","GMD":"CB Gambia","GHS":"Bank of Ghana","GNF":"BCRG Guinea","LRD":"CB Liberia","LYD":"CB Libya","MGA":"BCM Madagascar","MWK":"RBM Malawi","MRU":"BCM Mauritanie","MUR":"BOM Mauritius","MAD":"Bank Al-Maghrib","MZN":"BM Mozambique","NAD":"BON Namibia","NGN":"CBN Nigeria","RWF":"NBR Rwanda","STN":"BCSTP","SCR":"CBS Seychelles","SLL":"BSL Sierra Leone","SOS":"CBS Somalia","ZAR":"SARB South Africa","SSP":"BSS South Sudan","SDG":"CBS Sudan","TZS":"BOT Tanzania","TND":"BCT Tunisie","UGX":"BOU Uganda","ZMW":"BOZ Zambia","ZWG":"RBZ Zimbabwe","KES":"CBK Kenya","LSL":"CBL Lesotho"},"countries":[{"name":"Algeria","region":"North Africa","currency":"DZD","fx_rate":134.5,"octane":95,"src":"?","gas_usd_now":0.3363,"die_usd_now":0.217,"lpg_usd_now":0.31,"gas_loc_now":45.23,"die_loc_now":29.19,"lpg_loc_now":41.7,"gas_usd_w":[0.3202,0.3202,0.3202,0.3202,0.3224,0.3224,0.3224,0.3224,0.3363,0.3363,0.3363,0.3363],"die_usd_w":[0.1963,0.1963,0.1963,0.1963,0.208,0.208,0.208,0.208,0.217,0.217,0.217,0.217],"gas_loc_w":[43.07,43.07,43.07,43.07,43.36,43.36,43.36,43.36,45.23,45.23,45.23,45.23],"die_loc_w":[26.4,26.4,26.4,26.4,27.98,27.98,27.98,27.98,29.19,29.19,29.19,29.19],"chg_gas":5.03,"chg_die":10.55,"min_gas":0.3202,"max_gas":0.3363,"avg_gas":0.3263},{"name":"Angola","region":"Southern Africa","currency":"AOA","fx_rate":910.0,"octane":91,"src":"?","gas_usd_now":0.3038,"die_usd_now":0.4123,"lpg_usd_now":0.65,"gas_loc_now":276.46,"die_loc_now":375.19,"lpg_loc_now":591.5,"gas_usd_w":[0.2892,0.2892,0.2892,0.2892,0.2912,0.2912,0.2912,0.2912,0.3038,0.3038,0.3038,0.3038],"die_usd_w":[0.3822,0.3822,0.3822,0.3822,0.3952,0.3952,0.3952,0.3952,0.4123,0.4123,0.4123,0.4123],"gas_loc_w":[263.17,263.17,263.17,263.17,264.99,264.99,264.99,264.99,276.46,276.46,276.46,276.46],"die_loc_w":[347.8,347.8,347.8,347.8,359.63,359.63,359.63,359.63,375.19,375.19,375.19,375.19],"chg_gas":5.05,"chg_die":7.88,"min_gas":0.2892,"max_gas":0.3038,"avg_gas":0.2947},{"name":"Benin","region":"West Africa","currency":"XOF","fx_rate":603.5,"octane":91,"src":"?","gas_usd_now":1.1501,"die_usd_now":1.0006,"lpg_usd_now":1.2,"gas_loc_now":694.09,"die_loc_now":603.86,"lpg_loc_now":724.2,"gas_usd_w":[1.095,1.095,1.095,1.095,1.1024,1.1024,1.1024,1.1024,1.1501,1.1501,1.1501,1.1501],"die_usd_w":[0.9526,0.9526,0.9526,0.9526,0.9591,0.9591,0.9591,0.9591,1.0006,1.0006,1.0006,1.0006],"gas_loc_w":[660.83,660.83,660.83,660.83,665.3,665.3,665.3,665.3,694.09,694.09,694.09,694.09],"die_loc_w":[574.89,574.89,574.89,574.89,578.82,578.82,578.82,578.82,603.86,603.86,603.86,603.86],"chg_gas":5.03,"chg_die":5.04,"min_gas":1.095,"max_gas":1.1501,"avg_gas":1.1158},{"name":"Botswana","region":"Southern Africa","currency":"BWP","fx_rate":13.7,"octane":93,"src":"?","gas_usd_now":1.085,"die_usd_now":0.9439,"lpg_usd_now":1.25,"gas_loc_now":14.86,"die_loc_now":12.93,"lpg_loc_now":17.12,"gas_usd_w":[1.0227,1.0227,1.0227,1.0227,1.04,1.04,1.04,1.04,1.085,1.085,1.085,1.085],"die_usd_w":[0.8897,0.8897,0.8897,0.8897,0.9048,0.9048,0.9048,0.9048,0.9439,0.9439,0.9439,0.9439],"gas_loc_w":[14.01,14.01,14.01,14.01,14.25,14.25,14.25,14.25,14.86,14.86,14.86,14.86],"die_loc_w":[12.19,12.19,12.19,12.19,12.4,12.4,12.4,12.4,12.93,12.93,12.93,12.93],"chg_gas":6.09,"chg_die":6.09,"min_gas":1.0227,"max_gas":1.085,"avg_gas":1.0492},{"name":"Burkina Faso","region":"West Africa","currency":"XOF","fx_rate":603.5,"octane":91,"src":"?","gas_usd_now":1.4105,"die_usd_now":1.2271,"lpg_usd_now":1.38,"gas_loc_now":851.24,"die_loc_now":740.55,"lpg_loc_now":832.83,"gas_usd_w":[1.3429,1.3429,1.3429,1.3429,1.352,1.352,1.352,1.352,1.4105,1.4105,1.4105,1.4105],"die_usd_w":[1.1683,1.1683,1.1683,1.1683,1.1762,1.1762,1.1762,1.1762,1.2271,1.2271,1.2271,1.2271],"gas_loc_w":[810.44,810.44,810.44,810.44,815.93,815.93,815.93,815.93,851.24,851.24,851.24,851.24],"die_loc_w":[705.07,705.07,705.07,705.07,709.84,709.84,709.84,709.84,740.55,740.55,740.55,740.55],"chg_gas":5.03,"chg_die":5.03,"min_gas":1.3429,"max_gas":1.4105,"avg_gas":1.3685},{"name":"Burundi","region":"East Africa","currency":"BIF","fx_rate":2920.0,"octane":91,"src":"?","gas_usd_now":1.3345,"die_usd_now":1.161,"lpg_usd_now":1.45,"gas_loc_now":3896.74,"die_loc_now":3390.12,"lpg_loc_now":4234.0,"gas_usd_w":[1.1776,1.1776,1.1776,1.1776,1.2792,1.2792,1.2792,1.2792,1.3345,1.3345,1.3345,1.3345],"die_usd_w":[1.0245,1.0245,1.0245,1.0245,1.1129,1.1129,1.1129,1.1129,1.161,1.161,1.161,1.161],"gas_loc_w":[3438.59,3438.59,3438.59,3438.59,3735.26,3735.26,3735.26,3735.26,3896.74,3896.74,3896.74,3896.74],"die_loc_w":[2991.54,2991.54,2991.54,2991.54,3249.67,3249.67,3249.67,3249.67,3390.12,3390.12,3390.12,3390.12],"chg_gas":13.32,"chg_die":13.32,"min_gas":1.1776,"max_gas":1.3345,"avg_gas":1.2638},{"name":"CAR","region":"Central Africa","currency":"XAF","fx_rate":603.5,"octane":91,"src":"?","gas_usd_now":1.736,"die_usd_now":1.5103,"lpg_usd_now":1.8,"gas_loc_now":1047.68,"die_loc_now":911.47,"lpg_loc_now":1086.3,"gas_usd_w":[1.6528,1.6528,1.6528,1.6528,1.664,1.664,1.664,1.664,1.736,1.736,1.736,1.736],"die_usd_w":[1.4379,1.4379,1.4379,1.4379,1.4477,1.4477,1.4477,1.4477,1.5103,1.5103,1.5103,1.5103],"gas_loc_w":[997.46,997.46,997.46,997.46,1004.22,1004.22,1004.22,1004.22,1047.68,1047.68,1047.68,1047.68],"die_loc_w":[867.77,867.77,867.77,867.77,873.69,873.69,873.69,873.69,911.47,911.47,911.47,911.47],"chg_gas":5.03,"chg_die":5.04,"min_gas":1.6528,"max_gas":1.736,"avg_gas":1.6843},{"name":"Cabo Verde","region":"West Africa","currency":"CVE","fx_rate":100.5,"octane":91,"src":"?","gas_usd_now":1.2694,"die_usd_now":1.1044,"lpg_usd_now":1.22,"gas_loc_now":127.57,"die_loc_now":110.99,"lpg_loc_now":122.61,"gas_usd_w":[1.1363,1.1363,1.1363,1.1363,1.2168,1.2168,1.2168,1.2168,1.2694,1.2694,1.2694,1.2694],"die_usd_w":[0.9886,0.9886,0.9886,0.9886,1.0586,1.0586,1.0586,1.0586,1.1044,1.1044,1.1044,1.1044],"gas_loc_w":[114.2,114.2,114.2,114.2,122.29,122.29,122.29,122.29,127.57,127.57,127.57,127.57],"die_loc_w":[99.35,99.35,99.35,99.35,106.39,106.39,106.39,106.39,110.99,110.99,110.99,110.99],"chg_gas":11.71,"chg_die":11.71,"min_gas":1.1363,"max_gas":1.2694,"avg_gas":1.2075},{"name":"Cameroon","region":"Central Africa","currency":"XAF","fx_rate":603.5,"octane":91,"src":"?","gas_usd_now":1.3888,"die_usd_now":1.2083,"lpg_usd_now":1.2,"gas_loc_now":838.14,"die_loc_now":729.21,"lpg_loc_now":724.2,"gas_usd_w":[1.3222,1.3222,1.3222,1.3222,1.3312,1.3312,1.3312,1.3312,1.3888,1.3888,1.3888,1.3888],"die_usd_w":[1.1503,1.1503,1.1503,1.1503,1.1581,1.1581,1.1581,1.1581,1.2083,1.2083,1.2083,1.2083],"gas_loc_w":[797.95,797.95,797.95,797.95,803.38,803.38,803.38,803.38,838.14,838.14,838.14,838.14],"die_loc_w":[694.21,694.21,694.21,694.21,698.91,698.91,698.91,698.91,729.21,729.21,729.21,729.21],"chg_gas":5.04,"chg_die":5.04,"min_gas":1.3222,"max_gas":1.3888,"avg_gas":1.3474},{"name":"Congo DR","region":"Central Africa","currency":"CDF","fx_rate":2820.0,"octane":91,"src":"?","gas_usd_now":1.0524,"die_usd_now":0.9156,"lpg_usd_now":1.25,"gas_loc_now":2967.77,"die_loc_now":2581.99,"lpg_loc_now":3525.0,"gas_usd_w":[0.9297,0.9297,0.9297,0.9297,1.0088,1.0088,1.0088,1.0088,1.0524,1.0524,1.0524,1.0524],"die_usd_w":[0.8088,0.8088,0.8088,0.8088,0.8777,0.8777,0.8777,0.8777,0.9156,0.9156,0.9156,0.9156],"gas_loc_w":[2621.75,2621.75,2621.75,2621.75,2844.82,2844.82,2844.82,2844.82,2967.77,2967.77,2967.77,2967.77],"die_loc_w":[2280.82,2280.82,2280.82,2280.82,2475.11,2475.11,2475.11,2475.11,2581.99,2581.99,2581.99,2581.99],"chg_gas":13.2,"chg_die":13.2,"min_gas":0.9297,"max_gas":1.0524,"avg_gas":0.997},{"name":"Egypt","region":"North Africa","currency":"EGP","fx_rate":50.2,"octane":92,"src":"?","gas_usd_now":0.434,"die_usd_now":0.3689,"lpg_usd_now":0.44,"gas_loc_now":21.79,"die_loc_now":18.52,"lpg_loc_now":22.09,"gas_usd_w":[0.3925,0.3925,0.3925,0.3925,0.416,0.416,0.416,0.416,0.434,0.434,0.434,0.434],"die_usd_w":[0.3202,0.3202,0.3202,0.3202,0.3536,0.3536,0.3536,0.3536,0.3689,0.3689,0.3689,0.3689],"gas_loc_w":[19.7,19.7,19.7,19.7,20.88,20.88,20.88,20.88,21.79,21.79,21.79,21.79],"die_loc_w":[16.07,16.07,16.07,16.07,17.75,17.75,17.75,17.75,18.52,18.52,18.52,18.52],"chg_gas":10.57,"chg_die":15.21,"min_gas":0.3925,"max_gas":0.434,"avg_gas":0.4142},{"name":"Eswatini","region":"Southern Africa","currency":"SZL","fx_rate":18.55,"octane":93,"src":"?","gas_usd_now":1.1067,"die_usd_now":0.9628,"lpg_usd_now":1.25,"gas_loc_now":20.53,"die_loc_now":17.86,"lpg_loc_now":23.19,"gas_usd_w":[1.0537,1.0537,1.0537,1.0537,1.0608,1.0608,1.0608,1.0608,1.1067,1.1067,1.1067,1.1067],"die_usd_w":[0.9167,0.9167,0.9167,0.9167,0.9229,0.9229,0.9229,0.9229,0.9628,0.9628,0.9628,0.9628],"gas_loc_w":[19.55,19.55,19.55,19.55,19.68,19.68,19.68,19.68,20.53,20.53,20.53,20.53],"die_loc_w":[17.0,17.0,17.0,17.0,17.12,17.12,17.12,17.12,17.86,17.86,17.86,17.86],"chg_gas":5.03,"chg_die":5.03,"min_gas":1.0537,"max_gas":1.1067,"avg_gas":1.0737},{"name":"Ethiopia","region":"East Africa","currency":"ETB","fx_rate":131.0,"octane":91,"src":"?","gas_usd_now":0.792,"die_usd_now":0.8355,"lpg_usd_now":1.05,"gas_loc_now":103.75,"die_loc_now":109.45,"lpg_loc_now":137.55,"gas_usd_w":[0.6818,0.6818,0.6818,0.6818,0.7592,0.7592,0.7592,0.7592,0.792,0.792,0.792,0.792],"die_usd_w":[0.6301,0.6301,0.6301,0.6301,0.8008,0.8008,0.8008,0.8008,0.8355,0.8355,0.8355,0.8355],"gas_loc_w":[89.32,89.32,89.32,89.32,99.46,99.46,99.46,99.46,103.75,103.75,103.75,103.75],"die_loc_w":[82.54,82.54,82.54,82.54,104.9,104.9,104.9,104.9,109.45,109.45,109.45,109.45],"chg_gas":16.16,"chg_die":32.6,"min_gas":0.6818,"max_gas":0.792,"avg_gas":0.7443},{"name":"Gabon","region":"Central Africa","currency":"XAF","fx_rate":603.5,"octane":91,"src":"?","gas_usd_now":0.9873,"die_usd_now":0.9548,"lpg_usd_now":0.9,"gas_loc_now":595.84,"die_loc_now":576.22,"lpg_loc_now":543.15,"gas_usd_w":[0.94,0.94,0.94,0.94,0.9464,0.9464,0.9464,0.9464,0.9873,0.9873,0.9873,0.9873],"die_usd_w":[0.909,0.909,0.909,0.909,0.9152,0.9152,0.9152,0.9152,0.9548,0.9548,0.9548,0.9548],"gas_loc_w":[567.29,567.29,567.29,567.29,571.15,571.15,571.15,571.15,595.84,595.84,595.84,595.84],"die_loc_w":[548.58,548.58,548.58,548.58,552.32,552.32,552.32,552.32,576.22,576.22,576.22,576.22],"chg_gas":5.03,"chg_die":5.04,"min_gas":0.94,"max_gas":0.9873,"avg_gas":0.9579},{"name":"Ghana","region":"West Africa","currency":"GHS","fx_rate":15.7,"octane":91,"src":"?","gas_usd_now":1.1609,"die_usd_now":1.01,"lpg_usd_now":1.2,"gas_loc_now":18.23,"die_loc_now":15.86,"lpg_loc_now":18.84,"gas_usd_w":[1.1053,1.1053,1.1053,1.1053,1.1128,1.1128,1.1128,1.1128,1.1609,1.1609,1.1609,1.1609],"die_usd_w":[0.9616,0.9616,0.9616,0.9616,0.9681,0.9681,0.9681,0.9681,1.01,1.01,1.01,1.01],"gas_loc_w":[17.35,17.35,17.35,17.35,17.47,17.47,17.47,17.47,18.23,18.23,18.23,18.23],"die_loc_w":[15.1,15.1,15.1,15.1,15.2,15.2,15.2,15.2,15.86,15.86,15.86,15.86],"chg_gas":5.03,"chg_die":5.03,"min_gas":1.1053,"max_gas":1.1609,"avg_gas":1.1263},{"name":"Guinea","region":"West Africa","currency":"GNF","fx_rate":8650.0,"octane":91,"src":"?","gas_usd_now":1.2803,"die_usd_now":1.1139,"lpg_usd_now":1.28,"gas_loc_now":11074.59,"die_loc_now":9635.23,"lpg_loc_now":11072.0,"gas_usd_w":[1.1879,1.1879,1.1879,1.1879,1.2272,1.2272,1.2272,1.2272,1.2803,1.2803,1.2803,1.2803],"die_usd_w":[1.0335,1.0335,1.0335,1.0335,1.0677,1.0677,1.0677,1.0677,1.1139,1.1139,1.1139,1.1139],"gas_loc_w":[10275.33,10275.33,10275.33,10275.33,10615.28,10615.28,10615.28,10615.28,11074.59,11074.59,11074.59,11074.59],"die_loc_w":[8939.78,8939.78,8939.78,8939.78,9235.61,9235.61,9235.61,9235.61,9635.23,9635.23,9635.23,9635.23],"chg_gas":7.78,"chg_die":7.78,"min_gas":1.1879,"max_gas":1.2803,"avg_gas":1.2318},{"name":"Ivory Coast","region":"West Africa","currency":"XOF","fx_rate":603.5,"octane":91,"src":"?","gas_usd_now":1.3562,"die_usd_now":1.1799,"lpg_usd_now":1.1,"gas_loc_now":818.47,"die_loc_now":712.07,"lpg_loc_now":663.85,"gas_usd_w":[1.2912,1.2912,1.2912,1.2912,1.3,1.3,1.3,1.3,1.3562,1.3562,1.3562,1.3562],"die_usd_w":[1.1233,1.1233,1.1233,1.1233,1.131,1.131,1.131,1.131,1.1799,1.1799,1.1799,1.1799],"gas_loc_w":[779.24,779.24,779.24,779.24,784.55,784.55,784.55,784.55,818.47,818.47,818.47,818.47],"die_loc_w":[677.91,677.91,677.91,677.91,682.56,682.56,682.56,682.56,712.07,712.07,712.07,712.07],"chg_gas":5.03,"chg_die":5.04,"min_gas":1.2912,"max_gas":1.3562,"avg_gas":1.3158},{"name":"Kenya","region":"East Africa","currency":"KES","fx_rate":130.5,"octane":93,"src":"?","gas_usd_now":1.2803,"die_usd_now":1.1139,"lpg_usd_now":1.35,"gas_loc_now":167.08,"die_loc_now":145.36,"lpg_loc_now":176.18,"gas_usd_w":[1.2189,1.2189,1.2189,1.2189,1.2272,1.2272,1.2272,1.2272,1.2803,1.2803,1.2803,1.2803],"die_usd_w":[1.0604,1.0604,1.0604,1.0604,1.0677,1.0677,1.0677,1.0677,1.1139,1.1139,1.1139,1.1139],"gas_loc_w":[159.07,159.07,159.07,159.07,160.15,160.15,160.15,160.15,167.08,167.08,167.08,167.08],"die_loc_w":[138.38,138.38,138.38,138.38,139.33,139.33,139.33,139.33,145.36,145.36,145.36,145.36],"chg_gas":5.04,"chg_die":5.05,"min_gas":1.2189,"max_gas":1.2803,"avg_gas":1.2421},{"name":"Lesotho","region":"Southern Africa","currency":"LSL","fx_rate":18.55,"octane":93,"src":"?","gas_usd_now":1.0199,"die_usd_now":0.8873,"lpg_usd_now":1.25,"gas_loc_now":18.92,"die_loc_now":16.46,"lpg_loc_now":23.19,"gas_usd_w":[0.9607,0.9607,0.9607,0.9607,0.9776,0.9776,0.9776,0.9776,1.0199,1.0199,1.0199,1.0199],"die_usd_w":[0.8358,0.8358,0.8358,0.8358,0.8505,0.8505,0.8505,0.8505,0.8873,0.8873,0.8873,0.8873],"gas_loc_w":[17.82,17.82,17.82,17.82,18.13,18.13,18.13,18.13,18.92,18.92,18.92,18.92],"die_loc_w":[15.5,15.5,15.5,15.5,15.78,15.78,15.78,15.78,16.46,16.46,16.46,16.46],"chg_gas":6.16,"chg_die":6.16,"min_gas":0.9607,"max_gas":1.0199,"avg_gas":0.9861},{"name":"Liberia","region":"West Africa","currency":"LRD","fx_rate":194.0,"octane":91,"src":"?","gas_usd_now":0.8463,"die_usd_now":0.9114,"lpg_usd_now":1.2,"gas_loc_now":164.18,"die_loc_now":176.81,"lpg_loc_now":232.8,"gas_usd_w":[0.7334,0.7334,0.7334,0.7334,0.8112,0.8112,0.8112,0.8112,0.8463,0.8463,0.8463,0.8463],"die_usd_w":[0.7954,0.7954,0.7954,0.7954,0.8736,0.8736,0.8736,0.8736,0.9114,0.9114,0.9114,0.9114],"gas_loc_w":[142.28,142.28,142.28,142.28,157.37,157.37,157.37,157.37,164.18,164.18,164.18,164.18],"die_loc_w":[154.31,154.31,154.31,154.31,169.48,169.48,169.48,169.48,176.81,176.81,176.81,176.81],"chg_gas":15.39,"chg_die":14.58,"min_gas":0.7334,"max_gas":0.8463,"avg_gas":0.797},{"name":"Libya","region":"North Africa","currency":"LYD","fx_rate":4.85,"octane":95,"src":"?","gas_usd_now":0.0309,"die_usd_now":0.0309,"lpg_usd_now":0.05,"gas_loc_now":0.15,"die_loc_now":0.15,"lpg_loc_now":0.24,"gas_usd_w":[0.0309,0.0309,0.0309,0.0309,0.0309,0.0309,0.0309,0.0309,0.0309,0.0309,0.0309,0.0309],"die_usd_w":[0.0309,0.0309,0.0309,0.0309,0.0309,0.0309,0.0309,0.0309,0.0309,0.0309,0.0309,0.0309],"gas_loc_w":[0.15,0.15,0.15,0.15,0.15,0.15,0.15,0.15,0.15,0.15,0.15,0.15],"die_loc_w":[0.15,0.15,0.15,0.15,0.15,0.15,0.15,0.15,0.15,0.15,0.15,0.15],"chg_gas":0.0,"chg_die":0.0,"min_gas":0.0309,"max_gas":0.0309,"avg_gas":0.0309},{"name":"Madagascar","region":"East Africa","currency":"MGA","fx_rate":4620.0,"octane":91,"src":"?","gas_usd_now":1.0958,"die_usd_now":0.9533,"lpg_usd_now":1.3,"gas_loc_now":5062.6,"die_loc_now":4404.25,"lpg_loc_now":6006.0,"gas_usd_w":[0.971,0.971,0.971,0.971,1.0504,1.0504,1.0504,1.0504,1.0958,1.0958,1.0958,1.0958],"die_usd_w":[0.8448,0.8448,0.8448,0.8448,0.9138,0.9138,0.9138,0.9138,0.9533,0.9533,0.9533,0.9533],"gas_loc_w":[4486.02,4486.02,4486.02,4486.02,4852.85,4852.85,4852.85,4852.85,5062.6,5062.6,5062.6,5062.6],"die_loc_w":[3902.98,3902.98,3902.98,3902.98,4221.76,4221.76,4221.76,4221.76,4404.25,4404.25,4404.25,4404.25],"chg_gas":12.85,"chg_die":12.84,"min_gas":0.971,"max_gas":1.0958,"avg_gas":1.0391},{"name":"Malawi","region":"East Africa","currency":"MWK","fx_rate":1735.0,"octane":91,"src":"?","gas_usd_now":2.6691,"die_usd_now":2.3221,"lpg_usd_now":2.4,"gas_loc_now":4630.89,"die_loc_now":4028.84,"lpg_loc_now":4164.0,"gas_usd_w":[2.4792,2.4792,2.4792,2.4792,2.5584,2.5584,2.5584,2.5584,2.6691,2.6691,2.6691,2.6691],"die_usd_w":[2.1569,2.1569,2.1569,2.1569,2.2258,2.2258,2.2258,2.2258,2.3221,2.3221,2.3221,2.3221],"gas_loc_w":[4301.41,4301.41,4301.41,4301.41,4438.82,4438.82,4438.82,4438.82,4630.89,4630.89,4630.89,4630.89],"die_loc_w":[3742.22,3742.22,3742.22,3742.22,3861.76,3861.76,3861.76,3861.76,4028.84,4028.84,4028.84,4028.84],"chg_gas":7.66,"chg_die":7.66,"min_gas":2.4792,"max_gas":2.6691,"avg_gas":2.5689},{"name":"Mali","region":"West Africa","currency":"XOF","fx_rate":603.5,"octane":91,"src":"?","gas_usd_now":1.2911,"die_usd_now":1.1233,"lpg_usd_now":1.3,"gas_loc_now":779.18,"die_loc_now":677.91,"lpg_loc_now":784.55,"gas_usd_w":[1.2189,1.2189,1.2189,1.2189,1.2376,1.2376,1.2376,1.2376,1.2911,1.2911,1.2911,1.2911],"die_usd_w":[1.0604,1.0604,1.0604,1.0604,1.0767,1.0767,1.0767,1.0767,1.1233,1.1233,1.1233,1.1233],"gas_loc_w":[735.61,735.61,735.61,735.61,746.89,746.89,746.89,746.89,779.18,779.18,779.18,779.18],"die_loc_w":[639.95,639.95,639.95,639.95,649.79,649.79,649.79,649.79,677.91,677.91,677.91,677.91],"chg_gas":5.92,"chg_die":5.93,"min_gas":1.2189,"max_gas":1.2911,"avg_gas":1.2492},{"name":"Mauritius","region":"East Africa","currency":"MUR","fx_rate":46.2,"octane":95,"src":"?","gas_usd_now":1.1935,"die_usd_now":1.0383,"lpg_usd_now":1.4,"gas_loc_now":55.14,"die_loc_now":47.97,"lpg_loc_now":64.68,"gas_usd_w":[1.1156,1.1156,1.1156,1.1156,1.144,1.144,1.144,1.144,1.1935,1.1935,1.1935,1.1935],"die_usd_w":[0.9706,0.9706,0.9706,0.9706,0.9953,0.9953,0.9953,0.9953,1.0383,1.0383,1.0383,1.0383],"gas_loc_w":[51.54,51.54,51.54,51.54,52.85,52.85,52.85,52.85,55.14,55.14,55.14,55.14],"die_loc_w":[44.84,44.84,44.84,44.84,45.98,45.98,45.98,45.98,47.97,47.97,47.97,47.97],"chg_gas":6.98,"chg_die":6.98,"min_gas":1.1156,"max_gas":1.1935,"avg_gas":1.151},{"name":"Morocco","region":"North Africa","currency":"MAD","fx_rate":10.02,"octane":95,"src":"?","gas_usd_now":1.3853,"die_usd_now":1.2052,"lpg_usd_now":0.6,"gas_loc_now":13.88,"die_loc_now":12.08,"lpg_loc_now":6.01,"gas_usd_w":[1.157,1.157,1.157,1.157,1.1856,1.1856,1.1856,1.1856,1.2369,1.2369,1.3853,1.3853],"die_usd_w":[1.0066,1.0066,1.0066,1.0066,1.0315,1.0315,1.0315,1.0315,1.0761,1.0761,1.2052,1.2052],"gas_loc_w":[11.59,11.59,11.59,11.59,11.88,11.88,11.88,11.88,12.39,12.39,13.88,13.88],"die_loc_w":[10.09,10.09,10.09,10.09,10.34,10.34,10.34,10.34,10.78,10.78,12.08,12.08],"chg_gas":19.73,"chg_die":19.73,"min_gas":1.157,"max_gas":1.3853,"avg_gas":1.2179},{"name":"Mozambique","region":"Southern Africa","currency":"MZN","fx_rate":64.1,"octane":91,"src":"?","gas_usd_now":1.226,"die_usd_now":1.0666,"lpg_usd_now":1.3,"gas_loc_now":78.59,"die_loc_now":68.37,"lpg_loc_now":83.33,"gas_usd_w":[1.1363,1.1363,1.1363,1.1363,1.1752,1.1752,1.1752,1.1752,1.226,1.226,1.226,1.226],"die_usd_w":[0.9886,0.9886,0.9886,0.9886,1.0224,1.0224,1.0224,1.0224,1.0666,1.0666,1.0666,1.0666],"gas_loc_w":[72.84,72.84,72.84,72.84,75.33,75.33,75.33,75.33,78.59,78.59,78.59,78.59],"die_loc_w":[63.37,63.37,63.37,63.37,65.54,65.54,65.54,65.54,68.37,68.37,68.37,68.37],"chg_gas":7.89,"chg_die":7.89,"min_gas":1.1363,"max_gas":1.226,"avg_gas":1.1792},{"name":"Namibia","region":"Southern Africa","currency":"NAD","fx_rate":18.55,"octane":93,"src":"?","gas_usd_now":1.1176,"die_usd_now":0.9723,"lpg_usd_now":1.25,"gas_loc_now":20.73,"die_loc_now":18.04,"lpg_loc_now":23.19,"gas_usd_w":[1.064,1.064,1.064,1.064,1.0712,1.0712,1.0712,1.0712,1.1176,1.1176,1.1176,1.1176],"die_usd_w":[0.9257,0.9257,0.9257,0.9257,0.9319,0.9319,0.9319,0.9319,0.9723,0.9723,0.9723,0.9723],"gas_loc_w":[19.74,19.74,19.74,19.74,19.87,19.87,19.87,19.87,20.73,20.73,20.73,20.73],"die_loc_w":[17.17,17.17,17.17,17.17,17.29,17.29,17.29,17.29,18.04,18.04,18.04,18.04],"chg_gas":5.04,"chg_die":5.03,"min_gas":1.064,"max_gas":1.1176,"avg_gas":1.0843},{"name":"Niger","region":"West Africa","currency":"XOF","fx_rate":603.5,"octane":91,"src":"?","gas_usd_now":1.102,"die_usd_now":1.002,"lpg_usd_now":1.25,"gas_loc_now":665.06,"die_loc_now":604.71,"lpg_loc_now":754.38,"gas_usd_w":[1.102,1.102,1.102,1.102,1.102,1.102,1.102,1.102,1.102,1.102,1.102,1.102],"die_usd_w":[1.002,1.002,1.002,1.002,1.002,1.002,1.002,1.002,1.002,1.002,1.002,1.002],"gas_loc_w":[665.06,665.06,665.06,665.06,665.06,665.06,665.06,665.06,665.06,665.06,665.06,665.06],"die_loc_w":[604.71,604.71,604.71,604.71,604.71,604.71,604.71,604.71,604.71,604.71,604.71,604.71],"chg_gas":0.0,"chg_die":0.0,"min_gas":1.102,"max_gas":1.102,"avg_gas":1.102},{"name":"Nigeria","region":"West Africa","currency":"NGN","fx_rate":1620.0,"octane":91,"src":"?","gas_usd_now":0.786,"die_usd_now":0.9873,"lpg_usd_now":0.55,"gas_loc_now":1273.32,"die_loc_now":1599.43,"lpg_loc_now":891.0,"gas_usd_w":[0.5062,0.5366,0.5568,0.6817,0.7176,0.732,0.732,0.7463,0.7261,0.7336,0.7785,0.786],"die_usd_w":[0.5785,0.5785,0.5785,0.5785,0.9464,0.9464,0.9464,0.9464,0.9873,0.9873,0.9873,0.9873],"gas_loc_w":[820.04,869.29,902.02,1104.35,1162.51,1185.84,1185.84,1209.01,1176.28,1188.43,1261.17,1273.32],"die_loc_w":[937.17,937.17,937.17,937.17,1533.17,1533.17,1533.17,1533.17,1599.43,1599.43,1599.43,1599.43],"chg_gas":55.27,"chg_die":70.67,"min_gas":0.5062,"max_gas":0.786,"avg_gas":0.6861},{"name":"Rwanda","region":"East Africa","currency":"RWF","fx_rate":1415.0,"octane":91,"src":"?","gas_usd_now":1.2803,"die_usd_now":1.1139,"lpg_usd_now":1.45,"gas_loc_now":1811.62,"die_loc_now":1576.17,"lpg_loc_now":2051.75,"gas_usd_w":[1.1879,1.1879,1.1879,1.1879,1.2272,1.2272,1.2272,1.2272,1.2803,1.2803,1.2803,1.2803],"die_usd_w":[1.0335,1.0335,1.0335,1.0335,1.0677,1.0677,1.0677,1.0677,1.1139,1.1139,1.1139,1.1139],"gas_loc_w":[1680.88,1680.88,1680.88,1680.88,1736.49,1736.49,1736.49,1736.49,1811.62,1811.62,1811.62,1811.62],"die_loc_w":[1462.4,1462.4,1462.4,1462.4,1510.8,1510.8,1510.8,1510.8,1576.17,1576.17,1576.17,1576.17],"chg_gas":7.78,"chg_die":7.78,"min_gas":1.1879,"max_gas":1.2803,"avg_gas":1.2318},{"name":"Senegal","region":"West Africa","currency":"XOF","fx_rate":603.5,"octane":91,"src":"?","gas_usd_now":1.5298,"die_usd_now":1.3309,"lpg_usd_now":1.15,"gas_loc_now":923.23,"die_loc_now":803.2,"lpg_loc_now":694.02,"gas_usd_w":[1.4565,1.4565,1.4565,1.4565,1.4664,1.4664,1.4664,1.4664,1.5298,1.5298,1.5298,1.5298],"die_usd_w":[1.2672,1.2672,1.2672,1.2672,1.2758,1.2758,1.2758,1.2758,1.3309,1.3309,1.3309,1.3309],"gas_loc_w":[879.0,879.0,879.0,879.0,884.97,884.97,884.97,884.97,923.23,923.23,923.23,923.23],"die_loc_w":[764.76,764.76,764.76,764.76,769.95,769.95,769.95,769.95,803.2,803.2,803.2,803.2],"chg_gas":5.03,"chg_die":5.03,"min_gas":1.4565,"max_gas":1.5298,"avg_gas":1.4842},{"name":"Seychelles","region":"East Africa","currency":"SCR","fx_rate":14.15,"octane":95,"src":"?","gas_usd_now":1.4105,"die_usd_now":1.2271,"lpg_usd_now":1.6,"gas_loc_now":19.96,"die_loc_now":17.36,"lpg_loc_now":22.64,"gas_usd_w":[1.3016,1.3016,1.3016,1.3016,1.352,1.352,1.352,1.352,1.4105,1.4105,1.4105,1.4105],"die_usd_w":[1.1324,1.1324,1.1324,1.1324,1.1762,1.1762,1.1762,1.1762,1.2271,1.2271,1.2271,1.2271],"gas_loc_w":[18.42,18.42,18.42,18.42,19.13,19.13,19.13,19.13,19.96,19.96,19.96,19.96],"die_loc_w":[16.02,16.02,16.02,16.02,16.64,16.64,16.64,16.64,17.36,17.36,17.36,17.36],"chg_gas":8.37,"chg_die":8.36,"min_gas":1.3016,"max_gas":1.4105,"avg_gas":1.3547},{"name":"Sierra Leone","region":"West Africa","currency":"SLL","fx_rate":22500.0,"octane":91,"src":"?","gas_usd_now":1.448,"die_usd_now":1.1,"lpg_usd_now":1.25,"gas_loc_now":32580.0,"die_loc_now":24750.0,"lpg_loc_now":28125.0,"gas_usd_w":[1.387,1.3925,1.3981,1.4036,1.4092,1.4147,1.4203,1.4258,1.4314,1.4369,1.4425,1.448],"die_usd_w":[1.1,1.1,1.1,1.1,1.1,1.1,1.1,1.1,1.1,1.1,1.1,1.1],"gas_loc_w":[31207.5,31331.25,31457.25,31581.0,31707.0,31830.75,31956.75,32080.5,32206.5,32330.25,32456.25,32580.0],"die_loc_w":[24750.0,24750.0,24750.0,24750.0,24750.0,24750.0,24750.0,24750.0,24750.0,24750.0,24750.0,24750.0],"chg_gas":4.4,"chg_die":0.0,"min_gas":1.387,"max_gas":1.448,"avg_gas":1.4175},{"name":"South Africa","region":"Southern Africa","currency":"ZAR","fx_rate":18.55,"octane":95,"src":"?","gas_usd_now":1.2369,"die_usd_now":1.378,"lpg_usd_now":1.35,"gas_loc_now":22.94,"die_loc_now":25.56,"lpg_loc_now":25.04,"gas_usd_w":[1.1776,1.1776,1.1776,1.1776,1.1856,1.1856,1.1856,1.1856,1.2369,1.2369,1.2369,1.2369],"die_usd_w":[1.2809,1.2809,1.2809,1.2809,1.2896,1.2896,1.2896,1.2896,1.378,1.378,1.378,1.378],"gas_loc_w":[21.84,21.84,21.84,21.84,21.99,21.99,21.99,21.99,22.94,22.94,22.94,22.94],"die_loc_w":[23.76,23.76,23.76,23.76,23.92,23.92,23.92,23.92,25.56,25.56,25.56,25.56],"chg_gas":5.04,"chg_die":7.58,"min_gas":1.1776,"max_gas":1.2369,"avg_gas":1.2},{"name":"Sudan","region":"North Africa","currency":"SDG","fx_rate":510.0,"octane":91,"src":"?","gas_usd_now":0.651,"die_usd_now":0.6076,"lpg_usd_now":0.55,"gas_loc_now":332.01,"die_loc_now":309.88,"lpg_loc_now":280.5,"gas_usd_w":[0.6095,0.6095,0.6095,0.6095,0.624,0.624,0.624,0.624,0.651,0.651,0.651,0.651],"die_usd_w":[0.5682,0.5682,0.5682,0.5682,0.5824,0.5824,0.5824,0.5824,0.6076,0.6076,0.6076,0.6076],"gas_loc_w":[310.85,310.85,310.85,310.85,318.24,318.24,318.24,318.24,332.01,332.01,332.01,332.01],"die_loc_w":[289.78,289.78,289.78,289.78,297.02,297.02,297.02,297.02,309.88,309.88,309.88,309.88],"chg_gas":6.81,"chg_die":6.93,"min_gas":0.6095,"max_gas":0.651,"avg_gas":0.6282},{"name":"Tanzania","region":"East Africa","currency":"TZS","fx_rate":2720.0,"octane":91,"src":"?","gas_usd_now":1.0307,"die_usd_now":0.8967,"lpg_usd_now":1.25,"gas_loc_now":2803.5,"die_loc_now":2439.02,"lpg_loc_now":3400.0,"gas_usd_w":[0.94,0.94,0.94,0.94,0.988,0.988,0.988,0.988,1.0307,1.0307,1.0307,1.0307],"die_usd_w":[0.8178,0.8178,0.8178,0.8178,0.8596,0.8596,0.8596,0.8596,0.8967,0.8967,0.8967,0.8967],"gas_loc_w":[2556.8,2556.8,2556.8,2556.8,2687.36,2687.36,2687.36,2687.36,2803.5,2803.5,2803.5,2803.5],"die_loc_w":[2224.42,2224.42,2224.42,2224.42,2338.11,2338.11,2338.11,2338.11,2439.02,2439.02,2439.02,2439.02],"chg_gas":9.65,"chg_die":9.65,"min_gas":0.94,"max_gas":1.0307,"avg_gas":0.9862},{"name":"Togo","region":"West Africa","currency":"XOF","fx_rate":603.5,"octane":91,"src":"?","gas_usd_now":1.1284,"die_usd_now":0.9817,"lpg_usd_now":1.1,"gas_loc_now":680.99,"die_loc_now":592.46,"lpg_loc_now":663.85,"gas_usd_w":[1.0743,1.0743,1.0743,1.0743,1.0816,1.0816,1.0816,1.0816,1.1284,1.1284,1.1284,1.1284],"die_usd_w":[0.9346,0.9346,0.9346,0.9346,0.941,0.941,0.941,0.941,0.9817,0.9817,0.9817,0.9817],"gas_loc_w":[648.34,648.34,648.34,648.34,652.75,652.75,652.75,652.75,680.99,680.99,680.99,680.99],"die_loc_w":[564.03,564.03,564.03,564.03,567.89,567.89,567.89,567.89,592.46,592.46,592.46,592.46],"chg_gas":5.04,"chg_die":5.04,"min_gas":1.0743,"max_gas":1.1284,"avg_gas":1.0948},{"name":"Tunisia","region":"North Africa","currency":"TND","fx_rate":2.921,"octane":95,"src":"?","gas_usd_now":0.87,"die_usd_now":0.757,"lpg_usd_now":0.78,"gas_loc_now":2.54,"die_loc_now":2.21,"lpg_loc_now":2.28,"gas_usd_w":[0.87,0.87,0.87,0.87,0.87,0.87,0.87,0.87,0.87,0.87,0.87,0.87],"die_usd_w":[0.757,0.757,0.757,0.757,0.757,0.757,0.757,0.757,0.757,0.757,0.757,0.757],"gas_loc_w":[2.54,2.54,2.54,2.54,2.54,2.54,2.54,2.54,2.54,2.54,2.54,2.54],"die_loc_w":[2.21,2.21,2.21,2.21,2.21,2.21,2.21,2.21,2.21,2.21,2.21,2.21],"chg_gas":0.0,"chg_die":0.0,"min_gas":0.87,"max_gas":0.87,"avg_gas":0.87},{"name":"Uganda","region":"East Africa","currency":"UGX","fx_rate":3720.0,"octane":91,"src":"?","gas_usd_now":1.381,"die_usd_now":1.15,"lpg_usd_now":1.3,"gas_loc_now":5137.32,"die_loc_now":4278.0,"lpg_loc_now":4836.0,"gas_usd_w":[1.381,1.381,1.381,1.381,1.381,1.381,1.381,1.381,1.381,1.381,1.381,1.381],"die_usd_w":[1.15,1.15,1.15,1.15,1.15,1.15,1.15,1.15,1.15,1.15,1.15,1.15],"gas_loc_w":[5137.32,5137.32,5137.32,5137.32,5137.32,5137.32,5137.32,5137.32,5137.32,5137.32,5137.32,5137.32],"die_loc_w":[4278.0,4278.0,4278.0,4278.0,4278.0,4278.0,4278.0,4278.0,4278.0,4278.0,4278.0,4278.0],"chg_gas":0.0,"chg_die":0.0,"min_gas":1.381,"max_gas":1.381,"avg_gas":1.381},{"name":"Zambia","region":"Southern Africa","currency":"ZMW","fx_rate":27.2,"octane":93,"src":"?","gas_usd_now":1.2803,"die_usd_now":1.1139,"lpg_usd_now":1.3,"gas_loc_now":34.82,"die_loc_now":30.3,"lpg_loc_now":35.36,"gas_usd_w":[1.2706,1.2706,1.2706,1.2706,1.2272,1.2272,1.2272,1.2272,1.2803,1.2803,1.2803,1.2803],"die_usd_w":[1.1054,1.1054,1.1054,1.1054,1.0677,1.0677,1.0677,1.0677,1.1139,1.1139,1.1139,1.1139],"gas_loc_w":[34.56,34.56,34.56,34.56,33.38,33.38,33.38,33.38,34.82,34.82,34.82,34.82],"die_loc_w":[30.07,30.07,30.07,30.07,29.04,29.04,29.04,29.04,30.3,30.3,30.3,30.3],"chg_gas":0.76,"chg_die":0.77,"min_gas":1.2272,"max_gas":1.2803,"avg_gas":1.2594},{"name":"Zimbabwe","region":"Southern Africa","currency":"ZWG","fx_rate":13.6,"octane":91,"src":"?","gas_usd_now":1.5949,"die_usd_now":1.3876,"lpg_usd_now":1.55,"gas_loc_now":21.69,"die_loc_now":18.87,"lpg_loc_now":21.08,"gas_usd_w":[1.3532,1.3532,1.3532,1.3532,1.5288,1.5288,1.5288,1.5288,1.5949,1.5949,1.5949,1.5949],"die_usd_w":[1.1773,1.1773,1.1773,1.1773,1.3301,1.3301,1.3301,1.3301,1.3876,1.3876,1.3876,1.3876],"gas_loc_w":[18.4,18.4,18.4,18.4,20.79,20.79,20.79,20.79,21.69,21.69,21.69,21.69],"die_loc_w":[16.01,16.01,16.01,16.01,18.09,18.09,18.09,18.09,18.87,18.87,18.87,18.87],"chg_gas":17.86,"chg_die":17.86,"min_gas":1.3532,"max_gas":1.5949,"avg_gas":1.4923}],"data_quality_summary":{"live":41,"verified":1,"estimated":0,"total":42}};
+let data = JSON.parse(JSON.stringify(D.countries));
+let filtered = [...data];
+let region = 'all', tblCur = 'usd', topCur = 'usd', botCur = 'usd', lineCur = 'usd';
+let sortKey = 'name', modalCtry = null, modalTab = 'gas';
+let lineInst, barInst, mInst;
+
+const FX = D.fx_rates, WL = D.week_labels;
+const REGS = ['North Africa','West Africa','East Africa','Central Africa','Southern Africa'];
+const AB = {
+  'North Africa':'na','West Africa':'wa','East Africa':'ea',
+  'Central Africa':'ca','Southern Africa':'sa'
+};
+const RC = {
+  'North Africa':'#F5A300','West Africa':'#00A86A',
+  'East Africa':'#1A8FD8','Central Africa':'#E87C1A','Southern Africa':'#E8394A'
+};
+const KEYS = ['South Africa','Nigeria','Kenya','Egypt','Libya','Morocco',
+              'Ethiopia','Tanzania','Ghana','Tunisia'];
+const PAL = ['#00A86A','#F5A300','#1A8FD8','#E8394A','#E87C1A',
+             '#00C4CF','#8B5CF6','#00CC85','#FFBE33','#9EC8E0'];
+
+Chart.defaults.color = '#5A8FAF';
+Chart.defaults.borderColor = 'rgba(33,64,89,.5)';
+Chart.defaults.font.family = "'Outfit', sans-serif";
+Chart.defaults.font.size = 11;
+
+const avg = () => data.reduce((s,c) => s + c.gas_usd_now, 0) / data.length;
+const rAvg = r => { const cs = data.filter(c=>c.region===r); return cs.length ? cs.reduce((s,c)=>s+c.gas_usd_now,0)/cs.length : 0; };
+const rAvgF = (r,f) => { const cs = data.filter(c=>c.region===r); return cs.length ? cs.reduce((s,c)=>s+(c[f]||0),0)/cs.length : 0; };
+
+window.addEventListener('DOMContentLoaded', () => {
+  buildNav(); buildTicker(); buildKpis(); buildRegions();
+  buildLineChart(); buildBarChart();
+  buildRanks('top'); buildRanks('bot');
+  buildFx(); buildHead(); renderTable();
+>>>>>>> Stashed changes
   wire();
-  setInterval(liveTick,12000);
+  setInterval(tick, 12000);
 });
-function buildHeader(){
-  document.getElementById('hMeta').innerHTML=`42 countries · GPP verified &nbsp;|&nbsp; ${D.updated}`;
-  document.getElementById('ftTime').textContent=`Data: ${D.updated}`;
+
+/* NAV */
+function buildNav() {
+  document.getElementById('navMeta').textContent = `42 countries · ${D.updated}`;
+  document.getElementById('ftTime').textContent = `Updated: ${D.updated}`;
 }
-function buildTicker(){
-  const s=[...data].sort((a,b)=>a.name.localeCompare(b.name));
-  let h='';for(let i=0;i<2;i++) s.forEach(c=>{
-    const cl=c.chg_gas>0?'ti-up':c.chg_gas<0?'ti-dn':'ti-fl';
-    const ar=c.chg_gas>0?'▲':c.chg_gas<0?'▼':'—';
-    h+=`<span class="ti"><span class="ti-name">${c.name}</span><span class="ti-price">$${c.gas_usd_now.toFixed(3)}</span><span class="ti-cur">${c.currency}</span><span class="${cl}">${ar}${Math.abs(c.chg_gas).toFixed(1)}%</span></span>`;
+
+/* TICKER */
+function buildTicker() {
+  const s = [...data].sort((a,b) => a.name.localeCompare(b.name));
+  let h = '';
+  for (let i = 0; i < 2; i++) s.forEach(c => {
+    const cl = c.chg_gas > 0 ? 'up' : c.chg_gas < 0 ? 'dn' : 'fl';
+    const ar = c.chg_gas > 0 ? '▲' : c.chg_gas < 0 ? '▼' : '—';
+    h += `<span class="ti">
+      <span class="ti-n">${c.name}</span>
+      <span class="ti-p">$${c.gas_usd_now.toFixed(3)}</span>
+      <span class="ti-c">${c.currency}</span>
+      <span class="${cl}">${ar}${Math.abs(c.chg_gas).toFixed(1)}%</span>
+    </span>`;
   });
-  document.getElementById('tickerTrack').innerHTML=h;
+  document.getElementById('tickerTrack').innerHTML = h;
 }
-function buildHeroKpis(){
-  const s=[...data].sort((a,b)=>b.gas_usd_now-a.gas_usd_now);
-  const hi=s[0],lo=s[s.length-1],sg=[...data].sort((a,b)=>b.chg_gas-a.chg_gas)[0],av=avg();
-  document.getElementById('hKpis').innerHTML=[
-    {l:'Highest Gas Price',v:`$${hi.gas_usd_now.toFixed(3)}/L`,s:hi.name,c:'var(--red)'},
-    {l:'Lowest Gas Price',v:`$${lo.gas_usd_now.toFixed(3)}/L`,s:lo.name,c:'var(--green)'},
-    {l:'Africa Average',v:`$${av.toFixed(3)}/L`,s:'42 nations',c:'var(--gold)'},
-    {l:'Biggest Jan→Mar Δ',v:`${sg.chg_gas>=0?'+':''}${sg.chg_gas.toFixed(1)}%`,s:sg.name,c:'var(--red)'},
-  ].map(k=>`<div class="hkpi"><div class="hkpi-label">${k.l}</div><div class="hkpi-value" style="color:${k.c}">${k.v}</div><div class="hkpi-sub">${k.s}</div></div>`).join('');
+
+/* KPIS */
+function buildKpis() {
+  const s = [...data].sort((a,b) => b.gas_usd_now - a.gas_usd_now);
+  const hi = s[0], lo = s[s.length-1];
+  const sg = [...data].sort((a,b) => b.chg_gas - a.chg_gas)[0];
+  const av = avg();
+  document.getElementById('kpiGrid').innerHTML = [
+    {l:'Highest',  v:`$${hi.gas_usd_now.toFixed(3)}`, s:hi.name, c:'var(--red)'},
+    {l:'Lowest',   v:`$${lo.gas_usd_now.toFixed(3)}`, s:lo.name, c:'var(--g0)'},
+    {l:'Avg Africa', v:`$${av.toFixed(3)}`, s:'42 nations', c:'var(--gold)'},
+    {l:'Biggest Δ', v:`+${sg.chg_gas.toFixed(1)}%`, s:sg.name, c:'var(--red)'},
+  ].map(k=>`<div class="kpi">
+    <div class="kpi-label">${k.l}</div>
+    <div class="kpi-value" style="color:${k.c}">${k.v}</div>
+    <div class="kpi-sub">${k.s}</div>
+  </div>`).join('');
 }
-function buildRegGrid(){
-  const mx=Math.max(...REGS.map(rAvg));
-  document.getElementById('regGrid').innerHTML=REGS.map(r=>{
-    const ab=ABBR[r],col=RCOL[r],av=rAvg(r),n=data.filter(c=>c.region===r).length;
-    const chg=rAvgF(r,'chg_gas'),pct=Math.round(av/mx*100);
-    return `<div class="rc rc-${ab}"><div class="rc-name">${r}</div><div class="rc-price" style="color:${col}">$${av.toFixed(3)}</div><div class="rc-meta">${n} countries · gasoline avg</div><div class="rc-bar-bg"><div class="rc-bar-fill" style="width:${pct}%;background:${col}"></div></div><div class="rc-chg" style="color:${chg>=0?'var(--red)':'var(--green)'}">${chg>=0?'▲':'▼'} ${Math.abs(chg).toFixed(1)}% Jan→Mar</div></div>`;
+
+/* REGIONS */
+function buildRegions() {
+  const mx = Math.max(...REGS.map(rAvg));
+  document.getElementById('regStrip').innerHTML = REGS.map(r => {
+    const ab = AB[r], col = RC[r];
+    const av = rAvg(r), n = data.filter(c=>c.region===r).length;
+    const chg = rAvgF(r,'chg_gas'), pct = Math.round(av/mx*100);
+    return `<div class="rc rc-${ab}">
+      <div class="rc-name">${r}</div>
+      <div class="rc-price" style="color:${col}">$${av.toFixed(3)}</div>
+      <div class="rc-count">${n} countries</div>
+      <div class="rc-bar"><div class="rc-fill" style="width:${pct}%;background:${col}"></div></div>
+      <div class="rc-chg" style="color:${chg>=0?'var(--red)':'var(--g0)'}">
+        ${chg>=0?'▲':'▼'} ${Math.abs(chg).toFixed(1)}% Jan→Mar
+      </div>
+    </div>`;
   }).join('');
 }
-function buildLineChart(){
-  const kd=KEYS.map(n=>data.find(c=>c.name===n)).filter(Boolean);
-  lineInst=new Chart(document.getElementById('lineChart').getContext('2d'),{
-    type:'line',data:{labels:WL,datasets:kd.map((c,i)=>({label:c.name,data:c.gas_usd_w||[],borderColor:PAL[i],backgroundColor:PAL[i]+'15',borderWidth:2,pointRadius:2,pointHoverRadius:6,tension:.4,fill:false}))},
-    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
-      plugins:{legend:{position:'bottom',labels:{boxWidth:9,padding:10,font:{size:10}}},tooltip:{callbacks:{title:i=>`Week: ${i[0].label}`,label:ctx=>`${ctx.dataset.label}: $${ctx.parsed.y.toFixed(3)}/L`}}},
-      scales:{x:{grid:{color:'rgba(26,51,71,.4)'},ticks:{font:{size:9},maxTicksLimit:12}},y:{grid:{color:'rgba(26,51,71,.4)'},ticks:{callback:v=>`$${v.toFixed(2)}`}}}}
+
+/* LINE CHART */
+function buildLineChart() {
+  const kd = KEYS.map(n => data.find(c=>c.name===n)).filter(Boolean);
+  lineInst = new Chart(document.getElementById('lineChart').getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: WL,
+      datasets: kd.map((c,i) => ({
+        label: c.name, data: c.gas_usd_w || [],
+        borderColor: PAL[i], backgroundColor: PAL[i]+'12',
+        borderWidth: 2, pointRadius: 2, pointHoverRadius: 5,
+        tension: .4, fill: false,
+      }))
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: {mode:'index', intersect:false},
+      plugins: {
+        legend: {position:'bottom', labels:{boxWidth:8, padding:10, font:{size:10}}},
+        tooltip: {callbacks: {
+          title: i => `Week: ${i[0].label}`,
+          label: ctx => `${ctx.dataset.label}: $${ctx.parsed.y.toFixed(3)}/L`
+        }}
+      },
+      scales: {
+        x: {grid:{color:'rgba(33,64,89,.35)'}, ticks:{font:{size:9}, maxTicksLimit:8}},
+        y: {grid:{color:'rgba(33,64,89,.35)'}, ticks:{callback: v=>`$${v.toFixed(2)}`}}
+      }
+    }
   });
 }
-function updateLineChart(){
-  const kd=KEYS.map(n=>data.find(c=>c.name===n)).filter(Boolean);
-  const sd=c=>lineCur==='usd'?c.gas_usd_w||[]:lineCur==='loc'?c.gas_loc_w||[]:c.die_usd_w||[];
-  lineInst.data.datasets=kd.map((c,i)=>({label:c.name,data:sd(c),borderColor:PAL[i],backgroundColor:PAL[i]+'15',borderWidth:2,pointRadius:2,pointHoverRadius:6,tension:.4,fill:false}));
-  const isU=lineCur==='usd';
-  lineInst.options.scales.y.ticks.callback=isU?v=>`$${v.toFixed(3)}`:v=>v.toFixed(2);
-  lineInst.options.plugins.tooltip.callbacks.label=ctx=>{
-    const u=lineCur==='usd'?`$${ctx.parsed.y.toFixed(3)} USD/L`:lineCur==='loc'?`${ctx.parsed.y.toFixed(2)} Local/L`:`$${ctx.parsed.y.toFixed(3)} Die USD/L`;
-    return `${ctx.dataset.label}: ${u}`;};
+
+function updateLineChart() {
+  const kd = KEYS.map(n => data.find(c=>c.name===n)).filter(Boolean);
+  const sd = c => lineCur==='usd' ? c.gas_usd_w||[] : lineCur==='loc' ? c.gas_loc_w||[] : c.die_usd_w||[];
+  lineInst.data.datasets = kd.map((c,i) => ({
+    label:c.name, data:sd(c), borderColor:PAL[i], backgroundColor:PAL[i]+'12',
+    borderWidth:2, pointRadius:2, pointHoverRadius:5, tension:.4, fill:false,
+  }));
+  const isU = lineCur !== 'loc';
+  lineInst.options.scales.y.ticks.callback = isU ? v=>`$${v.toFixed(3)}` : v=>v.toFixed(1);
   lineInst.update('none');
 }
-function buildBarChart(){
-  barInst=new Chart(document.getElementById('barChart').getContext('2d'),{
-    type:'bar',
-    data:{labels:REGS.map(r=>r.replace(' Africa','')),
-      datasets:[
-        {label:'Gasoline USD/L',data:REGS.map(rAvg),backgroundColor:REGS.map(r=>RCOL[r]+'BB'),borderColor:REGS.map(r=>RCOL[r]),borderWidth:1.5,borderRadius:5},
-        {label:'Diesel USD/L',data:REGS.map(r=>{const cs=data.filter(c=>c.region===r);return cs.length?cs.reduce((s,c)=>s+c.die_usd_now,0)/cs.length:0}),backgroundColor:REGS.map(r=>RCOL[r]+'55'),borderColor:REGS.map(r=>RCOL[r]),borderWidth:1.5,borderRadius:5},
-      ]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{position:'bottom',labels:{boxWidth:9,padding:10,font:{size:10}}},tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: $${ctx.parsed.y.toFixed(3)}/L`}}},
-      scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{grid:{color:'rgba(26,51,71,.4)'},ticks:{callback:v=>`$${v.toFixed(2)}`}}}}
+
+/* BAR CHART */
+function buildBarChart() {
+  barInst = new Chart(document.getElementById('barChart').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: REGS.map(r => r.replace(' Africa','\nAfrica')),
+      datasets: [
+        {label:'Gasoline USD',
+         data: REGS.map(rAvg),
+         backgroundColor: REGS.map(r=>RC[r]+'BB'),
+         borderColor: REGS.map(r=>RC[r]),
+         borderWidth:1.5, borderRadius:4},
+        {label:'Diesel USD',
+         data: REGS.map(r=>{const cs=data.filter(c=>c.region===r);return cs.length?cs.reduce((s,c)=>s+c.die_usd_now,0)/cs.length:0;}),
+         backgroundColor: REGS.map(r=>RC[r]+'44'),
+         borderColor: REGS.map(r=>RC[r]),
+         borderWidth:1.5, borderRadius:4},
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins: {
+        legend: {position:'bottom', labels:{boxWidth:8,padding:10,font:{size:10}}},
+        tooltip: {callbacks: {label: ctx=>`${ctx.dataset.label}: $${ctx.parsed.y.toFixed(3)}`}}
+      },
+      scales: {
+        x: {grid:{display:false}, ticks:{font:{size:9}}},
+        y: {grid:{color:'rgba(33,64,89,.35)'}, ticks:{callback:v=>`$${v.toFixed(2)}`}}
+      }
+    }
   });
 }
-function buildRankings(type){
-  const cur=type==='top'?topCur:botCur,isU=cur==='usd';
-  const sorted=[...data].sort((a,b)=>b.gas_usd_now-a.gas_usd_now);
-  const items=type==='top'?sorted.slice(0,10):sorted.slice(-10).reverse();
-  const mx=items[0]?.gas_usd_now||1,col=type==='top'?'var(--red)':'var(--green)';
-  document.getElementById(type+'List').innerHTML=items.map((c,i)=>{
-    const p=isU?`$${c.gas_usd_now.toFixed(3)}`:`${c.gas_loc_now.toFixed(2)} ${c.currency}`;
-    const pct=Math.round(c.gas_usd_now/mx*100);
-    return `<div class="rank-item" onclick="openModal('${esc(c.name)}')"><div class="rank-num">${i+1}</div><div style="flex:1"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.28rem"><span class="rank-name">${c.name}</span><span class="rank-price" style="color:${col}">${p}</span></div><div class="rank-bar-bg"><div class="rank-bar-fill" style="width:${pct}%;background:${col}"></div></div></div></div>`;
+
+/* RANKINGS */
+function buildRanks(type) {
+  const cur = type==='top' ? topCur : botCur, isU = cur==='usd';
+  const sorted = [...data].sort((a,b)=>b.gas_usd_now-a.gas_usd_now);
+  const items = type==='top' ? sorted.slice(0,10) : sorted.slice(-10).reverse();
+  const mx = items[0]?.gas_usd_now || 1;
+  const col = type==='top' ? 'var(--red)' : 'var(--g0)';
+  document.getElementById(type+'List').innerHTML = items.map((c,i) => {
+    const price = isU ? `$${c.gas_usd_now.toFixed(3)}` : `${c.gas_loc_now.toFixed(1)} ${c.currency}`;
+    const pct = Math.round(c.gas_usd_now/mx*100);
+    return `<div class="rank-item" onclick="openModal('${esc(c.name)}')">
+      <div class="rank-n">${i+1}</div>
+      <div class="rank-name">${c.name}</div>
+      <div class="rank-right">
+        <span class="rank-price" style="color:${col}">${price}</span>
+        <div class="rank-bar-bg"><div class="rank-bar-fg" style="width:${pct}%;background:${col}"></div></div>
+      </div>
+    </div>`;
   }).join('');
 }
-function buildFxGrid(){
-  document.getElementById('fxGrid').innerHTML=Object.entries(FX).sort((a,b)=>a[0].localeCompare(b[0])).map(([code,rate])=>{
-    const m=rate>=1000?rate.toLocaleString('en-US',{maximumFractionDigits:0}):rate>=10?rate.toFixed(2):rate.toFixed(4);
-    return `<div class="fx-item"><span class="fx-code">${code}</span><div><span class="fx-main">${m}</span><span class="fx-inv">$1 = ${m} ${code}</span></div></div>`;
-  }).join('');
+
+/* FX */
+function buildFx() {
+  document.getElementById('fxWrap').innerHTML = Object.entries(FX)
+    .sort((a,b)=>a[0].localeCompare(b[0]))
+    .map(([code,rate]) => {
+      const m = rate>=1000 ? rate.toLocaleString('en-US',{maximumFractionDigits:0}) :
+                rate>=10 ? rate.toFixed(2) : rate.toFixed(4);
+      const inv = 1/rate;
+      const invF = inv<0.001 ? inv.toFixed(6) : inv.toFixed(4);
+      return `<div class="fx-card">
+        <span class="fx-code">${code}</span>
+        <div style="text-align:right">
+          <span class="fx-rate">${m}</span>
+          <span class="fx-inv">= $${invF}</span>
+        </div>
+      </div>`;
+    }).join('');
 }
-function buildTableHead(){
-  const cols=[{l:'Country',k:'name'},{l:'Region',k:null},{l:'Curr.',k:null},{l:'FX Rate',k:'fx'}];
-  if(tblCur==='usd'||tblCur==='both') cols.push({l:'Gas USD',k:'gas'},{l:'Diesel USD',k:'die'},{l:'LPG USD',k:null});
-  if(tblCur==='loc'||tblCur==='both') cols.push({l:'Gas Local',k:null},{l:'Diesel Local',k:null},{l:'LPG Local',k:null});
-  cols.push({l:'Jan→Mar',k:'chg'},{l:'Level',k:null},{l:'Jan W1',k:null},{l:'Feb W5',k:null},{l:'Mar W9',k:null});
-  document.getElementById('tHead').innerHTML=cols.map(c=>`<th ${c.k?`data-k="${c.k}"`:''} class="${sortKey===c.k?'sorted':''}">${c.l}</th>`).join('');
-  document.querySelectorAll('#tHead th[data-k]').forEach(th=>{
-    th.addEventListener('click',()=>{sortKey=th.dataset.k;renderTable();});
-  });
+
+/* TABLE */
+function buildHead() {
+  const cols = [
+    {l:'Country',k:'name'},{l:'Region',k:null},
+    {l:'Curr',k:null},{l:'FX',k:'fx'}
+  ];
+  if (tblCur==='usd'||tblCur==='both')
+    cols.push({l:'Gas USD',k:'gas'},{l:'Diesel USD',k:'die'});
+  if (tblCur==='loc'||tblCur==='both')
+    cols.push({l:'Gas Local',k:null},{l:'Die Local',k:null});
+  cols.push({l:'Jan→Mar',k:'chg'},{l:'Level',k:null},{l:'Jan',k:null},{l:'Mar',k:null});
+  document.getElementById('tHead').innerHTML = cols.map(c =>
+    `<th ${c.k?`data-k="${c.k}"`:''} class="${sortKey===c.k?'sorted':''}">${c.l}</th>`
+  ).join('');
+  document.querySelectorAll('#tHead th[data-k]').forEach(th =>
+    th.addEventListener('click', () => { sortKey=th.dataset.k; renderTable(); })
+  );
 }
-function renderTable(){
-  let d=[...filtered];
-  const q=(document.getElementById('srchInp').value||'').toLowerCase();
-  if(q) d=d.filter(c=>c.name.toLowerCase().includes(q)||c.region.toLowerCase().includes(q)||c.currency.toLowerCase().includes(q));
-  const sv=document.getElementById('sortSel').value;
-  const sorts={'name':(a,b)=>a.name.localeCompare(b.name),'gas_desc':(a,b)=>b.gas_usd_now-a.gas_usd_now,'gas_asc':(a,b)=>a.gas_usd_now-b.gas_usd_now,'chg_desc':(a,b)=>b.chg_gas-a.chg_gas,'chg_asc':(a,b)=>a.chg_gas-b.chg_gas,'fx_desc':(a,b)=>(FX[b.currency]||1)-(FX[a.currency]||1)};
-  if(sorts[sv]) d.sort(sorts[sv]);
-  document.getElementById('cntBdg').textContent=`${d.length} COUNTRIES`;
-  const mx=Math.max(...data.map(c=>c.gas_usd_now));
-  document.getElementById('tBody').innerHTML=d.map(c=>{
-    const ab=ABBR[c.region]||'na',fx=FX[c.currency]||1;
-    const chgCl=c.chg_gas>0.5?'up':c.chg_gas<-0.5?'dn':'fl',chgAr=c.chg_gas>0.5?'▲':c.chg_gas<-0.5?'▼':'—';
-    const levCl=c.gas_usd_now>1.3?'lev-h':c.gas_usd_now>0.8?'lev-m':'lev-l';
-    const levLb=c.gas_usd_now>1.3?'● HIGH':c.gas_usd_now>0.8?'● MID':'● LOW';
-    const fxF=fx>=1000?fx.toLocaleString('en-US',{maximumFractionDigits:0}):fx>=10?fx.toFixed(2):fx.toFixed(4);
-    const bw=Math.round(c.gas_usd_now/mx*100);
-    const w=c.gas_usd_w||[];
-    const w1=w[0]!=null?`$${Number(w[0]).toFixed(3)}`:'—';
-    const w5=w[4]!=null?`$${Number(w[4]).toFixed(3)}`:'—';
-    const w9=w[8]!=null?`$${Number(w[8]).toFixed(3)}`:'—';
-    let cells=`<td><span class="cn">${c.name}</span></td><td><span class="rt rt-${ab}">${c.region}</span></td><td><span class="cur-tag">${c.currency}</span></td><td class="mono" style="font-size:.74rem;color:var(--txt2)">${fxF}</td>`;
-    if(tblCur==='usd'||tblCur==='both') cells+=`<td><span class="mono">$${c.gas_usd_now.toFixed(3)}</span><div class="pb-out"><div class="pb-in" style="width:${bw}%"></div></div></td><td class="mono">$${c.die_usd_now.toFixed(3)}</td><td class="mono" style="color:var(--txt2)">$${c.lpg_usd_now.toFixed(3)}</td>`;
-    if(tblCur==='loc'||tblCur==='both') cells+=`<td class="mono" style="color:var(--cyan)">${c.gas_loc_now.toFixed(2)}</td><td class="mono" style="color:var(--cyan)">${c.die_loc_now.toFixed(2)}</td><td class="mono" style="color:var(--txt2)">${c.lpg_loc_now.toFixed(2)}</td>`;
-    cells+=`<td><span class="${chgCl}">${chgAr} ${Math.abs(c.chg_gas).toFixed(2)}%</span></td><td><span class="${levCl}">${levLb}</span></td><td class="mono" style="font-size:.69rem;color:var(--txt3)">${w1}</td><td class="mono" style="font-size:.69rem;color:var(--txt3)">${w5}</td><td class="mono" style="font-size:.74rem">${w9}</td>`;
+
+function renderTable() {
+  let d = [...filtered];
+  const q = (document.getElementById('srchInp').value||'').toLowerCase();
+  if (q) d = d.filter(c =>
+    c.name.toLowerCase().includes(q) ||
+    c.region.toLowerCase().includes(q) ||
+    c.currency.toLowerCase().includes(q)
+  );
+  const sv = document.getElementById('sortSel').value;
+  const sorts = {
+    'name':(a,b)=>a.name.localeCompare(b.name),
+    'gas_desc':(a,b)=>b.gas_usd_now-a.gas_usd_now,
+    'gas_asc':(a,b)=>a.gas_usd_now-b.gas_usd_now,
+    'chg_desc':(a,b)=>b.chg_gas-a.chg_gas,
+    'chg_asc':(a,b)=>a.chg_gas-b.chg_gas,
+    'fx_desc':(a,b)=>(FX[b.currency]||1)-(FX[a.currency]||1),
+  };
+  if (sorts[sv]) d.sort(sorts[sv]);
+  document.getElementById('cntBadge').textContent = d.length;
+  const mx = Math.max(...data.map(c=>c.gas_usd_now));
+  document.getElementById('tBody').innerHTML = d.map(c => {
+    const ab = AB[c.region]||'na', fx = FX[c.currency]||1;
+    const chgCl = c.chg_gas>0.5?'up2':c.chg_gas<-0.5?'dn2':'fl2';
+    const chgAr = c.chg_gas>0.5?'▲':c.chg_gas<-0.5?'▼':'—';
+    const levCl = c.gas_usd_now>1.3?'lev-h':c.gas_usd_now>0.8?'lev-m':'lev-l';
+    const levLb = c.gas_usd_now>1.3?'HIGH':c.gas_usd_now>0.8?'MID':'LOW';
+    const fxF = fx>=1000?fx.toLocaleString('en-US',{maximumFractionDigits:0}):fx>=10?fx.toFixed(2):fx.toFixed(4);
+    const bw = Math.round(c.gas_usd_now/mx*100);
+    const w = c.gas_usd_w||[];
+    let cells = `
+      <td><span class="cn">${c.name}</span></td>
+      <td><span class="rt rt-${ab}">${c.region.replace(' Africa','')}</span></td>
+      <td><span class="cur">${c.currency}</span></td>
+      <td class="mono" style="font-size:.7rem;color:var(--t3)">${fxF}</td>`;
+    if (tblCur==='usd'||tblCur==='both') cells += `
+      <td>
+        <span class="mono">$${c.gas_usd_now.toFixed(3)}</span>
+        <div class="pb"><div class="pb-f" style="width:${bw}%"></div></div>
+      </td>
+      <td class="mono">$${c.die_usd_now.toFixed(3)}</td>`;
+    if (tblCur==='loc'||tblCur==='both') cells += `
+      <td class="mono" style="color:var(--cyan)">${c.gas_loc_now.toFixed(2)}</td>
+      <td class="mono" style="color:var(--cyan)">${c.die_loc_now.toFixed(2)}</td>`;
+    cells += `
+      <td><span class="${chgCl}">${chgAr} ${Math.abs(c.chg_gas).toFixed(2)}%</span></td>
+      <td><span class="${levCl}">${levLb}</span></td>
+      <td class="mono" style="font-size:.67rem;color:var(--t4)">${w[0]!=null?'$'+Number(w[0]).toFixed(3):'—'}</td>
+      <td class="mono" style="font-size:.7rem">${w[w.length-1]!=null?'$'+Number(w[w.length-1]).toFixed(3):'—'}</td>`;
     return `<tr onclick="openModal('${esc(c.name)}')">${cells}</tr>`;
   }).join('');
 }
-function openModal(name){
-  const c=data.find(d=>d.name===name);if(!c) return;
-  modalCtry=c;
-  const fx=FX[c.currency]||1;
-  const fxF=fx>=1000?fx.toLocaleString('en-US',{maximumFractionDigits:0}):fx>=10?fx.toFixed(2):fx.toFixed(4);
-  document.getElementById('mTitle').textContent=`⛽ ${c.name}`;
-  document.getElementById('mMeta').textContent=`${c.region} · ${c.currency} · ${c.octane} RON`;
-  document.getElementById('mFx').textContent=`1 USD = ${fxF} ${c.currency}  ·  1 ${c.currency} = $${(1/fx).toFixed(fx>=1000?6:4)}`;
-  document.getElementById('mGrid').innerHTML=[
-    {l:`Gasoline USD/L`,v:`$${c.gas_usd_now.toFixed(3)}`,col:'var(--gold)'},
-    {l:`Gas ${c.currency}/L`,v:`${c.gas_loc_now.toFixed(2)}`,col:'var(--green)'},
-    {l:`Diesel USD/L`,v:`$${c.die_usd_now.toFixed(3)}`,col:'var(--blue)'},
-    {l:`Die ${c.currency}/L`,v:`${c.die_loc_now.toFixed(2)}`,col:'var(--cyan)'},
-    {l:`LPG USD/kg`,v:`$${c.lpg_usd_now.toFixed(3)}`,col:'var(--amber)'},
-    {l:`Jan→Mar Change`,v:`${c.chg_gas>=0?'+':''}${c.chg_gas.toFixed(2)}%`,col:c.chg_gas>0?'var(--red)':'var(--green)'},
-  ].map(s=>`<div class="m-stat"><div class="m-sl">${s.l}</div><div class="m-sv" style="color:${s.col}">${s.v}</div></div>`).join('');
+
+/* MODAL */
+function openModal(name) {
+  const c = data.find(d=>d.name===name); if (!c) return;
+  modalCtry = c;
+  const fx = FX[c.currency]||1;
+  const fxF = fx>=1000?fx.toLocaleString('en-US',{maximumFractionDigits:0}):fx>=10?fx.toFixed(2):fx.toFixed(4);
+  document.getElementById('mTitle').textContent = `⛽ ${c.name}`;
+  document.getElementById('mSub').textContent = `${c.region} · ${c.currency} · ${c.octane} RON`;
+  document.getElementById('mFx').textContent = `1 USD = ${fxF} ${c.currency}  ·  $1 = ${(1/fx).toFixed(fx>=1000?6:4)} ${c.currency}`;
+  const av = avg();
+  document.getElementById('mStats').innerHTML = [
+    {l:`Gas USD/L`,    v:`$${c.gas_usd_now.toFixed(3)}`, col:'var(--gold)'},
+    {l:`Gas ${c.currency}/L`, v:`${c.gas_loc_now.toFixed(2)}`, col:'var(--g0)'},
+    {l:`Diesel USD/L`, v:`$${c.die_usd_now.toFixed(3)}`, col:'var(--blue)'},
+    {l:`Die ${c.currency}/L`, v:`${c.die_loc_now.toFixed(2)}`, col:'var(--cyan)'},
+    {l:`LPG USD/kg`,  v:`$${c.lpg_usd_now.toFixed(3)}`, col:'var(--amber)'},
+    {l:`Jan→Mar`,     v:`${c.chg_gas>=0?'+':''}${c.chg_gas.toFixed(2)}%`,
+     col:c.chg_gas>0?'var(--red)':'var(--g0)'},
+  ].map(s=>`<div class="m-stat">
+    <div class="m-sl">${s.l}</div>
+    <div class="m-sv" style="color:${s.col}">${s.v}</div>
+  </div>`).join('');
   document.querySelectorAll('.mtab').forEach(b=>b.classList.remove('on'));
   document.querySelector('.mtab[data-tab="gas"]').classList.add('on');
-  modalTab='gas';buildModalChart();
+  modalTab = 'gas'; buildModalChart();
   document.getElementById('modalOv').classList.add('open');
+  document.body.style.overflow = 'hidden';
 }
-function buildModalChart(){
-  if(mInst){mInst.destroy();mInst=null;}
-  const c=modalCtry;if(!c) return;
-  const isGas=modalTab==='gas';
-  const uD=isGas?(c.gas_usd_w||[]):(c.die_usd_w||[]);
-  const lD=isGas?(c.gas_loc_w||[]):(c.die_loc_w||[]);
-  mInst=new Chart(document.getElementById('mChart').getContext('2d'),{
-    type:'line',
-    data:{labels:WL,datasets:[
-      {label:'USD/L',data:uD,borderColor:'#F5A300',backgroundColor:'rgba(245,163,0,.1)',borderWidth:2.5,pointRadius:3,pointHoverRadius:6,tension:.4,fill:true,yAxisID:'y1'},
-      {label:`${c.currency}/L`,data:lD,borderColor:'#00A86A',backgroundColor:'transparent',borderWidth:2,pointRadius:2,tension:.4,yAxisID:'y2'},
-    ]},
-    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
-      plugins:{legend:{position:'bottom',labels:{boxWidth:9,padding:10,font:{size:10}}},tooltip:{callbacks:{title:i=>`Week: ${i[0].label}`}}},
-      scales:{y1:{position:'left',grid:{color:'rgba(26,51,71,.4)'},ticks:{callback:v=>`$${v.toFixed(3)}`}},y2:{position:'right',grid:{display:false},ticks:{callback:v=>v.toFixed(v>=1000?0:v>=10?1:2)}}}}
+
+function buildModalChart() {
+  if (mInst) { mInst.destroy(); mInst = null; }
+  const c = modalCtry; if (!c) return;
+  const isGas = modalTab === 'gas';
+  const uD = (isGas ? c.gas_usd_w : c.die_usd_w) || [];
+  const lD = (isGas ? c.gas_loc_w : c.die_loc_w) || [];
+  mInst = new Chart(document.getElementById('mChart').getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: WL,
+      datasets: [
+        {label:'USD/L', data:uD, borderColor:'#F5A300', backgroundColor:'rgba(245,163,0,.1)',
+         borderWidth:2.5, pointRadius:3, pointHoverRadius:6, tension:.4, fill:true, yAxisID:'y1'},
+        {label:`${c.currency}/L`, data:lD, borderColor:'#00A86A', backgroundColor:'transparent',
+         borderWidth:2, pointRadius:2, tension:.4, yAxisID:'y2'},
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{position:'bottom',labels:{boxWidth:8,padding:10,font:{size:10}}},
+        tooltip:{callbacks:{title:i=>`Week: ${i[0].label}`}}
+      },
+      scales:{
+        y1:{position:'left',grid:{color:'rgba(33,64,89,.4)'},ticks:{callback:v=>`$${v.toFixed(3)}`}},
+        y2:{position:'right',grid:{display:false},ticks:{callback:v=>v.toFixed(v>=1000?0:v>=10?1:2)}}
+      }
+    }
   });
 }
-function wire(){
-  document.getElementById('mxBtn').addEventListener('click',()=>closeModal());
-  document.getElementById('modalOv').addEventListener('click',e=>{if(e.target.id==='modalOv')closeModal();});
-  document.getElementById('mTabs').addEventListener('click',e=>{
-    const b=e.target.closest('.mtab');if(!b) return;
+
+function closeModal() {
+  document.getElementById('modalOv').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+/* WIRE EVENTS */
+function wire() {
+  // Modal close
+  document.getElementById('mClose').addEventListener('click', closeModal);
+  document.getElementById('modalOv').addEventListener('click', e => {
+    if (e.target.id==='modalOv') closeModal();
+  });
+  // Swipe to close on mobile
+  let touchY = 0;
+  document.getElementById('modalBox').addEventListener('touchstart', e => {
+    touchY = e.touches[0].clientY;
+  }, {passive:true});
+  document.getElementById('modalBox').addEventListener('touchmove', e => {
+    if (e.touches[0].clientY - touchY > 80) closeModal();
+  }, {passive:true});
+  // Modal tabs
+  document.getElementById('mTabs').addEventListener('click', e => {
+    const b = e.target.closest('.mtab'); if (!b) return;
     document.querySelectorAll('.mtab').forEach(x=>x.classList.remove('on'));
-    b.classList.add('on');modalTab=b.dataset.tab;buildModalChart();
+    b.classList.add('on'); modalTab = b.dataset.tab; buildModalChart();
   });
-  document.querySelectorAll('.fb').forEach(btn=>{
-    btn.addEventListener('click',()=>{
+  // Region filter
+  document.querySelectorAll('.fb').forEach(btn => {
+    btn.addEventListener('click', () => {
       document.querySelectorAll('.fb').forEach(b=>b.classList.remove('on'));
-      btn.classList.add('on');region=btn.dataset.r;
-      filtered=region==='all'?[...data]:data.filter(c=>c.region===region);
+      btn.classList.add('on'); region = btn.dataset.r;
+      filtered = region==='all' ? [...data] : data.filter(c=>c.region===region);
       renderTable();
     });
   });
-  document.getElementById('sortSel').addEventListener('change',e=>{sortKey=e.target.value.replace(/_desc|_asc/,'');renderTable();});
-  document.getElementById('srchInp').addEventListener('input',renderTable);
-  document.getElementById('tblTog').querySelectorAll('.tog-btn').forEach(btn=>{
-    btn.addEventListener('click',()=>{
+  // Sort
+  document.getElementById('sortSel').addEventListener('change', () => {
+    sortKey = document.getElementById('sortSel').value.replace(/_desc|_asc/,'');
+    renderTable();
+  });
+  // Search
+  document.getElementById('srchInp').addEventListener('input', renderTable);
+  // Table toggle
+  document.getElementById('tblTog').querySelectorAll('.tog-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
       document.getElementById('tblTog').querySelectorAll('.tog-btn').forEach(b=>b.classList.remove('on'));
-      btn.classList.add('on');tblCur=btn.dataset.v;buildTableHead();renderTable();
+      btn.classList.add('on'); tblCur = btn.dataset.v; buildHead(); renderTable();
     });
   });
-  document.getElementById('lineTog').querySelectorAll('.tog-btn').forEach(btn=>{
-    btn.addEventListener('click',()=>{
+  // Line toggle
+  document.getElementById('lineTog').querySelectorAll('.tog-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
       document.getElementById('lineTog').querySelectorAll('.tog-btn').forEach(b=>b.classList.remove('on'));
-      btn.classList.add('on');lineCur=btn.dataset.v;updateLineChart();
+      btn.classList.add('on'); lineCur = btn.dataset.v; updateLineChart();
     });
   });
-  ['top','bot'].forEach(t=>{
-    document.getElementById(t+'Tog').querySelectorAll('.tog-btn').forEach(btn=>{
-      btn.addEventListener('click',()=>{
+  // Rankings toggles
+  ['top','bot'].forEach(t => {
+    document.getElementById(t+'Tog').querySelectorAll('.tog-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
         document.getElementById(t+'Tog').querySelectorAll('.tog-btn').forEach(b=>b.classList.remove('on'));
         btn.classList.add('on');
-        if(t==='top') topCur=btn.dataset.v; else botCur=btn.dataset.v;
-        buildRankings(t);
+        if (t==='top') topCur=btn.dataset.v; else botCur=btn.dataset.v;
+        buildRanks(t);
       });
     });
   });
+  // Keyboard close
+  document.addEventListener('keydown', e => { if (e.key==='Escape') closeModal(); });
 }
-function closeModal(){document.getElementById('modalOv').classList.remove('open');}
-function liveTick(){
-  const n=Math.floor(Math.random()*3)+2;
-  for(let i=0;i<n;i++){
-    const c=data[Math.floor(Math.random()*data.length)];
-    const noise=(Math.random()-.5)*.002;
-    c.gas_usd_now=Math.max(.01,+(c.gas_usd_now+noise).toFixed(4));
-    c.die_usd_now=Math.max(.01,+(c.die_usd_now+noise*.9).toFixed(4));
-    const fx=FX[c.currency]||1;
-    c.gas_loc_now=+(c.gas_usd_now*fx).toFixed(2);
-    c.die_loc_now=+(c.die_usd_now*fx).toFixed(2);
-    if(c.gas_usd_w?.length)c.gas_usd_w[c.gas_usd_w.length-1]=c.gas_usd_now;
-    if(c.gas_loc_w?.length)c.gas_loc_w[c.gas_loc_w.length-1]=c.gas_loc_now;
-    if(c.die_usd_w?.length)c.die_usd_w[c.die_usd_w.length-1]=c.die_usd_now;
-    if(c.die_loc_w?.length)c.die_loc_w[c.die_loc_w.length-1]=c.die_loc_now;
+
+/* LIVE TICK */
+function tick() {
+  const n = Math.floor(Math.random()*3)+2;
+  for (let i=0; i<n; i++) {
+    const c = data[Math.floor(Math.random()*data.length)];
+    const noise = (Math.random()-.5)*.002;
+    c.gas_usd_now = Math.max(.01, +(c.gas_usd_now+noise).toFixed(4));
+    c.die_usd_now = Math.max(.01, +(c.die_usd_now+noise*.9).toFixed(4));
+    const fx = FX[c.currency]||1;
+    c.gas_loc_now = +(c.gas_usd_now*fx).toFixed(2);
+    c.die_loc_now = +(c.die_usd_now*fx).toFixed(2);
+    if (c.gas_usd_w?.length) c.gas_usd_w[c.gas_usd_w.length-1]=c.gas_usd_now;
+    if (c.gas_loc_w?.length) c.gas_loc_w[c.gas_loc_w.length-1]=c.gas_loc_now;
+    if (c.die_usd_w?.length) c.die_usd_w[c.die_usd_w.length-1]=c.die_usd_now;
+    if (c.die_loc_w?.length) c.die_loc_w[c.die_loc_w.length-1]=c.die_loc_now;
   }
-  buildHeroKpis();buildRegGrid();buildRankings('top');buildRankings('bot');renderTable();
+  buildKpis(); buildRegions(); buildRanks('top'); buildRanks('bot'); renderTable();
 }
-function esc(s){return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'")}
+
+function esc(s) { return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
 </script>
 </body>
 </html>
