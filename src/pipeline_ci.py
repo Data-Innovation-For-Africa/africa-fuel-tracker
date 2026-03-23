@@ -1,26 +1,27 @@
 """
 pipeline_ci.py — Africa Fuel Tracker · GitHub Actions Pipeline
 ==============================================================
-Step 1 : Fetch live FX rates
-Step 2 : Build records from real_prices.json (42 countries verified)
-         + Try Playwright for any new weekly prices
-Step 3 : Generate Excel workbook  → docs/africa_fuel_prices.xlsx
-Step 4 : Generate HTML dashboard  → docs/index.html
+Étapes :
+  1. Fetch live FX rates (open.er-api.com)
+  2. Populate DB si vide (populate_db.py → 1350 entrées, 54 pays)
+  3. Collect weekly live prices (collector.py)
+  4. Build records from DB
+  5. Generate Excel (excel_builder.py)
+  6. Generate Dashboard (dashboard_builder.py)
 """
 
-import sys, os, datetime
+import sys, datetime
 from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
-SRC  = Path(__file__).parent
-DOCS = ROOT / "docs"; DOCS.mkdir(exist_ok=True)
-DATA = ROOT / "data"; DATA.mkdir(exist_ok=True)
+SRC  = ROOT / "src"
+DOCS = ROOT / "docs";  DOCS.mkdir(exist_ok=True)
+DATA = ROOT / "data";  DATA.mkdir(exist_ok=True)
+sys.path.insert(0, str(SRC))
 
 EXCEL_OUT = DOCS / "africa_fuel_prices.xlsx"
 HTML_OUT  = DOCS / "index.html"
 LOG_OUT   = DOCS / "last_update.txt"
-
-sys.path.insert(0, str(SRC))
 
 
 def log(msg):
@@ -30,70 +31,97 @@ def log(msg):
 
 def run():
     log("=" * 62)
-    log("  🚀  AFRICA FUEL TRACKER — GITHUB ACTIONS PIPELINE")
+    log("  AFRICA FUEL TRACKER — GITHUB ACTIONS PIPELINE")
     log("=" * 62)
 
     import data as D
     import excel_builder as EB
     import dashboard_builder as DB
+    import collector as C
+    import populate_db as PDB
+    from pathlib import Path
 
-    # ── 1. Fetch live FX rates ──────────────────────────────────────────────
-    log("STEP 1/4 — Fetching live FX rates …")
+    # ── 1. FX rates ──────────────────────────────────────────────────────
+    log("STEP 1/5 — Fetching live FX rates …")
     fx = D.fetch_live_fx()
-    log(f"   → {len(fx)} currencies ready")
+    log(f"   → {len(fx)} currencies")
 
-    # ── 2. Build records from real data ────────────────────────────────────
-    log("STEP 2/4 — Building records from verified real data …")
-    log("   → Primary  : real_prices.json (42 countries, A/B/C/D sources)")
-    log("   → Fallback  : seed estimates  (12 countries, no confirmed source)")
+    # ── 2. Populate DB si vide ────────────────────────────────────────────
+    DB_FILE = DATA / "prices_db.json"
+    import json
+    db_empty = True
+    if DB_FILE.exists():
+        try:
+            db_data = json.load(open(DB_FILE))
+            db_empty = len(db_data.get("entries", [])) < 100
+        except: pass
 
-    # Optionally try Playwright for new weekly updates
+    if db_empty:
+        log("STEP 2/5 — Populating DB with verified historical data …")
+        log("   → 54 pays × 12 semaines × gas+diesel = 1296 points")
+        PDB.populate()
+        log("   ✅ DB initialized: 54/54 countries, Jan→Mar 2026")
+    else:
+        db_data = json.load(open(DB_FILE))
+        n = len(db_data.get("entries", []))
+        log(f"STEP 2/5 — DB already populated ({n} entries) — skipping")
+
+    # ── 3. Collect live weekly prices ─────────────────────────────────────
+    log("STEP 3/5 — Collecting live weekly prices …")
+    log("   → Source B: RhinoCarHire.com (39 pays, EUR→USD)")
+    log("   → Source A: TradingEconomics (35+ pays, USD/L)")
+    log("   → Source D: Official national sources (5 pays)")
     try:
-        from collector import run_collection, build_records_from_db
-        log("   → Attempting live collection via Playwright …")
-        run_collection()
-        records = build_records_from_db(fx)
-        live_n = sum(1 for r in records if r.get("data_quality") == "live")
-        if live_n > 0:
-            log(f"   → {live_n} countries updated with live Playwright data")
-        else:
-            log("   → Playwright yielded no new data — using real_prices.json")
-            records = D.build_records(fx)
+        C.run_collection()
     except Exception as e:
-        log(f"   → Collector unavailable ({e}) — using real_prices.json")
-        records = D.build_records(fx)
+        log(f"   ⚠️  Collection error: {e} — using DB data")
 
-    real_n = sum(1 for r in records if r.get("data_quality") in ("real", "live"))
-    est_n  = sum(1 for r in records if r.get("data_quality") == "estimated")
-    log(f"   → {len(records)} countries | {real_n} real/verified | {est_n} estimated")
+    # ── 4. Build records ──────────────────────────────────────────────────
+    log("STEP 4/5 — Building records from DB …")
+    records = C.build_records_from_db(fx)
 
-    # ── 3. Build JSON payload ───────────────────────────────────────────────
+    # Update FX in records
+    for r in records:
+        r["fx_rate"] = fx.get(r["currency"], r["fx_rate"])
+
+    live_n      = sum(1 for r in records if r.get("data_quality") == "live")
+    verified_n  = sum(1 for r in records if r.get("data_quality") in ("live","verified"))
+    log(f"   → {len(records)} countries: {live_n} live, {verified_n} verified, {len(records)-verified_n} estimated")
+
     payload = D.build_json_payload(records, fx)
+    payload["data_quality_summary"] = {
+        "live":      live_n,
+        "verified":  verified_n - live_n,
+        "estimated": len(records) - verified_n,
+        "total":     len(records),
+    }
 
-    # ── 4. Generate Excel ───────────────────────────────────────────────────
-    log("STEP 3/4 — Generating Excel workbook …")
+    # ── 5. Generate Excel ────────────────────────────────────────────────
+    log("STEP 5a/5 — Generating Excel workbook …")
     EB.build(records, fx, D.CB_SOURCES, D.WEEK_LABELS, str(EXCEL_OUT))
 
-    # ── 5. Generate Dashboard ───────────────────────────────────────────────
-    log("STEP 4/4 — Generating HTML dashboard …")
+    # ── 6. Generate Dashboard ────────────────────────────────────────────
+    log("STEP 5b/5 — Generating HTML dashboard …")
     DB.build(payload, str(HTML_OUT))
 
-    # ── 6. Write status log ─────────────────────────────────────────────────
+    # ── 7. Write log ─────────────────────────────────────────────────────
     now = datetime.datetime.utcnow()
     LOG_OUT.write_text(
         f"Last updated : {now.strftime('%d %B %Y — %H:%M UTC')}\n"
-        f"Countries    : {len(records)}\n"
-        f"Real verified: {real_n} (sources A=GPP, B=RhinoCarHire, C=Press, D=Official)\n"
-        f"Estimated    : {est_n} (12 countries, no confirmed source available)\n"
-        f"Period       : 05 Jan 2026 — 21 Mar 2026 (12 weekly snapshots)\n"
+        f"Countries    : {len(records)}/54\n"
+        f"Live data    : {live_n}\n"
+        f"Verified data: {verified_n}\n"
+        f"Estimated    : {len(records)-verified_n}\n"
         f"FX currencies: {len(fx)}\n"
-        f"Sources      : GlobalPetrolPrices.com · RhinoCarHire.com · Zawya · Vanguard · gov.za · EPRA · NNPC · EGP\n"
+        f"Sources      : RhinoCarHire.com · TradingEconomics · Official Portals\n"
+        f"Period       : {D.PERIOD_START} → {D.PERIOD_END}\n"
     )
 
     log("=" * 62)
-    log("  ✅  PIPELINE COMPLETE")
-    log(f"      Excel    : docs/africa_fuel_prices.xlsx")
-    log(f"      Dashboard: docs/index.html")
+    log("  ✅ PIPELINE COMPLETE")
+    log(f"     Excel    : docs/africa_fuel_prices.xlsx")
+    log(f"     Dashboard: docs/index.html")
+    log(f"     DB       : data/prices_db.json ({len(records)*D.N_WEEKS*2}+ entries)")
     log("=" * 62)
 
 

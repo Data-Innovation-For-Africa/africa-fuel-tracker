@@ -2,90 +2,61 @@ name: 🌍 Africa Fuel Tracker — Daily Update
 
 on:
   schedule:
-    - cron: '0 6 * * *'        # chaque jour 06:00 UTC
+    - cron: '0 6 * * *'
   push:
-    branches: [ main ]          # à chaque git push
-  workflow_dispatch:             # déclenchement manuel
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
 
 jobs:
   collect-and-deploy:
-    name: Playwright scrape · Build Excel & Dashboard · Deploy
     runs-on: ubuntu-latest
     permissions:
       contents: write
 
     steps:
-
-      # ── 1. Checkout ────────────────────────────────────────────────────
-      - name: 📥 Checkout repository
+      - name: 📥 Checkout
         uses: actions/checkout@v4
 
-      # ── 2. Python ──────────────────────────────────────────────────────
-      - name: 🐍 Set up Python 3.11
+      - name: 🐍 Python 3.11
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           cache: 'pip'
 
-      # ── 3. Dépendances Python ──────────────────────────────────────────
-      - name: 📦 Install Python dependencies
-        run: |
-          pip install --upgrade pip
-          pip install openpyxl pandas requests beautifulsoup4 lxml playwright
+      - name: 📦 Install dependencies
+        run: pip install --upgrade pip openpyxl pandas requests beautifulsoup4 lxml
 
-      # ── 4. Playwright + Chromium ───────────────────────────────────────
-      # Installe le navigateur Chromium utilisé par Playwright
-      - name: 🎭 Install Playwright Chromium browser
-        run: |
-          playwright install chromium
-          playwright install-deps chromium
+      - name: ⚙️ Run pipeline
+        run: python src/pipeline_ci.py
 
-      # ── 5. Pipeline principal ──────────────────────────────────────────
-      - name: ⚙️ Run pipeline (scrape → Excel → Dashboard)
-        run: |
-          echo "Sources: GlobalPetrolPrices.com via Playwright headless Chromium"
-          echo "Période: 1 Jan 2026 → aujourd'hui"
-          python src/pipeline_ci.py
-
-      # ── 6. Rapport qualité données ─────────────────────────────────────
       - name: 📊 Data quality report
         run: |
-          echo "=== Pipeline Output ==="
-          [ -f docs/last_update.txt ] && cat docs/last_update.txt || echo "No report"
-          echo ""
-          echo "=== Database Stats ==="
+          cat docs/last_update.txt
           python3 -c "
           import json
-          try:
-              db = json.load(open('data/prices_db.json'))
-              entries = db.get('entries', [])
-              countries = set(e['country'] for e in entries)
-              live = [e for e in entries if e.get('status') == 'live']
-              history = [e for e in entries if e.get('fuel_type') in ['gasoline','diesel']]
-              gas_pts = [e for e in entries if e['fuel_type']=='gasoline']
-              print(f'Total DB entries    : {len(entries)}')
-              print(f'Countries with data : {len(countries)}/54')
-              print(f'Live entries        : {len(live)}')
-              print(f'Gasoline data pts   : {len(gas_pts)}')
-              print(f'Last run            : {db.get(\"last_run\",\"unknown\")}')
-              if gas_pts:
-                  dates = sorted(set(e[\"date\"] for e in gas_pts))
-                  print(f'Date range          : {dates[0]} to {dates[-1]}')
-                  print(f'Countries sample    : {list(countries)[:8]}')
-          except Exception as e:
-              print(f'Error reading DB: {e}')
+          from collections import Counter
+          db = json.load(open('data/prices_db.json'))
+          entries = db.get('entries',[])
+          gas = [e for e in entries if e['fuel_type']=='gasoline']
+          today = __import__('datetime').date.today().isoformat()
+          today_gas = [e for e in gas if e['date']==today]
+          srcs = Counter(e.get('src_code','?') for e in today_gas)
+          all_c = set(e['country'] for e in gas)
+          print(f'Today collected  : {len(today_gas)}/54')
+          print(f'D(official)={srcs.get(\"D\",0)} C(press)={srcs.get(\"C\",0)} B(Rhino)={srcs.get(\"B\",0)} A(TE/Claude)={srcs.get(\"A\",0)} last_known={srcs.get(\"last_known\",0)}')
+          print(f'Historical cover : {len(all_c)}/54 countries')
+          print(f'Total DB entries : {len(entries)}')
           "
 
-      # ── 7. Commit & push ───────────────────────────────────────────────
-      - name: 💾 Commit & push updated files
+      - name: 💾 Commit & push
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/index.html
-          git add docs/africa_fuel_prices.xlsx
-          git add docs/last_update.txt
+          git add docs/index.html docs/africa_fuel_prices.xlsx docs/last_update.txt
           git add data/prices_db.json || true
           git diff --cached --quiet \
-            && echo "ℹ️  No changes to commit" \
-            || (git commit -m "🔄 Real data update: $(date -u '+%d %b %Y %H:%M UTC')" \
-                && git push)
+            && echo "No changes" \
+            || (git commit -m "🔄 Update: $(date -u '+%d %b %Y %H:%M UTC')" && git push)
