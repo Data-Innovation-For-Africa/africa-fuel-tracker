@@ -154,18 +154,22 @@ def _sfloat(text):
 
 
 def scrape_fsia_south_africa():
-    """FSIA — Fuels Industry Association SA (officiel, mensuel)."""
+    """FSIA — Fuels Industry Association SA (officiel, mensuel).
+    NOTE: FSIA stores prices in CENTS per litre (c/l), e.g. 1992 = R19.92/L.
+    Must divide by 100 to get Rands before converting to USD.
+    """
     r = _get("https://fuelsindustry.org.za/consumer-information/fuel-prices-current-past/")
     if not r: return {}
-    # Pattern: 95 ULP (c/l) *1992,00 (example from search results)
-    m = re.search(r'95\s*(?:ULP|LRP).*?\*?\s*(\d{4})[,.](\d{2})', r.text, re.I | re.S)
+    # Pattern: 95 ULP (c/l) *1992,00 → 1992 cents/L = R19.92/L
+    m = re.search(r'95\s*(?:ULP|LRP)[^*]*\*\s*(\d{3,4})[,.]\d', r.text, re.I | re.S)
     if m:
-        cents = int(m.group(1) + m.group(2)) / 100  # e.g. 1992.00 = R19.92
+        cents = int(m.group(1))
+        rands = round(cents / 100, 2)   # 1992 c/l → R19.92/L (CRITICAL: divide by 100)
         from data import FX_RATES
         fx  = FX_RATES.get("ZAR", 18.55)
-        usd = round(cents / fx, 4)
-        print(f"   ✅ South Africa (FSIA): R{cents:.2f}/L = ${usd:.3f}/L")
-        return {"price_usd": usd, "price_local": cents, "source": r.url, "src_code": "D"}
+        usd = round(rands / fx, 4)
+        print(f"   ✅ South Africa (FSIA): {cents}c/L = R{rands}/L = ${usd:.3f}/L")
+        return {"price_usd": usd, "price_local": rands, "source": r.url, "src_code": "D"}
     return {}
 
 
@@ -371,6 +375,9 @@ def build_records_from_db(fx_rates=None):
         quality   = "live" if any(s in ("D","C","B","A") for s in gas_srcs[-3:]) else \
                     "verified" if real_srcs else "estimated"
 
+        # Regulated market = flat price (govt-fixed, GPP "flat line" indicator)
+        is_regulated = len(set(round(p, 2) for p in gas_usd)) <= 2
+
         records.append({
             "name":         name,  "region":   region,
             "currency":     currency, "octane": octane, "fx_rate": fx,
@@ -386,6 +393,7 @@ def build_records_from_db(fx_rates=None):
             "max_gas":      round(max(gas_usd),4),
             "avg_gas":      round(sum(gas_usd)/len(gas_usd),4),
             "data_quality": quality,
+            "regulated":    is_regulated,
             "updated":      now.strftime("%Y-%m-%d %H:%M UTC"),
         })
 

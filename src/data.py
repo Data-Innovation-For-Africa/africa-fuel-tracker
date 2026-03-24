@@ -294,12 +294,11 @@ def _build_gas_weekly(name):
 
     jan_eur, feb_eur, mar_eur = pd[0], pd[1], pd[2]
 
-    # Tunisia: marché régulé — prix TND FIXE par décret gouvernemental
-    # Source: GlobalPetrolPrices.com (23-Feb-2026 + 09-Mar-2026) = $0.870/L = 2.53 TND/L
-    # GPP note: "A long flat line means that the government fixes the prices"
-    # Aucun décret de changement confirmé Jan–Mar 2026 → prix constant
+    # Tunisia: STIR regulated — 2.530 TND/L FIXED by government decree
+    # USD = 2.530 / FX_TND  →  local price is the anchor (never spikes with FX)
     if name == "Tunisia":
-        return [0.870] * N_WEEKS   # $0.870/L = 2.53 TND/L — GPP verified
+        fx = FX_RATES.get("TND", 2.921)
+        return [round(2.530 / fx, 4)] * N_WEEKS
 
     # Nigeria: weekly breakdown press-verified
     if name == "Nigeria":
@@ -324,18 +323,32 @@ def _build_gas_weekly(name):
     return _eur_to_weekly_usd(jan_eur, feb_eur, mar_eur)
 
 
+# ── Regulated Local Prices — government-fixed in local currency ────────────
+# For these countries, price is set by decree in local currency.
+# USD = local_fixed / fx_live  →  local price never spikes with FX changes
+# Source: GPP (flat line = regulated market)
+REGULATED_LOCAL = {
+    # Tunisia: STIR decree — flat line on GPP
+    "Tunisia": {"gas_tnd": 2.530, "die_tnd": 2.210},
+    # Libya: NOC — ultra-subsidised, essentially free
+    "Libya":   {"gas_lyd": 0.150, "die_lyd": 0.150},
+    # Algeria: Sonatrach subsidy
+    "Algeria": {"gas_dzd": 44.50, "die_dzd": 28.70},
+}
+
+
 # ── GPP Diesel Prices — Africa Feb/Mar 2026 ────────────────────────────────
 # Source: GlobalPetrolPrices.com Africa diesel page 09-Feb-2026
 # These are VERIFIED diesel prices distinct from gasoline
 GPP_DIESEL = {
     "Benin":        1.243,  "Botswana":     1.041,  "Burkina Faso": 1.177,
-    "Burundi":      1.288,  "CAR":          2.291,  "Cameroon":     1.365,
+    "Burundi":      1.288,  "CAR":          2.154,  # GPP Jan-2026: 1300 XAF / 603.5 = $2.154  "Cameroon":     1.365,
     "Congo DR":     0.862,  "Eswatini":     1.199,  "Ghana":        1.100,
     "Guinea":       1.341,  "Kenya":        1.279,  "Lesotho":      1.156,
-    "Madagascar":   1.550,  "Malawi":       2.015,  "Mali":         1.250,
+    "Madagascar":   1.550,  # GPP Africa Feb-2026 ✅  "Malawi":       2.015,  # GPP Africa Feb-2026 ✅  "Mali":         1.250,
     "Mauritius":    1.276,  "Morocco":      1.317,  "Mozambique":   1.235,
     "Namibia":      1.102,  "Rwanda":       1.199,  "Seychelles":   1.330,
-    "Sierra Leone": 1.361,  "South Africa": 1.270,  "Tanzania":     1.012,
+    "Sierra Leone": 1.361,  # GPP Africa Feb-2026 ✅  "South Africa": 1.270,  "Tanzania":     1.012,
     "Togo":         1.181,  "Uganda":       1.314,  "Zambia":       1.021,
     "Cabo Verde":   1.121,  "Niger":        1.002,  "Senegal":      1.298,
     "Ivory Coast":  1.166,  "Zimbabwe":     1.381,
@@ -350,11 +363,11 @@ def _build_die_weekly(name):
         die_usd = 0.15 / FX_RATES["LYD"]
         return [round(die_usd, 4)] * N_WEEKS
 
-    # Tunisia diesel: GPP confirmed 2.205-2.21 TND/L (regulated flat price)
-    # Source: GPP 13-Oct-2025 = 2.205 TND · oilpricez.com Mar-2026 = 2.21 TND
-    # USD = 2.21 / 2.9183 = $0.757/L
+    # Tunisia diesel: STIR regulated — 2.210 TND/L FIXED by government decree
+    # USD = 2.210 / FX_TND  →  local price is the anchor
     if name == "Tunisia":
-        return [0.757] * N_WEEKS   # $0.757/L = 2.21 TND/L — GPP verified
+        fx = FX_RATES.get("TND", 2.921)
+        return [round(2.210 / fx, 4)] * N_WEEKS
 
     if pd is None or pd[3] is None:
         fb = ESTIMATE_FALLBACK.get(name)
@@ -402,6 +415,17 @@ def build_records(fx_rates=None):
         lpg     = LPG_USD.get(name, 1.2)
         src     = PRICE_DATA.get(name, (None,)*7)[6] if PRICE_DATA.get(name) else "E"
 
+        # For regulated markets: use fixed local price as anchor
+        reg = REGULATED_LOCAL.get(name)
+        if reg:
+            # Override loc_w with stable local prices
+            loc_key = [k for k in reg if not k.startswith("die_")][0]
+            die_key = [k for k in reg if k.startswith("die_")][0] if any(k.startswith("die_") for k in reg) else None
+            gas_loc_fixed = reg[loc_key]
+            die_loc_fixed = reg[die_key] if die_key else None
+            gas_loc = [gas_loc_fixed] * N_WEEKS
+            die_loc = [die_loc_fixed] * N_WEEKS if die_loc_fixed else die_loc
+
         recs.append({
             "name":       name,    "region":   region,
             "currency":   currency,"octane":   octane, "fx_rate": fx,
@@ -413,7 +437,9 @@ def build_records(fx_rates=None):
             "chg_die":    round((die_usd[-1]-die_usd[0])/die_usd[0]*100,2) if die_usd[0] else 0,
             "min_gas":    round(min(gas_usd),4), "max_gas": round(max(gas_usd),4),
             "avg_gas":    round(sum(gas_usd)/len(gas_usd),4),
+            "regulated":  bool(reg),
             "src":        src,
+            "regulated":  len(set(round(p,3) for p in gas_usd)) == 1,
             "updated":    now.strftime("%Y-%m-%d %H:%M UTC"),
         })
     return sorted(recs, key=lambda r: r["name"])
@@ -440,6 +466,7 @@ def build_json_payload(records, fx_rates):
             "gas_loc_w":   r["gas_loc_w"], "die_loc_w": r["die_loc_w"],
             "chg_gas":     r["chg_gas"],  "chg_die":    r["chg_die"],
             "min_gas":     r["min_gas"],  "max_gas":    r["max_gas"], "avg_gas": r["avg_gas"],
+            "regulated":   r.get("regulated", False),
         } for r in records],
     }
 
