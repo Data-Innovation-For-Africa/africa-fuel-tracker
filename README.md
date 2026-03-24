@@ -6,7 +6,7 @@
 
 ## 🌐 Live Dashboard
 
-**→ [Open Dashboard](https://YOUR_USERNAME.github.io/africa-fuel-tracker/)**
+**→ [Open Dashboard](https://data-innovation-for-africa.github.io/africa-fuel-tracker/)**
 
 ## 📊 Download Excel
 
