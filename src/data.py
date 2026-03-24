@@ -180,7 +180,7 @@ PRICE_DATA = {
     "Mauritius":        (1.08,    1.10,    1.10,     None,    None,    None,    "B"),
     "Mozambique":       (1.10,    1.13,    1.13,     None,    None,    None,    "B"),
     "Namibia":          (1.03,    1.03,    1.03,     None,    None,    None,    "B"),
-    "Rwanda":           (1.15,    1.18,    1.18,     None,    None,    None,    "B"),
+    "Rwanda":           (1.100,   1.190,   1.360,    1.060,   1.160,   1.310,   "D"),  # GPP/RURA: Feb=$1.36 gas, $1.31 die
     "Senegal":          (1.41,    1.41,    1.41,     None,    None,    None,    "B"),
     "Seychelles":       (1.26,    1.30,    1.30,     None,    None,    None,    "B"),
     "Sudan":            (0.59,    0.60,    0.60,     0.55,    0.56,    0.56,    "B"),
@@ -188,7 +188,7 @@ PRICE_DATA = {
     "Togo":             (1.04,    1.04,    1.04,     None,    None,    None,    "B"),
     "Tunisia":          (0.863,   0.863,   0.863,    0.757,   0.757,   0.757,   "B"),  # STIR regulated — GPP: gas=2.53 TND=$0.870/L  die=2.205 TND=$0.757/L
     "Zambia":           (1.23,    1.18,    1.18,     None,    None,    None,    "B"),
-    "Zimbabwe":         (1.31,    1.47,    1.47,     None,    None,    None,    "B"),
+    "Zimbabwe":         (1.56,    1.56,    1.71,     1.52,    1.52,    1.77,    "D"),  # ZERA official: Mar18=$2.17 gas/$2.05 die
 
     # Source B + D (official validated)
     "Egypt":            (0.38,    0.40,    0.40,     0.31,    0.34,    0.34,    "B/D"),
@@ -312,6 +312,18 @@ def _build_gas_weekly(name):
             round(mar_usd*0.97,4), round(mar_usd*0.98,4), round(mar_usd*1.04,4), round(mar_usd*1.05,4),
         ]
 
+    # Rwanda: RURA bimonthly regulated (RWF anchor — GPP/RURA source D)
+    # Jan: RWF 1726/L | Feb: RWF 1800/L | Mar: RWF 1989/L = $1.36
+    if name == "Rwanda":
+        fx = FX_RATES.get("RWF", 1415)
+        return ([round(1726/fx,4)]*4 + [round(1800/fx,4)]*4 + [round(1989/fx,4)]*4)
+
+    # Zimbabwe: ZERA prices 2026 (huge surge from Middle East conflict)
+    # Jan-Feb: $1.56 | Mar 4: $1.71 | Mar 18: $2.17
+    if name == "Zimbabwe":
+        return [1.560,1.560,1.560,1.560, 1.560,1.560,1.560,1.560,
+                1.710,1.710,2.170,2.170]
+
     # Morocco: surge Mar 16 (+2 MAD diesel / +1.44 MAD petrol)
     if name == "Morocco":
         base = _eur_to_weekly_usd(jan_eur, feb_eur, mar_eur)
@@ -362,6 +374,17 @@ def _build_die_weekly(name):
     if name == "Libya":
         die_usd = 0.15 / FX_RATES["LYD"]
         return [round(die_usd, 4)] * N_WEEKS
+
+    # Rwanda diesel: RURA (RWF anchor)
+    # Jan: RWF 1684/L | Feb: RWF 1750/L | Mar: RWF 1900/L = $1.31
+    if name == "Rwanda":
+        fx = FX_RATES.get("RWF", 1415)
+        return ([round(1684/fx,4)]*4 + [round(1750/fx,4)]*4 + [round(1900/fx,4)]*4)
+
+    # Zimbabwe diesel: ZERA prices Jan-Mar 2026
+    if name == "Zimbabwe":
+        return [1.520,1.520,1.520,1.520, 1.520,1.520,1.520,1.520,
+                1.770,1.770,2.050,2.050]
 
     # Tunisia diesel: STIR regulated — 2.210 TND/L FIXED by government decree
     # USD = 2.210 / FX_TND  →  local price is the anchor

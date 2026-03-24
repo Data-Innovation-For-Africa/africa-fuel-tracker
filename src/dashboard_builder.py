@@ -1107,9 +1107,12 @@ function wire() {
 
 /* LIVE TICK */
 function tick() {
+  // Only nudge FREE MARKET countries — regulated/govt-fixed prices never change
+  const free = data.filter(c => !c.regulated);
+  if (!free.length) return;
   const n = Math.floor(Math.random()*3)+2;
   for (let i=0; i<n; i++) {
-    const c = data[Math.floor(Math.random()*data.length)];
+    const c = free[Math.floor(Math.random()*free.length)];
     const noise = (Math.random()-.5)*.002;
     c.gas_usd_now = Math.max(.01, +(c.gas_usd_now+noise).toFixed(4));
     c.die_usd_now = Math.max(.01, +(c.die_usd_now+noise*.9).toFixed(4));
