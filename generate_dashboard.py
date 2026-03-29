@@ -148,6 +148,7 @@ def render(D):
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 :root{--g0:#00A86A;--g1:#00CC85;--gold:#F5A300;--red:#E8394A;--blue:#1A8FD8;--cyan:#00C4CF;--amber:#E87C1A;--bg:#07111E;--bg1:#0B1826;--s1:#132435;--s2:#1A3347;--s3:#214059;--t1:#E8EEF4;--t2:#9EC8E0;--t3:#5A8FAF;--t4:#2D5A7A;--r8:8px;--r12:12px;--r16:16px;--r24:24px;--r99:99px;--sh:0 4px 24px rgba(0,0,0,.4);--sh-g:0 4px 24px rgba(0,168,106,.25)}
 *{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
@@ -320,9 +321,9 @@ footer strong{color:var(--t3)}
   <div class="nav-right">
     <div class="nav-meta" id="navMeta"></div>
     <div class="live-dot"><span class="pulse"></span>LIVE</div>
-    <button class="btn-dl-nav" onclick="exportCSV()">
+    <button class="btn-dl-nav" onclick="exportXLSX()">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-      Export CSV
+      Export Excel
     </button>
   </div>
 </div></nav>
@@ -343,9 +344,9 @@ footer strong{color:var(--t3)}
         <span class="tag tag-b">&#x1F4B1; Official FX Rates</span>
         <span class="tag tag-g">&#x1F504; Daily Updates</span>
       </div>
-      <button class="btn-dl" onclick="exportCSV()">
+      <button class="btn-dl" onclick="exportXLSX()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Export Data <span style="opacity:.75;font-size:.75rem;font-weight:500">CSV</span>
+        Export Data <span style="opacity:.75;font-size:.75rem;font-weight:500">XLSX</span>
       </button>
     </div>
     <div class="kpi-grid" id="kpiGrid"></div>
@@ -447,8 +448,8 @@ footer strong{color:var(--t3)}
     </div>
   </div>
 </div>
-<button class="dl-float" onclick="exportCSV()">
-  <span class="dl-float-badge">CSV</span>
+<button class="dl-float" onclick="exportXLSX()">
+  <span class="dl-float-badge">XLSX</span>
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
   Export
 </button>
@@ -489,18 +490,26 @@ function buildNav(){
   document.getElementById('ftTime').textContent='Updated: '+D.updated;
 }
 function buildTicker(){
-  const s=[...data].sort((a,b)=>a.name.localeCompare(b.name));
+  // Sort: biggest movers first (▲ desc, then ▼ desc), stable countries last (alphabetical)
+  const movers = [...data].filter(c=>Math.abs(c.chg_gas)>0.05)
+                          .sort((a,b)=>Math.abs(b.chg_gas)-Math.abs(a.chg_gas));
+  const stable = [...data].filter(c=>Math.abs(c.chg_gas)<=0.05)
+                          .sort((a,b)=>a.name.localeCompare(b.name));
+  const s = [...movers, ...stable];
   let h='';
   for(let i=0;i<2;i++) s.forEach(c=>{
-    const cl=c.chg_gas>0.1?'up':c.chg_gas<-0.1?'dn':'fl';
-    const ar=c.chg_gas>0.1?'\u25b2':c.chg_gas<-0.1?'\u25bc':'\u2014';
-    const sign=c.chg_gas>0?'+':'';
-    const badge=c.stale?'<span class="stale-badge">STALE</span>':c.old_source?'<span class="old-badge">OLD</span>':'';
+    const isUp   = c.chg_gas > 0.05;
+    const isDn   = c.chg_gas < -0.05;
+    const cl     = isUp?'up':isDn?'dn':'fl';
+    const ar     = isUp?'\u25b2':isDn?'\u25bc':'\u2014';
+    const sign   = isUp?'+':'';
+    const chgTxt = (isUp||isDn) ? ar+sign+c.chg_gas.toFixed(1)+'%' : '\u2014';
+    const badge  = c.stale?'<span class="stale-badge">STALE</span>':c.old_source?'<span class="old-badge">OLD</span>':'';
     h+='<span class="ti">'+
        '<span class="ti-n">'+c.name+badge+'</span>'+
        '<span class="ti-p">$'+c.gas_usd_now.toFixed(3)+'</span>'+
        '<span class="ti-c">'+c.currency+'</span>'+
-       '<span class="'+cl+'">'+ar+sign+Math.abs(c.chg_gas).toFixed(1)+'%</span>'+
+       '<span class="'+cl+'">'+chgTxt+'</span>'+
        '</span>';
   });
   document.getElementById('tickerTrack').innerHTML=h;
@@ -678,12 +687,58 @@ function tick(){
   }
   buildKpis();buildRegions();buildRanks('top');buildRanks('bot');renderTable();
 }
-function exportCSV(){
-  const rows=[['Country','Region','Currency','FX Rate','Gas USD/L','Die USD/L','Gas Local/L','Die Local/L','Chg% Jan\u2192Now','Confidence','Effective Date','Source']];
-  data.forEach(c=>rows.push([c.name,c.region,c.currency,c.fx_rate,c.gas_usd_now,c.die_usd_now,c.gas_loc_now,c.die_loc_now,c.chg_gas+'%',c.confidence,c.effective_date,c.src]));
-  const csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
-  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
-  a.download='africa_fuel_prices_'+D.period_end+'.csv';a.click();
+function exportXLSX(){
+  // ── Sheet 1: All Countries ───────────────────────────────────────────────
+  const hdr=['Country','Region','Currency','FX Rate',
+             'Gas USD/L','Diesel USD/L','Gas Local/L','Diesel Local/L',
+             'Chg% Jan\u2192Now','Confidence','Effective Date','Source'];
+  const aoa=[hdr];
+  data.forEach(c=>aoa.push([
+    c.name, c.region, c.currency, c.fx_rate,
+    c.gas_usd_now, c.die_usd_now, c.gas_loc_now, c.die_loc_now,
+    parseFloat(c.chg_gas.toFixed(2)), c.confidence, c.effective_date, c.src
+  ]));
+  const ws1=XLSX.utils.aoa_to_sheet(aoa);
+
+  // Column widths
+  ws1['!cols']=[{wch:22},{wch:16},{wch:8},{wch:10},
+                {wch:13},{wch:13},{wch:14},{wch:14},
+                {wch:12},{wch:10},{wch:14},{wch:45}];
+
+  // ── Sheet 2: By Region ───────────────────────────────────────────────────
+  const REGS_LIST=['North Africa','West Africa','Central Africa','East Africa','Southern Africa'];
+  const hdr2=['Region','Country','Currency','Gas USD/L','Diesel USD/L',
+              'Gas Local/L','Diesel Local/L','Chg% Jan\u2192Now','Confidence'];
+  const aoa2=[hdr2];
+  REGS_LIST.forEach(reg=>{
+    const cs=data.filter(c=>c.region===reg).sort((a,b)=>a.name.localeCompare(b.name));
+    cs.forEach(c=>aoa2.push([
+      c.region, c.name, c.currency,
+      c.gas_usd_now, c.die_usd_now, c.gas_loc_now, c.die_loc_now,
+      parseFloat(c.chg_gas.toFixed(2)), c.confidence
+    ]));
+  });
+  const ws2=XLSX.utils.aoa_to_sheet(aoa2);
+  ws2['!cols']=[{wch:16},{wch:22},{wch:8},{wch:13},{wch:13},{wch:14},{wch:14},{wch:12},{wch:10}];
+
+  // ── Sheet 3: Rankings ────────────────────────────────────────────────────
+  const sorted=[...data].sort((a,b)=>b.gas_usd_now-a.gas_usd_now);
+  const hdr3=['Rank','Country','Region','Gas USD/L','Diesel USD/L','Chg% Jan\u2192Now'];
+  const aoa3=[['TOP 10 MOST EXPENSIVE'],hdr3];
+  sorted.slice(0,10).forEach((c,i)=>aoa3.push([i+1,c.name,c.region,c.gas_usd_now,c.die_usd_now,parseFloat(c.chg_gas.toFixed(2))]));
+  aoa3.push([]);
+  aoa3.push(['TOP 10 MOST AFFORDABLE']);
+  aoa3.push(hdr3);
+  sorted.slice(-10).reverse().forEach((c,i)=>aoa3.push([i+1,c.name,c.region,c.gas_usd_now,c.die_usd_now,parseFloat(c.chg_gas.toFixed(2))]));
+  const ws3=XLSX.utils.aoa_to_sheet(aoa3);
+  ws3['!cols']=[{wch:6},{wch:22},{wch:16},{wch:13},{wch:13},{wch:12}];
+
+  // ── Workbook ─────────────────────────────────────────────────────────────
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws1, 'All Countries');
+  XLSX.utils.book_append_sheet(wb, ws2, 'By Region');
+  XLSX.utils.book_append_sheet(wb, ws3, 'Rankings');
+  XLSX.writeFile(wb, 'africa_fuel_prices_'+D.period_end+'.xlsx');
 }
 function esc(s){return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'");}
 """
