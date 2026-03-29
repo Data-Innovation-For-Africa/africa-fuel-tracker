@@ -1,13 +1,15 @@
 """
-generate_excel.py — Africa Fuel Tracker Excel Report Generator
-Reads data/prices_db.json + data/history_db.json
+generate_excel.py — Africa Fuel Tracker  |  Professional Excel Report
+Reads  data/prices_db.json + data/history_db.json
 Writes africa_fuel_tracker_YYYY-MM-DD.xlsx
 
-Sheets:
-  1. Price History  — 54 countries, Jan→Now, USD + local, ▲▼ icons,
-                      conditional formatting, data bars
-  2. Charts & Analysis — bar chart (regional avg) + line chart (top markets)
-                         + top/bottom 10 rankings
+Sheets
+------
+1. Summary       — KPI cards, regional overview, data quality
+2. All Countries — 54 countries, conditional formatting, data bars
+3. Price History — Jan 2026 → today, USD + local, change icons
+4. Rankings      — Top/Bottom 10, biggest movers
+5. By Region     — one block per region with regional averages
 """
 import json
 from datetime import date
@@ -17,7 +19,6 @@ from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 from openpyxl.formatting.rule import ColorScaleRule, DataBarRule
-from openpyxl.chart import BarChart, LineChart, Reference
 
 ROOT       = Path(__file__).parent
 DATA_DIR   = ROOT / "data"
@@ -26,522 +27,513 @@ HISTORY_DB = DATA_DIR / "history_db.json"
 
 REGIONS = [
     "North Africa", "West Africa", "Central Africa",
-    "East Africa", "Southern Africa",
+    "East Africa",  "Southern Africa",
 ]
-RC_HEX = {
-    "North Africa":    "F5A300",
-    "West Africa":     "00A86A",
-    "Central Africa":  "E87C1A",
-    "East Africa":     "1A8FD8",
-    "Southern Africa": "E8394A",
+REG_DARK = {
+    "North Africa":    "7C4D00",
+    "West Africa":     "065F46",
+    "Central Africa":  "7C2D12",
+    "East Africa":     "1E3A8A",
+    "Southern Africa": "7F1D1D",
+}
+REG_LIGHT = {
+    "North Africa":    "FEF9EE",
+    "West Africa":     "F0FDF4",
+    "Central Africa":  "FFF7ED",
+    "East Africa":     "EFF6FF",
+    "Southern Africa": "FFF5F5",
+}
+REG_MID = {
+    "North Africa":    "FDE68A",
+    "West Africa":     "A7F3D0",
+    "Central Africa":  "FDBA74",
+    "East Africa":     "BFDBFE",
+    "Southern Africa": "FECACA",
 }
 
-# ── Palette ───────────────────────────────────────────────────────────────────
-BG_DARK   = "07111E"
-BG_SHEET  = "F7F9FC"
-BG_HEADER = "1A3347"
-TEXT_WHITE = "FFFFFF"
-TEXT_DARK  = "0D1B2A"
-TEXT_MUTED = "5A7A8F"
-CHART_PAL  = [
-    "00A86A", "F5A300", "1A8FD8", "E8394A", "E87C1A",
-    "8B5CF6", "00C4CF", "FF6B78", "FFBE33", "5A8FAF",
-]
-
-# ── Helpers ───────────────────────────────────────────────────────────────────
-
-def solid(hex_color: str) -> PatternFill:
-    return PatternFill("solid", fgColor=hex_color)
-
-def thin_border(color: str = "D8E4EF") -> Border:
-    s = Side(style="thin", color=color)
+def fill(h):    return PatternFill("solid", fgColor=h)
+def fnt(bold=False, size=10, color="111827", italic=False):
+    return Font(bold=bold, size=size, color=color, italic=italic, name="Calibri")
+def aln(h="left", v="center", wrap=False, indent=0):
+    return Alignment(horizontal=h, vertical=v, wrap_text=wrap, indent=indent)
+def brd(color="D1D5DB", style="thin"):
+    s = Side(style=style, color=color)
     return Border(left=s, right=s, top=s, bottom=s)
 
-def cell(ws, row: int, col: int, value=None, *,
-         bold=False, size=10, color=TEXT_DARK, bg=None,
-         halign="left", valign="center", wrap=False, num_format=None) -> object:
+def sc(ws, row, col, value=None, *, bold=False, size=10, color="111827",
+       bg=None, h="left", v="center", wrap=False, indent=0,
+       italic=False, nf=None, border=None):
     c = ws.cell(row=row, column=col, value=value)
-    c.font = Font(name="Arial", size=size, bold=bold, color=color)
-    if bg:
-        c.fill = solid(bg)
-    c.alignment = Alignment(horizontal=halign, vertical=valign, wrap_text=wrap)
-    if num_format:
-        c.number_format = num_format
+    c.font      = fnt(bold=bold, size=size, color=color, italic=italic)
+    c.alignment = aln(h=h, v=v, wrap=wrap, indent=indent)
+    if bg:     c.fill          = fill(bg)
+    if nf:     c.number_format = nf
+    if border: c.border        = border
     return c
 
-def merge(ws, row: int, c1: int, c2: int, value=None, *,
-          bold=False, size=12, color=TEXT_DARK, bg=None,
-          halign="center", valign="center", indent=0) -> object:
-    ws.merge_cells(start_row=row, start_column=c1, end_row=row, end_column=c2)
-    c = ws.cell(row=row, column=c1, value=value)
-    c.font = Font(name="Arial", size=size, bold=bold, color=color)
-    if bg:
-        c.fill = solid(bg)
-    c.alignment = Alignment(horizontal=halign, vertical=valign, indent=indent)
+def mg(ws, r, c1, c2, value=None, *, bold=False, size=11, color="111827",
+       bg=None, h="center", v="center", italic=False, indent=0):
+    ws.merge_cells(start_row=r, start_column=c1, end_row=r, end_column=c2)
+    c = ws.cell(row=r, column=c1, value=value)
+    c.font      = fnt(bold=bold, size=size, color=color, italic=italic)
+    c.alignment = aln(h=h, v=v, indent=indent)
+    if bg: c.fill = fill(bg)
     return c
 
-def rh(ws, row: int, height: float):
-    ws.row_dimensions[row].height = height
+def rh(ws, r, h):  ws.row_dimensions[r].height = h
+def cw(ws, c, w):  ws.column_dimensions[get_column_letter(c)].width = w
 
-def cw(ws, col: int, width: float):
-    ws.column_dimensions[get_column_letter(col)].width = width
+def chg(v):
+    if   v >  0.1: return f"▲ +{v:.1f}%", "991B1B", "FEE2E2"
+    elif v < -0.1: return f"▼ {v:.1f}%",  "166534", "DCFCE7"
+    else:          return "—",             "6B7280", "F9FAFB"
 
-def chg_icon(v: float) -> str:
-    if v > 0.5:  return f"▲ +{v:.1f}%"
-    if v < -0.5: return f"▼ {v:.1f}%"
-    return f"— {v:.1f}%"
-
-def chg_fg(v: float) -> str:
-    if v > 0.5:  return "C0392B"   # red
-    if v < -0.5: return "1A6B3C"   # green
-    return "666666"
-
-def chg_bg(v: float, default: str = "FFFFFF") -> str:
-    if v > 0.5:  return "FEE2E2"
-    if v < -0.5: return "D1FAE5"
-    return default
-
-# ── Data preparation ──────────────────────────────────────────────────────────
+def conf(c):
+    return {"high":"🟢 High","medium":"🟡 Medium","low":"🔴 Low"}.get(c, c)
 
 def load_data():
-    p = json.loads(PRICES_DB.read_text(encoding="utf-8"))
-    h = json.loads(HISTORY_DB.read_text(encoding="utf-8"))
-    meta  = p["meta"]
-    pdata = p["data"]
-
+    p    = json.loads(PRICES_DB.read_text(encoding="utf-8"))
+    h    = json.loads(HISTORY_DB.read_text(encoding="utf-8"))
+    meta = p["meta"]
     rows = []
-    for country, d in pdata.items():
-        hist = h.get(country, [])
-        first = next(
-            (e for e in hist if e["date"] >= "2026-01-01"), hist[0] if hist else None
-        )
-        gas_first     = first["gas_usd"]  if first else d["gas_usd"]
-        die_first     = first["die_usd"]  if first else d["die_usd"]
-        gasloc_first  = first["gas_loc"]  if first else d["gas_loc"]
-        dieloc_first  = first["die_loc"]  if first else d["die_loc"]
-        chg_gas = round((d["gas_usd"] - gas_first) / gas_first * 100, 2) if gas_first else 0
-        chg_die = round((d["die_usd"] - die_first) / die_first * 100, 2) if die_first else 0
+    for country, d in p["data"].items():
+        hist  = h.get(country, [])
+        first = next((e for e in hist if e["date"] >= "2026-01-01"),
+                     hist[0] if hist else None)
+        gf    = first["gas_usd"] if first else d["gas_usd"]
+        df    = first["die_usd"] if first else d["die_usd"]
+        glf   = first["gas_loc"] if first else d["gas_loc"]
+        dlf   = first["die_loc"] if first else d["die_loc"]
+        cg    = round((d["gas_usd"] - gf) / gf * 100, 2) if gf else 0
+        cd    = round((d["die_usd"] - df) / df * 100, 2) if df else 0
         rows.append({
-            "country":      country,
-            "region":       d["region"],
-            "currency":     d["currency"],
-            "fx_rate":      d["fx_rate"],
-            "gas_usd":      d["gas_usd"],
-            "die_usd":      d["die_usd"],
-            "gas_loc":      d["gas_loc"],
-            "die_loc":      d["die_loc"],
-            "gas_first":    gas_first,
-            "die_first":    die_first,
-            "gasloc_first": gasloc_first,
-            "dieloc_first": dieloc_first,
-            "chg_gas":      chg_gas,
-            "chg_die":      chg_die,
-            "confidence":   d["confidence"],
-            "eff_date":     d["effective_date"],
-            "source":       d["source_url"],
-            "hist":         hist,
+            "country": country,       "iso2": d["iso2"],
+            "region":  d["region"],   "currency": d["currency"],
+            "fx_rate": d["fx_rate"],  "gas_usd": d["gas_usd"],
+            "die_usd": d["die_usd"],  "gas_loc": d["gas_loc"],
+            "die_loc": d["die_loc"],  "gas_usd_jan": gf,
+            "die_usd_jan": df,        "gas_loc_jan": glf,
+            "die_loc_jan": dlf,       "chg_gas": cg,
+            "chg_die": cd,            "confidence": d["confidence"],
+            "effective_date": d["effective_date"],
+            "old_source": d.get("old_source", False),
+            "stale": d.get("stale", False),
+            "source_url": d.get("source_url", ""),
         })
-
     rows.sort(key=lambda x: (
         REGIONS.index(x["region"]) if x["region"] in REGIONS else 9,
         x["country"],
     ))
     return meta, rows
 
-# ══════════════════════════════════════════════════════════════════════════════
-# SHEET 1 — PRICE HISTORY
-# ══════════════════════════════════════════════════════════════════════════════
+# ── Sheet 1: Summary ──────────────────────────────────────────────────────────
+def sh_summary(wb, meta, rows):
+    ws = wb.create_sheet("Summary")
+    ws.sheet_view.showGridLines = False
+    ws.sheet_properties.tabColor = "065F46"
+    for i, w in enumerate([2,28,16,16,16,16,16,2], 1): cw(ws, i, w)
 
-def build_price_history(wb, meta, rows):
+    for r2 in [1,2,3]:
+        for c2 in range(1,9): ws.cell(row=r2,column=c2).fill = fill("0F172A")
+    rh(ws,1,8); rh(ws,2,44); rh(ws,3,20)
+    mg(ws,2,2,7, "⛽  AFRICA FUEL TRACKER  ·  2026",
+       bold=True,size=24,color="F8FAFC",bg="0F172A",h="left",indent=1)
+    mg(ws,3,2,7,
+       f"Official fuel price intelligence  ·  54 African nations  ·  Updated: {meta.get('run_date','')}",
+       size=10,color="94A3B8",bg="0F172A",h="left",indent=1)
+
+    gas_v  = [r["gas_usd"] for r in rows]
+    die_v  = [r["die_usd"] for r in rows]
+    max_r  = max(rows, key=lambda x: x["gas_usd"])
+    min_r  = min(rows, key=lambda x: x["gas_usd"])
+    mvrs   = [r for r in rows if abs(r["chg_gas"]) > 0.1]
+    big    = max(mvrs, key=lambda x: x["chg_gas"]) if mvrs else None
+    kpis   = [
+        (2,"54","countries tracked","TOTAL","065F46","D1FAE5"),
+        (3,f"${sum(gas_v)/len(gas_v):.3f}","Africa avg gas USD/L","AVG GAS","1D4ED8","DBEAFE"),
+        (4,f"${max_r['gas_usd']:.3f}",max_r["country"],"HIGHEST","991B1B","FEE2E2"),
+        (5,f"${min_r['gas_usd']:.3f}",min_r["country"],"LOWEST","166534","DCFCE7"),
+        (6,f"+{big['chg_gas']:.1f}%" if big else "—",
+             big["country"] if big else "No change","BIGGEST Δ","7C3AED","EDE9FE"),
+        (7,f"${sum(die_v)/len(die_v):.3f}","Africa avg diesel USD/L","AVG DIESEL","0E7490","CFFAFE"),
+    ]
+    rh(ws,4,10); rh(ws,5,16); rh(ws,6,38); rh(ws,7,18); rh(ws,8,10)
+    for col,val,sub,lbl,acc,bg in kpis:
+        ws.cell(row=5,column=col,value=lbl).font = fnt(bold=True,size=8,color=acc)
+        ws.cell(row=5,column=col).fill           = fill(bg)
+        ws.cell(row=5,column=col).alignment      = aln(h="center")
+        ws.cell(row=5,column=col).border         = Border(
+            left=Side(style="thin",color="E5E7EB"),
+            right=Side(style="thin",color="E5E7EB"),
+            top=Side(style="thin",color="E5E7EB"))
+        v = ws.cell(row=6,column=col,value=val)
+        v.font      = Font(bold=True,size=20,color=acc,name="Calibri")
+        v.fill      = fill(bg); v.alignment = aln(h="center")
+        v.border    = Border(left=Side(style="thin",color="E5E7EB"),
+                             right=Side(style="thin",color="E5E7EB"))
+        s = ws.cell(row=7,column=col,value=sub)
+        s.font      = fnt(size=9,color="6B7280")
+        s.fill      = fill(bg); s.alignment = aln(h="center")
+        s.border    = Border(left=Side(style="thin",color="E5E7EB"),
+                             right=Side(style="thin",color="E5E7EB"),
+                             bottom=Side(style="medium",color=acc))
+
+    rh(ws,9,10); rh(ws,10,26)
+    mg(ws,10,2,7,"REGIONAL OVERVIEW",bold=True,size=11,
+       color="F8FAFC",bg="1E293B",h="left",indent=1)
+    rh(ws,11,20)
+    for i,h2 in enumerate(["Region","Countries","Avg Gas (USD/L)","Avg Diesel (USD/L)","Min Gas","Max Gas"],2):
+        c2=sc(ws,11,i,h2,bold=True,size=9,color="F8FAFC",bg="334155",h="center")
+        c2.border=Border(bottom=Side(style="medium",color="4B6584"))
+    for idx,reg in enumerate(REGIONS):
+        rr2=12+idx; rg=[r for r in rows if r["region"]==reg]
+        gv2=[r["gas_usd"] for r in rg]; dv2=[r["die_usd"] for r in rg]
+        bg2="F8FAFC" if idx%2==0 else "FFFFFF"; b2=brd("E2E8F0")
+        sc(ws,rr2,2,f"  {reg}",bold=True,size=10,color=REG_DARK.get(reg,"374151"),bg=bg2,border=b2)
+        sc(ws,rr2,3,len(rg),size=10,color="374151",bg=bg2,h="center",border=b2)
+        sc(ws,rr2,4,sum(gv2)/len(gv2) if gv2 else 0,size=10,color="374151",
+           bg=bg2,h="right",nf="$#,##0.000",border=b2)
+        sc(ws,rr2,5,sum(dv2)/len(dv2) if dv2 else 0,size=10,color="374151",
+           bg=bg2,h="right",nf="$#,##0.000",border=b2)
+        sc(ws,rr2,6,min(gv2) if gv2 else 0,size=10,color="166534",
+           bg=bg2,h="right",nf="$#,##0.000",border=b2)
+        sc(ws,rr2,7,max(gv2) if gv2 else 0,size=10,color="991B1B",
+           bg=bg2,h="right",nf="$#,##0.000",border=b2)
+        rh(ws,rr2,20)
+
+    rh(ws,18,10); rh(ws,19,26)
+    mg(ws,19,2,7,"DATA QUALITY",bold=True,size=11,color="F8FAFC",bg="1E293B",h="left",indent=1)
+    dq=[
+        (2,"🟢 High confidence",  sum(1 for r in rows if r["confidence"]=="high"),   "166534","DCFCE7"),
+        (3,"🟡 Medium confidence",sum(1 for r in rows if r["confidence"]=="medium"), "92400E","FEF3C7"),
+        (4,"🔴 Low confidence",   sum(1 for r in rows if r["confidence"]=="low"),    "991B1B","FEE2E2"),
+        (5,"⚠️ Stale prices",     sum(1 for r in rows if r["stale"]),               "B45309","FFFBEB"),
+        (6,"🕰️ Old source",       sum(1 for r in rows if r["old_source"]),          "7C3AED","EDE9FE"),
+        (7,"📈 Prices changed",   sum(1 for r in rows if abs(r["chg_gas"])>0.1),    "1D4ED8","EFF6FF"),
+    ]
+    rh(ws,20,18); rh(ws,21,32)
+    for col,lbl,val,clr,bg in dq:
+        sc(ws,20,col,lbl,size=9,color="374151",bg=bg,h="center",border=brd("E2E8F0"))
+        c2=ws.cell(row=21,column=col,value=val)
+        c2.font=Font(bold=True,size=18,color=clr,name="Calibri")
+        c2.fill=fill(bg); c2.alignment=aln(h="center")
+        c2.border=Border(left=Side(style="thin",color="E5E7EB"),
+                         right=Side(style="thin",color="E5E7EB"),
+                         bottom=Side(style="medium",color=clr))
+    rh(ws,23,8); rh(ws,24,16)
+    mg(ws,24,2,7,
+       "Sources: Official national energy regulators  ·  FX: Frankfurter API (ECB) & central bank fixed rates",
+       italic=True,size=8,color="9CA3AF",bg="FFFFFF",h="left",indent=1)
+
+# ── Sheet 2: All Countries ────────────────────────────────────────────────────
+def sh_all(wb, meta, rows):
+    ws = wb.create_sheet("All Countries")
+    ws.sheet_view.showGridLines = False
+    ws.sheet_properties.tabColor = "1D4ED8"
+    for i,w in enumerate([22,17,7,9,13,13,14,14,13,11,13],1): cw(ws,i,w)
+
+    for c2 in range(1,12): ws.cell(row=1,column=c2).fill = fill("0F172A")
+    mg(ws,1,1,11,f"⛽  ALL COUNTRIES — CURRENT FUEL PRICES  ·  {meta.get('run_date','')}",
+       bold=True,size=13,color="F1F5F9",bg="0F172A",h="left",indent=1)
+    rh(ws,1,32)
+
+    H=2
+    hdrs=["Country","Region","ISO","Currency",
+          "Gas (USD/L)","Die (USD/L)","Gas (Local/L)","Die (Local/L)",
+          "FX Rate","Chg Jan→Now","Confidence"]
+    for i,h2 in enumerate(hdrs,1):
+        c2=sc(ws,H,i,h2,bold=True,size=9,color="F1F5F9",bg="1E3A5F",h="center")
+        c2.border=Border(bottom=Side(style="medium",color="3B82F6"),
+                         right=Side(style="thin",color="2D5A8E"))
+    rh(ws,H,24)
+
+    prev=None; r=H+1; DS=r
+    for row in rows:
+        if row["region"]!=prev:
+            prev=row["region"]
+            dk=REG_DARK.get(row["region"],"374151")
+            lk=REG_LIGHT.get(row["region"],"F3F4F6")
+            for c2 in range(1,12): ws.cell(row=r,column=c2).fill=fill(lk)
+            mg(ws,r,1,11,f"  ▸  {row['region'].upper()}",
+               bold=True,size=9,color=dk,bg=lk,h="left",indent=1)
+            ws.row_dimensions[r].height=16; r+=1
+
+        bg0="F8FAFC" if r%2==0 else "FFFFFF"
+        b2=brd("E2E8F0")
+        ct,cfg,cbg=chg(row["chg_gas"])
+        vals=[
+            (row["country"],   True, "111827",bg0,  "left",  None),
+            (row["region"],    False,"6B7280", bg0,  "left",  None),
+            (row["iso2"],      False,"9CA3AF", bg0,  "center",None),
+            (row["currency"],  True, "1D4ED8", bg0,  "center",None),
+            (row["gas_usd"],   False,"111827", bg0,  "right", "$#,##0.000"),
+            (row["die_usd"],   False,"111827", bg0,  "right", "$#,##0.000"),
+            (row["gas_loc"],   False,"374151", bg0,  "right", "#,##0.00"),
+            (row["die_loc"],   False,"374151", bg0,  "right", "#,##0.00"),
+            (row["fx_rate"],   False,"9CA3AF", bg0,  "right", "#,##0.00"),
+            (ct,               True, cfg,      cbg,  "center",None),
+            (conf(row["confidence"]),False,"374151",bg0,"center",None),
+        ]
+        for ci,(v,bd,fg,bg,ha,nf) in enumerate(vals,1):
+            c2=ws.cell(row=r,column=ci,value=v)
+            c2.font=Font(name="Calibri",size=10,bold=bd,color=fg)
+            c2.fill=fill(bg); c2.alignment=Alignment(horizontal=ha,vertical="center")
+            c2.border=b2
+            if nf: c2.number_format=nf
+        ws.row_dimensions[r].height=18; r+=1
+
+    DE=r-1
+    ws.conditional_formatting.add(f"E{DS}:E{DE}",
+        ColorScaleRule(start_type="min",start_color="4ADE80",
+                       mid_type="percentile",mid_value=50,mid_color="FDE047",
+                       end_type="max",end_color="F87171"))
+    ws.conditional_formatting.add(f"F{DS}:F{DE}",
+        ColorScaleRule(start_type="min",start_color="4ADE80",
+                       mid_type="percentile",mid_value=50,mid_color="FDE047",
+                       end_type="max",end_color="F87171"))
+    ws.conditional_formatting.add(f"E{DS}:E{DE}",
+        DataBarRule(start_type="min",end_type="max",color="3B82F6",showValue=True))
+    ws.freeze_panes="A3"
+    r+=1
+    mg(ws,r,1,4,"AFRICA AVERAGE  (54 nations)",bold=True,size=9,
+       color="F1F5F9",bg="1E3A5F",h="left",indent=1)
+    sc(ws,r,5,sum(x["gas_usd"] for x in rows)/len(rows),
+       bold=True,size=10,color="F1F5F9",bg="1E3A5F",h="right",nf="$#,##0.000")
+    sc(ws,r,6,sum(x["die_usd"] for x in rows)/len(rows),
+       bold=True,size=10,color="F1F5F9",bg="1E3A5F",h="right",nf="$#,##0.000")
+    for c2 in range(7,12): ws.cell(row=r,column=c2).fill=fill("1E3A5F")
+    ws.row_dimensions[r].height=20
+
+# ── Sheet 3: Price History ────────────────────────────────────────────────────
+def sh_history(wb, meta, rows):
     ws = wb.create_sheet("Price History")
     ws.sheet_view.showGridLines = False
-    ws.sheet_properties.tabColor = "00A86A"
+    ws.sheet_properties.tabColor = "166534"
+    for i,w in enumerate([22,8,13,13,12,13,13,12,13,13,12],1): cw(ws,i,w)
 
-    NCOLS = 14
+    for c2 in range(1,12): ws.cell(row=1,column=c2).fill=fill("0F172A")
+    mg(ws,1,1,11,f"⛽  PRICE HISTORY  ·  JAN 2026 → {meta.get('run_date','')}",
+       bold=True,size=13,color="F1F5F9",bg="0F172A",h="left",indent=1)
+    rh(ws,1,32)
 
-    # ── Title ─────────────────────────────────────────────────────────────────
-    merge(ws, 1, 1, NCOLS,
-          "⛽  AFRICA FUEL TRACKER — PRICE HISTORY  |  Jan 2026 → " + meta.get("run_date", ""),
-          bold=True, size=15, color=TEXT_WHITE, bg=BG_DARK, halign="left", indent=1)
-    rh(ws, 1, 36)
+    rh(ws,2,18)
+    for c2 in range(1,12): ws.cell(row=2,column=c2).fill=fill("1E293B")
+    mg(ws,2,3,5,"⛽  GASOLINE (USD/L)",bold=True,size=9,color="FCD34D",bg="1E293B")
+    mg(ws,2,6,8,"🚛  DIESEL (USD/L)",bold=True,size=9,color="93C5FD",bg="1E293B")
+    mg(ws,2,9,11,"💱  LOCAL CURRENCY / L",bold=True,size=9,color="86EFAC",bg="1E293B")
 
-    merge(ws, 2, 1, NCOLS,
-          f"Updated: {meta.get('run_date','')}  ·  54 countries, 5 regions  ·  "
-          "Sources: official national regulators  ·  FX: central bank references",
-          bold=False, size=9, color="9EC8E0", bg=BG_DARK, halign="left", indent=1)
-    rh(ws, 2, 18)
+    H=3
+    hdrs=["Country","Currency","Jan 2026","Latest","Change",
+          "Jan 2026","Latest","Change","Gas Local","Die Local","Confidence"]
+    hbg=["1E293B","1E293B","14532D","14532D","14532D",
+         "1E3A5F","1E3A5F","1E3A5F","1A3A2E","1A3A2E","2D1B69"]
+    for i,(h2,hb) in enumerate(zip(hdrs,hbg),1):
+        c2=sc(ws,H,i,h2,bold=True,size=9,color="F1F5F9",bg=hb,h="center")
+        c2.border=Border(bottom=Side(style="medium",color="6EE7B7"),
+                         right=Side(style="thin",color="374151"))
+    rh(ws,H,22)
 
-    # Spacer
-    for c in range(1, NCOLS + 1):
-        ws.cell(row=3, column=c).fill = solid(BG_SHEET)
-    rh(ws, 3, 8)
-
-    # ── Legend ────────────────────────────────────────────────────────────────
-    cell(ws, 4, 1, "LEGEND:", bold=True, size=8, color="444444", bg=BG_SHEET)
-    legends = [
-        (2,  "▲ = increase vs Jan 2026", "C0392B"),
-        (5,  "▼ = decrease vs Jan 2026", "1A6B3C"),
-        (8,  "— = no change",            "666666"),
-        (11, "Confidence: 🟢 High  🟡 Med  🔴 Low", "444444"),
-    ]
-    for col_i, txt, clr in legends:
-        cell(ws, 4, col_i, txt, size=8, color=clr, bg=BG_SHEET)
-    rh(ws, 4, 14)
-
-    # ── Column widths ─────────────────────────────────────────────────────────
-    widths = [20, 16, 8, 9, 13, 13, 10, 13, 13, 10, 13, 13, 13, 13]
-    for i, w in enumerate(widths, 1):
-        cw(ws, i, w)
-
-    # ── Column headers ────────────────────────────────────────────────────────
-    HDR = 5
-    headers = [
-        "Country", "Region", "Cur.", "FX Rate",
-        "Gas Jan (USD)", "Gas Now (USD)", "Gas Chg",
-        "Die Jan (USD)", "Die Now (USD)", "Die Chg",
-        "Gas Jan (Local)", "Gas Now (Local)",
-        "Die Jan (Local)", "Die Now (Local)",
-    ]
-    for i, h_txt in enumerate(headers, 1):
-        c = cell(ws, HDR, i, h_txt, bold=True, size=10,
-                 color=TEXT_WHITE, bg=BG_HEADER, halign="center")
-        c.border = Border(
-            bottom=Side(style="medium", color="00A86A"),
-            right=Side(style="thin",   color="2D4A6A"),
-        )
-    rh(ws, HDR, 26)
-
-    # ── Data rows ─────────────────────────────────────────────────────────────
-    prev_region = None
-    DATA_START = HDR + 1
-    r = DATA_START
-
+    prev=None; r=H+1; DS=r
     for row in rows:
-        # Region separator
-        if row["region"] != prev_region:
-            prev_region = row["region"]
-            rc = RC_HEX.get(row["region"], "888888")
-            merge(ws, r, 1, NCOLS,
-                  f"  {row['region'].upper()}",
-                  bold=True, size=9, color=TEXT_WHITE, bg=rc,
-                  halign="left", indent=1)
-            rh(ws, r, 18)
-            r += 1
+        if row["region"]!=prev:
+            prev=row["region"]
+            dk=REG_DARK.get(row["region"],"374151")
+            lk=REG_LIGHT.get(row["region"],"F3F4F6")
+            for c2 in range(1,12): ws.cell(row=r,column=c2).fill=fill(lk)
+            mg(ws,r,1,11,f"  ▸  {row['region'].upper()}",
+               bold=True,size=9,color=dk,bg=lk,h="left",indent=1)
+            ws.row_dimensions[r].height=15; r+=1
 
-        # Row background (alternating)
-        bg0 = "FFFFFF" if (r - DATA_START) % 2 == 0 else "F0F5FA"
-        brd = thin_border()
-
-        cg, cd = row["chg_gas"], row["chg_die"]
-
-        row_vals = [
-            # (value, fg_color, bg_color, halign, num_format)
-            (row["country"],      TEXT_DARK,        bg0,          "left",   None),
-            (row["region"],       TEXT_MUTED,       bg0,          "left",   None),
-            (row["currency"],     TEXT_DARK,        bg0,          "center", None),
-            (row["fx_rate"],      TEXT_DARK,        bg0,          "right",  "#,##0.00"),
-            (row["gas_first"],    TEXT_DARK,        bg0,          "right",  "$#,##0.0000"),
-            (row["gas_usd"],      TEXT_DARK,        bg0,          "right",  "$#,##0.0000"),
-            (chg_icon(cg),        chg_fg(cg),       chg_bg(cg, bg0), "center", None),
-            (row["die_first"],    TEXT_DARK,        bg0,          "right",  "$#,##0.0000"),
-            (row["die_usd"],      TEXT_DARK,        bg0,          "right",  "$#,##0.0000"),
-            (chg_icon(cd),        chg_fg(cd),       chg_bg(cd, bg0), "center", None),
-            (row["gasloc_first"], TEXT_DARK,        bg0,          "right",  "#,##0.00"),
-            (row["gas_loc"],      TEXT_DARK,        bg0,          "right",  "#,##0.00"),
-            (row["dieloc_first"], TEXT_DARK,        bg0,          "right",  "#,##0.00"),
-            (row["die_loc"],      TEXT_DARK,        bg0,          "right",  "#,##0.00"),
+        bg0="F8FAFC" if r%2==0 else "FFFFFF"; b2=brd("E2E8F0")
+        gt,gfg,gbg=chg(row["chg_gas"]); dt,dfg,dbg=chg(row["chg_die"])
+        vals=[
+            (row["country"],     True, "111827",bg0,    "left",  None),
+            (row["currency"],    True, "1D4ED8",bg0,    "center",None),
+            (row["gas_usd_jan"], False,"166534","F0FDF4","right", "$#,##0.000"),
+            (row["gas_usd"],     True, "111827",bg0,    "right", "$#,##0.000"),
+            (gt,                 True, gfg,     gbg,    "center",None),
+            (row["die_usd_jan"], False,"1D4ED8","EFF6FF","right", "$#,##0.000"),
+            (row["die_usd"],     True, "111827",bg0,    "right", "$#,##0.000"),
+            (dt,                 True, dfg,     dbg,    "center",None),
+            (row["gas_loc"],     False,"374151",bg0,    "right", "#,##0.00"),
+            (row["die_loc"],     False,"374151",bg0,    "right", "#,##0.00"),
+            (conf(row["confidence"]),False,"374151",bg0,"center",None),
         ]
+        for ci,(v,bd,fg,bg,ha,nf) in enumerate(vals,1):
+            c2=ws.cell(row=r,column=ci,value=v)
+            c2.font=Font(name="Calibri",size=10,bold=bd,color=fg)
+            c2.fill=fill(bg); c2.alignment=Alignment(horizontal=ha,vertical="center")
+            c2.border=b2
+            if nf: c2.number_format=nf
+        ws.row_dimensions[r].height=18; r+=1
 
-        for col_i, (val, fc, bc, ha, nf) in enumerate(row_vals, 1):
-            c = ws.cell(row=r, column=col_i, value=val)
-            c.font = Font(name="Arial", size=10, color=fc,
-                          bold=(col_i == 1))
-            c.fill = solid(bc)
-            c.alignment = Alignment(horizontal=ha, vertical="center")
-            c.border = brd
-            if nf:
-                c.number_format = nf
+    DE=r-1
+    ws.conditional_formatting.add(f"D{DS}:D{DE}",
+        ColorScaleRule(start_type="min",start_color="4ADE80",
+                       mid_type="percentile",mid_value=50,mid_color="FDE047",
+                       end_type="max",end_color="F87171"))
+    ws.freeze_panes="A4"
 
-        rh(ws, r, 18)
-        r += 1
+# ── Sheet 4: Rankings ─────────────────────────────────────────────────────────
+def sh_rankings(wb, meta, rows):
+    ws = wb.create_sheet("Rankings")
+    ws.sheet_view.showGridLines = False
+    ws.sheet_properties.tabColor = "991B1B"
+    for i,w in enumerate([22,17,13,13,12, 4, 22,17,13,13,12],1): cw(ws,i,w)
 
-    DATA_END = r - 1
+    for c2 in range(1,12): ws.cell(row=1,column=c2).fill=fill("0F172A")
+    mg(ws,1,1,11,"⛽  FUEL PRICE RANKINGS  ·  Gasoline (USD/L)",
+       bold=True,size=13,color="F1F5F9",bg="0F172A",h="left",indent=1)
+    rh(ws,1,32); rh(ws,2,8)
 
-    # ── Conditional formatting — Gas Now USD (col F) ───────────────────────
-    ws.conditional_formatting.add(
-        f"F{DATA_START}:F{DATA_END}",
-        ColorScaleRule(
-            start_type="min",        start_color="63BE7B",
-            mid_type="percentile",   mid_value=50, mid_color="FFEB84",
-            end_type="max",          end_color="F8696B",
-        ),
-    )
-    # Diesel Now USD (col I)
-    ws.conditional_formatting.add(
-        f"I{DATA_START}:I{DATA_END}",
-        ColorScaleRule(
-            start_type="min",        start_color="63BE7B",
-            mid_type="percentile",   mid_value=50, mid_color="FFEB84",
-            end_type="max",          end_color="F8696B",
-        ),
-    )
-    # Data bars on Gas Now USD
-    ws.conditional_formatting.add(
-        f"F{DATA_START}:F{DATA_END}",
-        DataBarRule(start_type="min", end_type="max",
-                    color="1A8FD8", showValue=True),
-    )
+    def draw(sc_col, title, tbg, data, rbgs):
+        mg(ws,3,sc_col,sc_col+4,title,bold=True,size=11,
+           color="FFFFFF",bg=tbg,h="left",indent=1)
+        rh(ws,3,28)
+        for i,h2 in enumerate(["Country","Region","Gas USD/L","Diesel USD/L","Chg Jan→Now"]):
+            c2=sc(ws,4,sc_col+i,h2,bold=True,size=9,color="F9FAFB",bg="374151",h="center")
+            c2.border=Border(bottom=Side(style="medium",color="6B7280"))
+        rh(ws,4,20)
+        for idx,row in enumerate(data):
+            rr=5+idx; bg=rbgs[idx%2]
+            rb="FEF3C7" if idx<3 else bg; rf="92400E" if idx<3 else "111827"
+            b2=brd("E2E8F0"); ct,cfg,cbg=chg(row["chg_gas"])
+            c2=ws.cell(row=rr,column=sc_col,value=f"  {idx+1}.  {row['country']}")
+            c2.font=Font(name="Calibri",size=10,bold=True,color=rf)
+            c2.fill=fill(rb); c2.alignment=aln(h="left"); c2.border=b2
+            sc(ws,rr,sc_col+1,row["region"],size=9,color="6B7280",bg=bg,border=b2)
+            sc(ws,rr,sc_col+2,row["gas_usd"],bold=True,size=11,color="111827",
+               bg=bg,h="right",nf="$#,##0.000",border=b2)
+            sc(ws,rr,sc_col+3,row["die_usd"],size=10,color="374151",
+               bg=bg,h="right",nf="$#,##0.000",border=b2)
+            sc(ws,rr,sc_col+4,ct,bold=True,size=10,color=cfg,bg=cbg,h="center",border=b2)
+            ws.row_dimensions[rr].height=22
 
-    ws.freeze_panes = "B6"
+    sd=sorted(rows,key=lambda x:-x["gas_usd"])
+    sa=sorted(rows,key=lambda x: x["gas_usd"])
+    draw(1,"🔴  TOP 10 MOST EXPENSIVE GAS","991B1B",sd[:10],["FEF2F2","FFF5F5"])
+    draw(7,"🟢  TOP 10 MOST AFFORDABLE GAS","166534",sa[:10],["F0FDF4","F7FEF9"])
 
-    # ── Summary stats ─────────────────────────────────────────────────────────
-    r += 1
-    merge(ws, r, 1, NCOLS, "SUMMARY STATISTICS",
-          bold=True, size=10, color=TEXT_WHITE, bg=BG_HEADER, halign="left", indent=1)
-    rh(ws, r, 22)
-    r += 1
+    rh(ws,16,10); rh(ws,17,26)
+    mg(ws,17,1,11,"📊  BIGGEST PRICE CHANGES  vs Jan 2026",
+       bold=True,size=11,color="F8FAFC",bg="1E293B",h="left",indent=1)
+    mvrs=sorted([r for r in rows if abs(r["chg_gas"])>0.1],key=lambda x:-x["chg_gas"])
+    if not mvrs:
+        rh(ws,18,20)
+        mg(ws,18,1,11,"No significant price changes since Jan 2026",
+           italic=True,size=10,color="6B7280")
+    else:
+        for i,h2 in enumerate(["Country","Region","Currency","Jan 2026","Latest","Change","Δ USD/L"],1):
+            c2=sc(ws,18,i,h2,bold=True,size=9,color="F9FAFB",bg="334155",h="center")
+            c2.border=Border(bottom=Side(style="medium",color="64748B"))
+        rh(ws,18,20)
+        for idx,row in enumerate(mvrs):
+            rr=19+idx; bg="F8FAFC" if idx%2==0 else "FFFFFF"
+            b2=brd("E2E8F0"); ct,cfg,cbg=chg(row["chg_gas"])
+            delta=round(row["gas_usd"]-row["gas_usd_jan"],4)
+            vals=[
+                (row["country"],    True, "111827",bg,    "left", None),
+                (row["region"],     False,"6B7280", bg,    "left", None),
+                (row["currency"],   False,"1D4ED8", bg,    "center",None),
+                (row["gas_usd_jan"],False,"166534","F0FDF4","right","$#,##0.000"),
+                (row["gas_usd"],    True, "111827",bg,    "right","$#,##0.000"),
+                (ct,                True, cfg,      cbg,   "center",None),
+                (delta,             True, cfg,      cbg,   "right","$#,##0.0000"),
+            ]
+            for ci,(v,bd,fg,bgc,ha,nf) in enumerate(vals,1):
+                c2=ws.cell(row=rr,column=ci,value=v)
+                c2.font=Font(name="Calibri",size=10,bold=bd,color=fg)
+                c2.fill=fill(bgc); c2.alignment=Alignment(horizontal=ha,vertical="center")
+                c2.border=b2
+                if nf: c2.number_format=nf
+            ws.row_dimensions[rr].height=20
 
-    stat_hdrs = ["Metric", "Gas USD/L", "Diesel USD/L", "Region", "Country"]
-    for i, h_txt in enumerate(stat_hdrs, 1):
-        cell(ws, r, i, h_txt, bold=True, size=9,
-             color=TEXT_WHITE, bg="2D4A6A", halign="center")
-    rh(ws, r, 18)
-    r += 1
+# ── Sheet 5: By Region ────────────────────────────────────────────────────────
+def sh_region(wb, meta, rows):
+    ws = wb.create_sheet("By Region")
+    ws.sheet_view.showGridLines = False
+    ws.sheet_properties.tabColor = "7C3AED"
+    for i,w in enumerate([22,8,13,13,13,13,12,11],1): cw(ws,i,w)
 
-    gas_vals = [x["gas_usd"] for x in rows]
-    die_vals = [x["die_usd"] for x in rows]
-    max_r = max(rows, key=lambda x: x["gas_usd"])
-    min_r = min(rows, key=lambda x: x["gas_usd"])
-    avg_g = round(sum(gas_vals) / len(gas_vals), 4)
-    avg_d = round(sum(die_vals) / len(die_vals), 4)
+    for c2 in range(1,9): ws.cell(row=1,column=c2).fill=fill("0F172A")
+    mg(ws,1,1,8,"⛽  PRICES BY REGION  ·  Sorted by region & country",
+       bold=True,size=13,color="F1F5F9",bg="0F172A",h="left",indent=1)
+    rh(ws,1,32)
 
-    stats = [
-        ("Africa Average (54 nations)", avg_g, avg_d, "All regions", "—"),
-        ("Highest gas price",  max_r["gas_usd"], max_r["die_usd"], max_r["region"], max_r["country"]),
-        ("Lowest gas price",   min_r["gas_usd"], min_r["die_usd"], min_r["region"], min_r["country"]),
-    ]
-    for idx, (label, gv, dv, reg, cntry) in enumerate(stats):
-        bg = "F7F9FC" if idx % 2 == 0 else "EFF4F8"
-        data = [(label, None), (gv, "$#,##0.0000"), (dv, "$#,##0.0000"), (reg, None), (cntry, None)]
-        for col_i, (val, nf) in enumerate(data, 1):
-            c = ws.cell(row=r, column=col_i, value=val)
-            c.font = Font(name="Arial", size=10, bold=(col_i == 1), color=TEXT_DARK)
-            c.fill = solid(bg)
-            c.alignment = Alignment(
-                horizontal="left" if col_i == 1 else "center", vertical="center"
-            )
-            if nf:
-                c.number_format = nf
-        rh(ws, r, 18)
-        r += 1
+    r=2
+    for reg in REGIONS:
+        rg=[row for row in rows if row["region"]==reg]
+        if not rg: continue
+        dk=REG_DARK.get(reg,"374151"); lk=REG_LIGHT.get(reg,"F3F4F6")
+        mk=REG_MID.get(reg,"E5E7EB")
 
-    return DATA_START, DATA_END
+        rh(ws,r,10); r+=1
+        for c2 in range(1,9): ws.cell(row=r,column=c2).fill=fill(dk)
+        mg(ws,r,1,8,f"  {reg.upper()}  ·  {len(rg)} countries",
+           bold=True,size=11,color="FFFFFF",bg=dk,h="left",indent=1)
+        rh(ws,r,26); r+=1
 
+        gv=[x["gas_usd"] for x in rg]; dv=[x["die_usd"] for x in rg]
+        sc(ws,r,1,"Regional average →",bold=True,size=9,color=dk,bg=mk)
+        sc(ws,r,3,sum(gv)/len(gv) if gv else 0,bold=True,size=9,color=dk,
+           bg=mk,h="right",nf="$#,##0.000")
+        sc(ws,r,4,sum(dv)/len(dv) if dv else 0,bold=True,size=9,color=dk,
+           bg=mk,h="right",nf="$#,##0.000")
+        sc(ws,r,5,min(gv) if gv else 0,size=9,color="166534",
+           bg=mk,h="right",nf="$#,##0.000")
+        sc(ws,r,6,max(gv) if gv else 0,size=9,color="991B1B",
+           bg=mk,h="right",nf="$#,##0.000")
+        for c2 in [2,7,8]: ws.cell(row=r,column=c2).fill=fill(mk)
+        rh(ws,r,16); r+=1
 
-# ══════════════════════════════════════════════════════════════════════════════
-# SHEET 2 — CHARTS & ANALYSIS
-# ══════════════════════════════════════════════════════════════════════════════
+        for i,h2 in enumerate(["Country","Currency","Gas USD/L","Diesel USD/L",
+                                "Gas Local","Diesel Local","Chg Jan→Now","Confidence"],1):
+            c2=sc(ws,r,i,h2,bold=True,size=9,color="F9FAFB",bg="334155",h="center")
+            c2.border=Border(bottom=Side(style="medium",color=dk))
+        rh(ws,r,18); r+=1
 
-def build_charts(wb, meta, rows):
-    wc = wb.create_sheet("Charts & Analysis")
-    wc.sheet_view.showGridLines = False
-    wc.sheet_properties.tabColor = "1A8FD8"
+        for idx,row in enumerate(rg):
+            bg="F8FAFC" if idx%2==0 else "FFFFFF"; b2=brd("E2E8F0")
+            ct,cfg,cbg=chg(row["chg_gas"])
+            vals=[
+                (row["country"],  True, "111827",bg,  "left",  None),
+                (row["currency"], True, "1D4ED8",bg,  "center",None),
+                (row["gas_usd"],  False,"111827",bg,  "right", "$#,##0.000"),
+                (row["die_usd"],  False,"111827",bg,  "right", "$#,##0.000"),
+                (row["gas_loc"],  False,"374151",bg,  "right", "#,##0.00"),
+                (row["die_loc"],  False,"374151",bg,  "right", "#,##0.00"),
+                (ct,              True, cfg,     cbg, "center",None),
+                (conf(row["confidence"]),False,"374151",bg,"center",None),
+            ]
+            for ci,(v,bd,fg,bgc,ha,nf) in enumerate(vals,1):
+                c2=ws.cell(row=r,column=ci,value=v)
+                c2.font=Font(name="Calibri",size=10,bold=bd,color=fg)
+                c2.fill=fill(bgc); c2.alignment=Alignment(horizontal=ha,vertical="center")
+                c2.border=b2
+                if nf: c2.number_format=nf
+            ws.row_dimensions[r].height=18; r+=1
 
-    NCOLS = 22
-
-    # ── Title ─────────────────────────────────────────────────────────────────
-    merge(wc, 1, 1, NCOLS,
-          "⛽  AFRICA FUEL TRACKER — CHARTS & ANALYSIS",
-          bold=True, size=15, color=TEXT_WHITE, bg=BG_DARK, halign="left", indent=1)
-    rh(wc, 1, 36)
-    merge(wc, 2, 1, NCOLS,
-          f"Updated: {meta.get('run_date','')}  ·  Regional averages and key market trends",
-          bold=False, size=9, color="9EC8E0", bg=BG_DARK, halign="left", indent=1)
-    rh(wc, 2, 18)
-
-    # ── Regional averages data (rows 4-9) ─────────────────────────────────────
-    cw(wc, 1, 20); cw(wc, 2, 16); cw(wc, 3, 16); cw(wc, 4, 12)
-
-    for i, hdr in enumerate(["Region", "Avg Gas USD/L", "Avg Diesel USD/L", "Countries"], 1):
-        c = cell(wc, 4, i, hdr, bold=True, size=10, color=TEXT_WHITE,
-                 bg=BG_HEADER, halign="center")
-        c.border = Border(bottom=Side(style="medium", color="00A86A"))
-    rh(wc, 4, 24)
-
-    reg_data = {}
-    for row in rows:
-        reg = row["region"]
-        reg_data.setdefault(reg, {"gas": [], "die": [], "n": 0})
-        reg_data[reg]["gas"].append(row["gas_usd"])
-        reg_data[reg]["die"].append(row["die_usd"])
-        reg_data[reg]["n"] += 1
-
-    for i, reg in enumerate(REGIONS, 5):
-        d   = reg_data.get(reg, {"gas": [], "die": [], "n": 0})
-        avg_g = round(sum(d["gas"]) / len(d["gas"]), 4) if d["gas"] else 0
-        avg_d = round(sum(d["die"]) / len(d["die"]), 4) if d["die"] else 0
-        bg = "F7F9FC" if i % 2 == 0 else "EFF4F8"
-        row_data = [(reg, None), (avg_g, "$#,##0.0000"), (avg_d, "$#,##0.0000"), (d["n"], None)]
-        for col_i, (val, nf) in enumerate(row_data, 1):
-            c = wc.cell(row=i, column=col_i, value=val)
-            c.font = Font(name="Arial", size=10, color=TEXT_DARK)
-            c.fill = solid(bg)
-            c.alignment = Alignment(
-                horizontal="left" if col_i == 1 else "center", vertical="center"
-            )
-            if nf:
-                c.number_format = nf
-        rh(wc, i, 18)
-
-    # ── Bar chart — regional averages ─────────────────────────────────────────
-    bar = BarChart()
-    bar.type = "col"
-    bar.grouping = "clustered"
-    bar.title = "Average Fuel Price by Region (USD/L)"
-    bar.style = 10
-    bar.y_axis.title = "USD/L"
-    bar.width = 18
-    bar.height = 12
-
-    cats    = Reference(wc, min_col=1, min_row=5, max_row=9)
-    gas_ref = Reference(wc, min_col=2, min_row=4, max_row=9)
-    die_ref = Reference(wc, min_col=3, min_row=4, max_row=9)
-    bar.add_data(gas_ref, titles_from_data=True)
-    bar.add_data(die_ref, titles_from_data=True)
-    bar.set_categories(cats)
-    bar.series[0].graphicalProperties.solidFill = "00A86A"
-    bar.series[1].graphicalProperties.solidFill = "1A8FD8"
-    wc.add_chart(bar, "F4")
-
-    # ── Top markets history data (rows 22+) ───────────────────────────────────
-    TOP = ["Kenya","Nigeria","South Africa","Egypt","Morocco",
-           "Ethiopia","Ghana","Tanzania","Algeria","Zambia"]
-
-    H_START = 22
-    merge(wc, H_START - 1, 1, len(TOP) + 1,
-          "TOP MARKETS — GASOLINE HISTORY (USD/L)",
-          bold=True, size=10, color=TEXT_WHITE, bg=BG_DARK, halign="left", indent=1)
-    rh(wc, H_START - 1, 22)
-
-    cell(wc, H_START, 1, "Date", bold=True, size=10,
-         color=TEXT_WHITE, bg=BG_HEADER, halign="center")
-    for j, cname in enumerate(TOP, 2):
-        cell(wc, H_START, j, cname, bold=True, size=10,
-             color=TEXT_WHITE, bg=BG_HEADER, halign="center")
-        cw(wc, j, 14)
-    rh(wc, H_START, 22)
-
-    # Collect all dates
-    hist_map = {row["country"]: row["hist"] for row in rows}
-    all_dates = sorted(set(
-        e["date"]
-        for c in TOP
-        for e in hist_map.get(c, [])
-        if e["date"] >= "2026-01-01"
-    ))
-
-    for di, dt in enumerate(all_dates):
-        dr  = H_START + 1 + di
-        bg  = "F7F9FC" if di % 2 == 0 else "EFF4F8"
-        wc.cell(row=dr, column=1, value=dt).font = Font(name="Arial", size=10)
-        wc.cell(row=dr, column=1).fill = solid(bg)
-        wc.cell(row=dr, column=1).alignment = Alignment(horizontal="center")
-        for j, cname in enumerate(TOP, 2):
-            hist_c = hist_map.get(cname, [])
-            val = None
-            for e in hist_c:
-                if e["date"] <= dt:
-                    val = e["gas_usd"]
-            c = wc.cell(row=dr, column=j, value=val)
-            c.fill = solid(bg)
-            c.font = Font(name="Arial", size=10)
-            c.alignment = Alignment(horizontal="right")
-            if val is not None:
-                c.number_format = "$#,##0.0000"
-        rh(wc, dr, 16)
-
-    H_END = H_START + len(all_dates)
-
-    # ── Line chart — top markets trend ────────────────────────────────────────
-    line = LineChart()
-    line.title = "Gasoline Price Trend — Top 10 Markets (USD/L)"
-    line.style = 10
-    line.y_axis.title = "USD/L"
-    line.x_axis.title = "Date"
-    line.width  = 22
-    line.height = 14
-
-    dates_ref = Reference(wc, min_col=1, min_row=H_START + 1, max_row=H_END)
-    for j in range(len(TOP)):
-        ser_ref = Reference(wc, min_col=j + 2, min_row=H_START, max_row=H_END)
-        line.add_data(ser_ref, titles_from_data=True)
-        line.series[j].graphicalProperties.line.solidFill = CHART_PAL[j]
-        line.series[j].graphicalProperties.line.width = 20000
-        line.series[j].smooth = True
-    line.set_categories(dates_ref)
-    wc.add_chart(line, "F22")
-
-    # ── Rankings (col 18+) ────────────────────────────────────────────────────
-    RC = 18
-    for c in range(RC, RC + 3):
-        cw(wc, c, 16 if c == RC else 12)
-
-    def mini_rank(start_row, title, title_bg, data_rows, row_bg_pair):
-        merge(wc, start_row, RC, RC + 2, title,
-              bold=True, size=10, color=TEXT_WHITE, bg=title_bg, halign="center")
-        rh(wc, start_row, 20)
-        for off, lbl in enumerate(["Country", "USD/L", "Region"]):
-            cell(wc, start_row + 1, RC + off, lbl, bold=True, size=9,
-                 color=TEXT_WHITE, bg=BG_HEADER, halign="center")
-        rh(wc, start_row + 1, 18)
-        for i, row in enumerate(data_rows):
-            dr  = start_row + 2 + i
-            bg  = row_bg_pair[i % 2]
-            wc.cell(row=dr, column=RC,     value=f"{i+1}. {row['country']}")
-            wc.cell(row=dr, column=RC + 1, value=row["gas_usd"])
-            wc.cell(row=dr, column=RC + 2, value=row["region"])
-            wc.cell(row=dr, column=RC + 1).number_format = "$#,##0.0000"
-            for col_off in range(3):
-                c = wc.cell(row=dr, column=RC + col_off)
-                c.fill = solid(bg)
-                c.font = Font(name="Arial", size=9, color=TEXT_DARK)
-                c.alignment = Alignment(
-                    horizontal="left" if col_off == 0 else "center", vertical="center"
-                )
-            rh(wc, dr, 16)
-
-    top10 = sorted(rows, key=lambda x: -x["gas_usd"])[:10]
-    bot10 = sorted(rows, key=lambda x:  x["gas_usd"])[:10]
-    mini_rank(4,  "🔴 TOP 10 MOST EXPENSIVE GAS", "991B1B", top10, ["FEF2F2", "FEE2E2"])
-    mini_rank(18, "🟢 TOP 10 MOST AFFORDABLE GAS","065F46", bot10, ["F0FDF4", "DCFCE7"])
-
-
-# ══════════════════════════════════════════════════════════════════════════════
-# MAIN
-# ══════════════════════════════════════════════════════════════════════════════
-
+# ── Main ──────────────────────────────────────────────────────────────────────
 def main():
-    if not PRICES_DB.exists():
-        print(f"❌ {PRICES_DB} not found"); return
-    if not HISTORY_DB.exists():
-        print(f"❌ {HISTORY_DB} not found"); return
+    for path in [PRICES_DB, HISTORY_DB]:
+        if not path.exists():
+            print(f"❌ {path} not found"); return
 
     meta, rows = load_data()
-
     wb = Workbook()
-    wb.remove(wb.active)      # remove default blank sheet
+    wb.remove(wb.active)
 
-    build_price_history(wb, meta, rows)
-    build_charts(wb, meta, rows)
+    sh_summary(wb,  meta, rows)
+    sh_all(wb,      meta, rows)
+    sh_history(wb,  meta, rows)
+    sh_rankings(wb, meta, rows)
+    sh_region(wb,   meta, rows)
 
     run_date = meta.get("run_date", date.today().isoformat())
-    out_path = ROOT / f"africa_fuel_tracker_{run_date}.xlsx"
-    wb.save(out_path)
-
-    size_kb = out_path.stat().st_size / 1024
-    print(f"✅ Excel generated → {out_path.name}  ({size_kb:.0f} KB)")
+    out = ROOT / f"africa_fuel_tracker_{run_date}.xlsx"
+    wb.save(out)
+    print(f"✅ {out.name}  ({out.stat().st_size//1024} KB)")
     print(f"   Sheets: {wb.sheetnames}")
-
 
 if __name__ == "__main__":
     main()
