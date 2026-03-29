@@ -7,7 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 :root{--g0:#00A86A;--g1:#00CC85;--gold:#F5A300;--red:#E8394A;--blue:#1A8FD8;--cyan:#00C4CF;--amber:#E87C1A;--bg:#07111E;--bg1:#0B1826;--s1:#132435;--s2:#1A3347;--s3:#214059;--t1:#E8EEF4;--t2:#9EC8E0;--t3:#5A8FAF;--t4:#2D5A7A;--r8:8px;--r12:12px;--r16:16px;--r24:24px;--r99:99px;--sh:0 4px 24px rgba(0,0,0,.4);--sh-g:0 4px 24px rgba(0,168,106,.25)}
 *{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
@@ -546,57 +545,15 @@ function tick(){
   buildKpis();buildRegions();buildRanks('top');buildRanks('bot');renderTable();
 }
 function exportXLSX(){
-  // ── Sheet 1: All Countries ───────────────────────────────────────────────
-  const hdr=['Country','Region','Currency','FX Rate',
-             'Gas USD/L','Diesel USD/L','Gas Local/L','Diesel Local/L',
-             'Chg% Jan\u2192Now','Confidence','Effective Date','Source'];
-  const aoa=[hdr];
-  data.forEach(c=>aoa.push([
-    c.name, c.region, c.currency, c.fx_rate,
-    c.gas_usd_now, c.die_usd_now, c.gas_loc_now, c.die_loc_now,
-    parseFloat(c.chg_gas.toFixed(2)), c.confidence, c.effective_date, c.src
-  ]));
-  const ws1=XLSX.utils.aoa_to_sheet(aoa);
-
-  // Column widths
-  ws1['!cols']=[{wch:22},{wch:16},{wch:8},{wch:10},
-                {wch:13},{wch:13},{wch:14},{wch:14},
-                {wch:12},{wch:10},{wch:14},{wch:45}];
-
-  // ── Sheet 2: By Region ───────────────────────────────────────────────────
-  const REGS_LIST=['North Africa','West Africa','Central Africa','East Africa','Southern Africa'];
-  const hdr2=['Region','Country','Currency','Gas USD/L','Diesel USD/L',
-              'Gas Local/L','Diesel Local/L','Chg% Jan\u2192Now','Confidence'];
-  const aoa2=[hdr2];
-  REGS_LIST.forEach(reg=>{
-    const cs=data.filter(c=>c.region===reg).sort((a,b)=>a.name.localeCompare(b.name));
-    cs.forEach(c=>aoa2.push([
-      c.region, c.name, c.currency,
-      c.gas_usd_now, c.die_usd_now, c.gas_loc_now, c.die_loc_now,
-      parseFloat(c.chg_gas.toFixed(2)), c.confidence
-    ]));
-  });
-  const ws2=XLSX.utils.aoa_to_sheet(aoa2);
-  ws2['!cols']=[{wch:16},{wch:22},{wch:8},{wch:13},{wch:13},{wch:14},{wch:14},{wch:12},{wch:10}];
-
-  // ── Sheet 3: Rankings ────────────────────────────────────────────────────
-  const sorted=[...data].sort((a,b)=>b.gas_usd_now-a.gas_usd_now);
-  const hdr3=['Rank','Country','Region','Gas USD/L','Diesel USD/L','Chg% Jan\u2192Now'];
-  const aoa3=[['TOP 10 MOST EXPENSIVE'],hdr3];
-  sorted.slice(0,10).forEach((c,i)=>aoa3.push([i+1,c.name,c.region,c.gas_usd_now,c.die_usd_now,parseFloat(c.chg_gas.toFixed(2))]));
-  aoa3.push([]);
-  aoa3.push(['TOP 10 MOST AFFORDABLE']);
-  aoa3.push(hdr3);
-  sorted.slice(-10).reverse().forEach((c,i)=>aoa3.push([i+1,c.name,c.region,c.gas_usd_now,c.die_usd_now,parseFloat(c.chg_gas.toFixed(2))]));
-  const ws3=XLSX.utils.aoa_to_sheet(aoa3);
-  ws3['!cols']=[{wch:6},{wch:22},{wch:16},{wch:13},{wch:13},{wch:12}];
-
-  // ── Workbook ─────────────────────────────────────────────────────────────
-  const wb=XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws1, 'All Countries');
-  XLSX.utils.book_append_sheet(wb, ws2, 'By Region');
-  XLSX.utils.book_append_sheet(wb, ws3, 'Rankings');
-  XLSX.writeFile(wb, 'africa_fuel_prices_'+D.period_end+'.xlsx');
+  // Download the pre-built, professionally formatted Excel file
+  // generated server-side by generate_excel.py (committed daily by GitHub Actions)
+  const filename = 'africa_fuel_tracker_' + D.period_end + '.xlsx';
+  const a = document.createElement('a');
+  a.href     = filename;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
 }
 function esc(s){return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'");}
 
