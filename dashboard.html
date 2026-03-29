@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AfricaFuelWatch 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{--g0:#00A86A;--g1:#00CC85;--gold:#F5A300;--gold2:#FFBE33;--red:#E8394A;--blue:#1A8FD8;--cyan:#00C4CF;--amber:#E87C1A;--purple:#8B5CF6;--bg:#07111E;--bg1:#0B1826;--bg2:#0E1E2E;--s1:#132435;--s2:#1A3347;--s3:#214059;--s4:#2D5A7A;--t1:#E8EEF4;--t2:#9EC8E0;--t3:#5A8FAF;--t4:#2D5A7A;--r4:4px;--r8:8px;--r12:12px;--r16:16px;--r24:24px;--r99:99px;--sh:0 4px 24px rgba(0,0,0,.4);--sh-g:0 4px 24px rgba(0,168,106,.25)}
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--t1);font-family:'Outfit',sans-serif;overflow-x:hidden;min-height:100vh;line-height:1.5}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:var(--bg1)}::-webkit-scrollbar-thumb{background:var(--s3);border-radius:99px}
+a{color:inherit;text-decoration:none}button{cursor:pointer;font-family:'Outfit',sans-serif;border:none;outline:none}input,select{font-family:'Outfit',sans-serif;outline:none}canvas{display:block}
+.page{display:flex;flex-direction:column;min-height:100vh}.wrap{width:100%;max-width:1440px;margin:0 auto;padding:0 1.5rem}
+nav{position:sticky;top:0;z-index:500;height:56px;background:rgba(7,17,30,.96);backdrop-filter:blur(24px);border-bottom:1px solid var(--s2)}
+.nav-inner{height:100%;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.nav-brand{display:flex;align-items:center;gap:.6rem;flex-shrink:0}
+.brand-icon{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--g0),#007A4D);display:flex;align-items:center;justify-content:center;font-size:1rem;box-shadow:var(--sh-g);flex-shrink:0}
+.brand-name{font-size:.9rem;font-weight:800;letter-spacing:-.02em}.brand-name span{color:var(--g0)}
+.brand-tag{font-size:.6rem;font-weight:600;letter-spacing:.06em;color:var(--g0);background:rgba(0,168,106,.1);border:1px solid rgba(0,168,106,.25);border-radius:var(--r99);padding:.12rem .5rem;text-transform:uppercase}
+.nav-right{display:flex;align-items:center;gap:.6rem}.nav-meta{font-size:.67rem;color:var(--t3);font-family:'JetBrains Mono',monospace;display:none}
+@media(min-width:640px){.nav-meta{display:block}}
+.live-dot{display:flex;align-items:center;gap:.35rem;background:rgba(0,168,106,.1);border:1px solid rgba(0,168,106,.3);border-radius:var(--r99);padding:.2rem .6rem;font-size:.65rem;font-weight:600;color:var(--g0);font-family:'JetBrains Mono',monospace;letter-spacing:.02em}
+.pulse{width:6px;height:6px;border-radius:50%;background:var(--g0);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+.btn-dl-nav{display:flex;align-items:center;gap:.4rem;padding:.32rem .75rem;border-radius:var(--r8);background:var(--g0);color:#fff;font-size:.73rem;font-weight:700;transition:.15s;white-space:nowrap}
+.btn-dl-nav:hover{background:var(--g1);transform:translateY(-1px)}
+.ticker{background:var(--bg1);border-bottom:1px solid var(--s2);height:32px;overflow:hidden;display:flex;align-items:center}
+.ticker-lbl{flex-shrink:0;padding:0 .75rem;height:100%;display:flex;align-items:center;gap:.4rem;background:rgba(0,168,106,.08);border-right:1px solid var(--s2);font-size:.62rem;font-weight:700;letter-spacing:.08em;color:var(--g0);text-transform:uppercase;white-space:nowrap}
+.ticker-body{flex:1;overflow:hidden;position:relative}
+.ticker-body::before{content:'';position:absolute;top:0;bottom:0;left:0;width:32px;z-index:2;background:linear-gradient(90deg,var(--bg1),transparent);pointer-events:none}
+.ticker-body::after{content:'';position:absolute;top:0;bottom:0;right:0;width:32px;z-index:2;background:linear-gradient(270deg,var(--bg1),transparent);pointer-events:none}
+.ticker-track{display:flex;align-items:center;white-space:nowrap;animation:ticker 120s linear infinite}
+.ticker-track:hover{animation-play-state:paused}
+@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.ti{display:inline-flex;align-items:center;gap:.45rem;padding:0 1rem;height:32px;border-right:1px solid rgba(33,64,89,.5);font-size:.7rem}
+.ti-n{font-weight:600}.ti-p{font-family:'JetBrains Mono',monospace;color:var(--g0);font-weight:500}.ti-c{font-size:.6rem;color:var(--t4)}
+.up{color:var(--red)}.dn{color:var(--g1)}.fl{color:var(--t4)}
+main{flex:1;padding:1.25rem 0 3rem}
+.hero{background:linear-gradient(135deg,#0B1E31 0%,#0E2A3D 60%,#0A1E2D 100%);border:1px solid var(--s2);border-radius:var(--r16);padding:1.5rem;margin-bottom:1.25rem;position:relative;overflow:hidden}
+.hero-glow{position:absolute;top:-80px;right:-80px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(0,168,106,.07) 0%,transparent 70%);pointer-events:none}
+.hero-grid{display:grid;grid-template-columns:1fr;gap:1.25rem}
+@media(min-width:768px){.hero-grid{grid-template-columns:1fr auto;align-items:start}}
+.hero-title{font-size:clamp(1.3rem,4vw,1.8rem);font-weight:900;line-height:1.15;margin-bottom:.5rem;letter-spacing:-.03em;background:linear-gradient(135deg,#E8EEF4 0%,#9EC8E0 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:.85rem;color:var(--t2);line-height:1.6;max-width:580px;margin-bottom:1rem}
+.hero-tags{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1.1rem}
+.tag{display:inline-flex;align-items:center;gap:.3rem;padding:.22rem .65rem;border-radius:var(--r99);font-size:.68rem;font-weight:600}
+.tag-g{background:rgba(0,168,106,.1);border:1px solid rgba(0,168,106,.2);color:var(--g0)}
+.tag-y{background:rgba(245,163,0,.1);border:1px solid rgba(245,163,0,.2);color:var(--gold)}
+.tag-b{background:rgba(26,143,216,.1);border:1px solid rgba(26,143,216,.2);color:var(--blue)}
+.btn-dl{display:inline-flex;align-items:center;gap:.6rem;padding:.65rem 1.35rem;border-radius:var(--r12);background:linear-gradient(135deg,#007A4D,var(--g0));color:#fff;font-size:.85rem;font-weight:700;box-shadow:var(--sh-g);transition:.2s;cursor:pointer}
+.btn-dl:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,168,106,.4)}
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.kpi{background:rgba(7,17,30,.7);border:1px solid var(--s2);border-radius:var(--r12);padding:.85rem 1rem}
+.kpi-label{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);margin-bottom:.25rem}
+.kpi-value{font-size:1.2rem;font-weight:900;font-family:'JetBrains Mono',monospace;line-height:1.1}
+.kpi-sub{font-size:.67rem;color:var(--t3);margin-top:.2rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sec-head{display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap;margin-bottom:.85rem}
+.sec-title{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);display:flex;align-items:center;gap:.5rem}
+.sec-pill{background:rgba(0,168,106,.1);border:1px solid rgba(0,168,106,.2);color:var(--g0);padding:.1rem .48rem;border-radius:var(--r99);font-size:.6rem;font-weight:800;letter-spacing:.04em}
+.reg-strip{display:grid;gap:.6rem;margin-bottom:1.25rem;grid-template-columns:repeat(2,1fr)}
+@media(min-width:480px){.reg-strip{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:900px){.reg-strip{grid-template-columns:repeat(5,1fr)}}
+.rc{background:var(--s1);border:1px solid var(--s2);border-radius:var(--r12);padding:.85rem 1rem;position:relative;overflow:hidden;transition:.2s}
+.rc:hover{border-color:var(--s3);transform:translateY(-2px);box-shadow:var(--sh)}
+.rc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.rc-na::before{background:var(--gold)}.rc-wa::before{background:var(--g0)}.rc-ea::before{background:var(--blue)}.rc-ca::before{background:var(--amber)}.rc-sa::before{background:var(--red)}
+.rc-name{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--t3);margin-bottom:.4rem}
+.rc-price{font-size:1.2rem;font-weight:900;font-family:'JetBrains Mono',monospace;line-height:1;margin-bottom:.25rem}
+.rc-count{font-size:.63rem;color:var(--t4);margin-bottom:.5rem}
+.rc-bar{background:var(--bg);border-radius:99px;height:3px;overflow:hidden;margin-bottom:.35rem}
+.rc-fill{height:100%;border-radius:99px;transition:width .8s ease}.rc-chg{font-size:.67rem;font-weight:600}
+.card{background:var(--s1);border:1px solid var(--s2);border-radius:var(--r16);padding:1.1rem 1.15rem;margin-bottom:1.1rem}
+.card-head{font-size:.71rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--t3);margin-bottom:.9rem;display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-wrap:wrap}
+.chart-row{display:grid;grid-template-columns:1fr;gap:1.1rem;margin-bottom:1.1rem}
+@media(min-width:900px){.chart-row{grid-template-columns:3fr 2fr}}
+.chart-box{height:260px;position:relative}
+@media(min-width:640px){.chart-box{height:300px}}
+.tog{display:inline-flex;background:var(--bg);border:1px solid var(--s2);border-radius:var(--r8);padding:2px;gap:2px;flex-wrap:wrap}
+.tog-btn{padding:.26rem .7rem;border-radius:6px;background:transparent;color:var(--t3);font-size:.7rem;font-weight:600;font-family:'Outfit',sans-serif;transition:.12s;white-space:nowrap}
+.tog-btn.on{background:var(--g0);color:#fff;box-shadow:0 2px 8px rgba(0,168,106,.3)}.tog-btn:hover:not(.on){background:var(--s2);color:var(--t1)}
+.rank-row{display:grid;grid-template-columns:1fr;gap:1.1rem;margin-bottom:1.1rem}
+@media(min-width:640px){.rank-row{grid-template-columns:1fr 1fr}}
+.rank-list{display:flex;flex-direction:column;gap:.3rem}
+.rank-item{display:flex;align-items:center;gap:.65rem;padding:.5rem .65rem;border-radius:var(--r8);border:1px solid transparent;cursor:pointer;transition:.12s}
+.rank-item:hover{background:var(--bg1);border-color:var(--s2)}
+.rank-n{width:24px;height:24px;border-radius:6px;background:var(--bg);border:1px solid var(--s2);display:flex;align-items:center;justify-content:center;font-size:.67rem;font-weight:700;color:var(--t3);flex-shrink:0}
+.rank-item:nth-child(-n+3) .rank-n{background:rgba(245,163,0,.1);border-color:rgba(245,163,0,.3);color:var(--gold)}
+.rank-name{font-size:.78rem;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rank-right{display:flex;flex-direction:column;align-items:flex-end;gap:.12rem;flex-shrink:0}
+.rank-price{font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:600}
+.rank-bar-bg{height:2px;background:var(--bg);border-radius:99px;width:60px}
+.rank-bar-fg{height:100%;border-radius:99px;transition:width .4s}
+.fx-wrap{display:grid;gap:.45rem;grid-template-columns:repeat(2,1fr);max-height:240px;overflow-y:auto}
+@media(min-width:480px){.fx-wrap{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:768px){.fx-wrap{grid-template-columns:repeat(4,1fr)}}
+@media(min-width:1100px){.fx-wrap{grid-template-columns:repeat(6,1fr)}}
+.fx-card{background:var(--bg1);border:1px solid var(--s2);border-radius:var(--r8);padding:.5rem .65rem;display:flex;align-items:center;justify-content:space-between;gap:.4rem}
+.fx-code{font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:600;color:var(--g0)}
+.fx-rate{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--t1);font-weight:500}
+.fx-inv{font-size:.58rem;color:var(--t4);display:block;margin-top:.08rem}
+.tbl-controls{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;padding-bottom:.75rem;border-bottom:1px solid var(--s2);margin-bottom:.75rem}
+.fb{padding:.24rem .7rem;border-radius:var(--r99);font-size:.7rem;font-weight:600;border:1px solid var(--s2);background:transparent;color:var(--t3);font-family:'Outfit',sans-serif;transition:.12s;white-space:nowrap}
+.fb.on{background:var(--g0);border-color:var(--g0);color:#fff}.fb:hover:not(.on){border-color:var(--s3);color:var(--t1)}
+.ctrl-right{display:flex;align-items:center;gap:.5rem;margin-left:auto;flex-wrap:wrap}
+.sort-sel{padding:.24rem .6rem;border-radius:var(--r8);font-size:.7rem;border:1px solid var(--s2);background:var(--bg);color:var(--t1);font-family:'Outfit',sans-serif;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235A8FAF' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .5rem center;padding-right:1.75rem}
+.sort-sel:focus{border-color:var(--g0)}
+.srch-wrap{position:relative}
+.srch-ico{position:absolute;left:.55rem;top:50%;transform:translateY(-50%);color:var(--t4);pointer-events:none;font-size:.8rem}
+.srch{padding:.24rem .6rem .24rem 1.75rem;border-radius:var(--r8);font-size:.7rem;border:1px solid var(--s2);background:var(--bg);color:var(--t1);font-family:'Outfit',sans-serif;width:150px;transition:.2s}
+@media(min-width:480px){.srch{width:180px}}.srch:focus{border-color:var(--g0);width:200px}.srch::placeholder{color:var(--t4)}
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:.76rem;min-width:600px}
+thead th{background:var(--bg);border-bottom:2px solid var(--s2);padding:.45rem .65rem;font-size:.64rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--t3);text-align:left;white-space:nowrap;cursor:pointer;position:sticky;top:0;z-index:2;user-select:none}
+thead th:hover{color:var(--g0)}thead th.sorted{color:var(--g0);border-bottom-color:var(--g0)}
+tbody tr{border-bottom:1px solid rgba(26,51,71,.4);cursor:pointer;transition:.1s}tbody tr:hover{background:rgba(0,168,106,.04)}
+td{padding:.45rem .65rem;white-space:nowrap;vertical-align:middle}
+.cn{font-weight:700}.mono{font-family:'JetBrains Mono',monospace;font-weight:500}
+.rt{font-size:.61rem;font-weight:600;padding:.12rem .45rem;border-radius:var(--r99);border:1px solid}
+.rt-na{color:var(--gold);border-color:rgba(245,163,0,.3);background:rgba(245,163,0,.07)}
+.rt-wa{color:var(--g0);border-color:rgba(0,168,106,.3);background:rgba(0,168,106,.07)}
+.rt-ea{color:var(--blue);border-color:rgba(26,143,216,.3);background:rgba(26,143,216,.07)}
+.rt-ca{color:var(--amber);border-color:rgba(232,124,26,.3);background:rgba(232,124,26,.07)}
+.rt-sa{color:var(--red);border-color:rgba(232,57,74,.3);background:rgba(232,57,74,.07)}
+.cur{font-family:'JetBrains Mono',monospace;font-size:.63rem;font-weight:500;padding:.1rem .38rem;border-radius:4px;background:rgba(0,168,106,.08);color:var(--g0);border:1px solid rgba(0,168,106,.18)}
+.up2{color:var(--red);font-weight:700}.dn2{color:var(--g1);font-weight:700}.fl2{color:var(--t4)}
+.lev-h{color:var(--red);font-size:.63rem;font-weight:800;letter-spacing:.02em}
+.lev-m{color:var(--gold);font-size:.63rem;font-weight:800;letter-spacing:.02em}
+.lev-l{color:var(--g0);font-size:.63rem;font-weight:800;letter-spacing:.02em}
+.pb{height:2px;background:var(--bg);border-radius:99px;width:60px;margin-top:3px}
+.pb-f{height:100%;background:var(--g0);border-radius:99px}
+.cnt-badge{font-size:.7rem;font-weight:700;background:rgba(0,168,106,.1);border:1px solid rgba(0,168,106,.2);color:var(--g0);padding:.1rem .45rem;border-radius:var(--r99)}
+.stale-badge{font-size:.58rem;font-weight:700;background:rgba(245,163,0,.12);border:1px solid rgba(245,163,0,.3);color:var(--gold);padding:.08rem .4rem;border-radius:4px;margin-left:.3rem;vertical-align:middle}
+.old-badge{font-size:.58rem;font-weight:700;background:rgba(232,57,74,.1);border:1px solid rgba(232,57,74,.3);color:var(--red);padding:.08rem .4rem;border-radius:4px;margin-left:.3rem;vertical-align:middle}
+.ov{position:fixed;inset:0;background:rgba(7,17,30,.85);backdrop-filter:blur(8px);z-index:900;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
+@media(min-width:600px){.ov{align-items:center}}
+.ov.open{opacity:1;pointer-events:all}
+.modal{background:var(--bg1);border:1px solid var(--s2);border-radius:var(--r24) var(--r24) 0 0;width:100%;max-width:520px;max-height:92vh;overflow-y:auto;transform:translateY(60px);transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+@media(min-width:600px){.modal{border-radius:var(--r24);transform:scale(.94)}}
+.ov.open .modal{transform:translateY(0) scale(1)}
+.m-bar{display:block;width:36px;height:3px;background:var(--s3);border-radius:99px;margin:.6rem auto .2rem}
+@media(min-width:600px){.m-bar{display:none}}
+.m-head{display:flex;justify-content:space-between;align-items:flex-start;padding:1rem 1.25rem .6rem;gap:.75rem;border-bottom:1px solid var(--s2)}
+.m-title{font-size:1.1rem;font-weight:800;letter-spacing:-.02em}.m-sub{font-size:.72rem;color:var(--t3);margin-top:.2rem}
+.m-fx{font-size:.67rem;color:var(--t4);font-family:'JetBrains Mono',monospace;margin-top:.25rem}
+.m-close{width:28px;height:28px;border-radius:8px;border:1px solid var(--s2);background:transparent;color:var(--t3);font-size:1rem;display:flex;align-items:center;justify-content:center;transition:.12s;flex-shrink:0}
+.m-close:hover{background:var(--s2);color:var(--t1)}
+.m-body{padding:1rem 1.25rem 1.5rem}
+.m-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:.55rem;margin-bottom:1rem}
+@media(min-width:400px){.m-stats{grid-template-columns:repeat(3,1fr)}}
+.m-stat{background:var(--bg1);border:1px solid var(--s2);border-radius:var(--r12);padding:.7rem .85rem}
+.m-sl{font-size:.62rem;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.28rem}
+.m-sv{font-size:1rem;font-weight:800;font-family:'JetBrains Mono',monospace}
+.m-tabs{display:flex;gap:.4rem;margin-bottom:.75rem}
+.mtab{padding:.28rem .8rem;border-radius:var(--r99);font-size:.72rem;font-weight:600;border:1px solid var(--s2);background:transparent;color:var(--t3);font-family:'Outfit',sans-serif;transition:.12s}
+.mtab.on{background:var(--g0);border-color:var(--g0);color:#fff}
+.m-chart{height:200px;position:relative}
+.m-src{font-size:.62rem;color:var(--t4);margin-top:.75rem;font-family:'JetBrains Mono',monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.m-src a{color:var(--blue)}
+footer{border-top:1px solid var(--s2);padding:1rem 1.5rem;font-size:.62rem;color:var(--t4);font-family:'JetBrains Mono',monospace;text-align:center;line-height:1.8}
+footer strong{color:var(--t3)}
+.dl-float{position:fixed;bottom:1.25rem;right:1.25rem;z-index:400;display:flex;align-items:center;gap:.5rem;padding:.6rem 1rem;border-radius:var(--r12);background:linear-gradient(135deg,#007A4D,var(--g0));color:#fff;font-size:.75rem;font-weight:700;box-shadow:0 6px 24px rgba(0,168,106,.4);animation:floatY 3s ease-in-out infinite;transition:.2s;cursor:pointer;border:none}
+@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.dl-float:hover{animation:none;transform:translateY(-2px) scale(1.04)}
+.dl-float-badge{position:absolute;top:-7px;right:-7px;background:var(--gold);color:#000;border-radius:99px;font-size:.52rem;font-weight:900;padding:.1rem .35rem;font-family:'JetBrains Mono',monospace;border:2px solid var(--bg);letter-spacing:.03em}
+.tbl-hint{display:flex;align-items:center;gap:.4rem;font-size:.65rem;color:var(--t4);margin-bottom:.5rem;padding:.35rem .6rem;background:rgba(26,143,216,.06);border:1px solid rgba(26,143,216,.15);border-radius:var(--r8)}
+@media(min-width:900px){.tbl-hint{display:none}}
+</style>
+</head>
+<body class="page">
+
+<nav><div class="wrap nav-inner">
+  <div class="nav-brand">
+    <div class="brand-icon">⛽</div>
+    <div><div class="brand-name">Africa<span>Fuel</span>Watch</div></div>
+    <div class="brand-tag">2026</div>
+  </div>
+  <div class="nav-right">
+    <div class="nav-meta" id="navMeta"></div>
+    <div class="live-dot"><span class="pulse"></span>LIVE</div>
+    <button class="btn-dl-nav" onclick="exportCSV()">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Export CSV
+    </button>
+  </div>
+</div></nav>
+
+<div class="ticker">
+  <div class="ticker-lbl"><svg width="10" height="10" viewBox="0 0 24 24" fill="var(--g0)"><circle cx="12" cy="12" r="10"/></svg>PRICES</div>
+  <div class="ticker-body"><div class="ticker-track" id="tickerTrack"></div></div>
+</div>
+
+<main><div class="wrap">
+
+<div class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-grid">
+    <div>
+      <div class="hero-title">Africa Fuel<br>Price Intelligence</div>
+      <div class="hero-sub">Real-time monitoring of gasoline &amp; diesel across <strong>54 African nations</strong> — USD and local currency, official sources only.</div>
+      <div class="hero-tags">
+        <span class="tag tag-g">⛽ 54 Countries</span>
+        <span class="tag tag-y">🌍 5 Regions</span>
+        <span class="tag tag-b">💱 Official FX Rates</span>
+        <span class="tag tag-g">🔄 Daily Updates</span>
+      </div>
+      <button class="btn-dl" onclick="exportCSV()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Export Data <span style="opacity:.75;font-size:.75rem;font-weight:500">CSV</span>
+      </button>
+    </div>
+    <div class="kpi-grid" id="kpiGrid"></div>
+  </div>
+</div>
+
+<div class="sec-head"><div class="sec-title">Regional Overview <span class="sec-pill">5 REGIONS</span></div></div>
+<div class="reg-strip" id="regStrip"></div>
+
+<div class="chart-row">
+  <div class="card">
+    <div class="card-head">Weekly Trend — Key Markets
+      <div class="tog" id="lineTog">
+        <button class="tog-btn on" data-v="usd">Gas USD</button>
+        <button class="tog-btn" data-v="loc">Local</button>
+        <button class="tog-btn" data-v="die">Diesel</button>
+      </div>
+    </div>
+    <div class="chart-box"><canvas id="lineChart"></canvas></div>
+  </div>
+  <div class="card">
+    <div class="card-head">Regional Averages</div>
+    <div class="chart-box"><canvas id="barChart"></canvas></div>
+  </div>
+</div>
+
+<div class="rank-row">
+  <div class="card">
+    <div class="card-head">🔴 Most Expensive Gas
+      <div class="tog" id="topTog"><button class="tog-btn on" data-v="usd">USD</button><button class="tog-btn" data-v="loc">Local</button></div>
+    </div>
+    <div class="rank-list" id="topList"></div>
+  </div>
+  <div class="card">
+    <div class="card-head">🟢 Most Affordable Gas
+      <div class="tog" id="botTog"><button class="tog-btn on" data-v="usd">USD</button><button class="tog-btn" data-v="loc">Local</button></div>
+    </div>
+    <div class="rank-list" id="botList"></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-head">💱 Exchange Rates <span style="font-size:.62rem;color:var(--t4);font-weight:400">Local per 1 USD</span></div>
+  <div class="fx-wrap" id="fxWrap"></div>
+</div>
+
+<div class="card">
+  <div class="card-head">All 54 Countries <span class="cnt-badge" id="cntBadge">54</span></div>
+  <div class="tog" id="tblTog" style="margin-bottom:.75rem">
+    <button class="tog-btn on" data-v="usd">USD/L</button>
+    <button class="tog-btn" data-v="loc">Local/L</button>
+    <button class="tog-btn" data-v="both">Both</button>
+  </div>
+  <div class="tbl-controls">
+    <button class="fb on" data-r="all">All</button>
+    <button class="fb" data-r="North Africa">N. Africa</button>
+    <button class="fb" data-r="West Africa">W. Africa</button>
+    <button class="fb" data-r="East Africa">E. Africa</button>
+    <button class="fb" data-r="Central Africa">Central</button>
+    <button class="fb" data-r="Southern Africa">Southern</button>
+    <div class="ctrl-right">
+      <select class="sort-sel" id="sortSel">
+        <option value="name">Name A–Z</option>
+        <option value="gas_desc">Gas ↓</option>
+        <option value="gas_asc">Gas ↑</option>
+        <option value="chg_desc">Change ↑</option>
+        <option value="chg_asc">Change ↓</option>
+      </select>
+      <div class="srch-wrap">
+        <span class="srch-ico">🔍</span>
+        <input class="srch" id="srchInp" placeholder="Search…">
+      </div>
+    </div>
+  </div>
+  <div class="tbl-hint">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    Scroll right for more · Tap a row for details
+  </div>
+  <div class="tbl-wrap">
+    <table><thead><tr id="tHead"></tr></thead><tbody id="tBody"></tbody></table>
+  </div>
+</div>
+
+</div></main>
+
+<footer>
+  <strong>AFRICAFUELWATCH 2026</strong> &nbsp;·&nbsp; Official regulatory sources only &nbsp;·&nbsp;
+  <span id="ftTime"></span>
+</footer>
+
+<div class="ov" id="modalOv">
+  <div class="modal" id="modalBox">
+    <span class="m-bar"></span>
+    <div class="m-head">
+      <div>
+        <div class="m-title" id="mTitle"></div>
+        <div class="m-sub" id="mSub"></div>
+        <div class="m-fx" id="mFx"></div>
+      </div>
+      <button class="m-close" id="mClose">✕</button>
+    </div>
+    <div class="m-body">
+      <div class="m-stats" id="mStats"></div>
+      <div class="m-tabs" id="mTabs">
+        <button class="mtab on" data-tab="gas">⛽ Gasoline</button>
+        <button class="mtab" data-tab="die">🚛 Diesel</button>
+      </div>
+      <div class="m-chart"><canvas id="mChart"></canvas></div>
+      <div class="m-src" id="mSrc"></div>
+    </div>
+  </div>
+</div>
+
+<button class="dl-float" onclick="exportCSV()">
+  <span class="dl-float-badge">CSV</span>
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+  Export
+</button>
+
+<script>
+'use strict';
+const D={"updated":"29 March 2026 — 09:40 UTC","period":"6 Dec 2025 — 29 Mar 2026","period_start":"2025-12-06","period_end":"2026-03-29","week_labels":["07 Dec","14 Dec","21 Dec","28 Dec","04 Jan","11 Jan","18 Jan","25 Jan","01 Feb","08 Feb","15 Feb","22 Feb","01 Mar","08 Mar","15 Mar","22 Mar","29 Mar","05 Apr"],"n_weeks":18,"fx_rates":{"DZD":532.0,"EGP":50.3,"LYD":4.85,"MAD":10.03,"SDG":601.5,"TND":3.02,"XOF":603.5,"CVE":100.5,"GMD":68.0,"GHS":10.89,"GNF":8650.0,"LRD":194.0,"MRU":36.5,"NGN":1621.0,"SLL":22500.0,"XAF":603.5,"CDF":2820.0,"STN":21.5,"BIF":2920.0,"KMF":426.0,"DJF":177.7,"ERN":15.0,"ETB":157.4,"KES":130.5,"MGA":4620.0,"MWK":1734.0,"MUR":46.5,"RWF":1463.0,"SCR":14.15,"USD":1.0,"SSP":4544.0,"TZS":2710.0,"UGX":3582.0,"AOA":917.0,"BWP":13.54,"SZL":18.55,"LSL":17.4,"MZN":64.1,"NAD":18.55,"ZAR":17.1906,"ZMW":26.2,"ZWG":26.0},"countries":[{"name":"Algeria","region":"North Africa","currency":"DZD","fx_rate":532.0,"octane":95,"src":"https://www.thefuelprice.com/Fdz/en","confidence":"high","old_source":false,"stale":false,"effective_date":"2026-01-01","gas_usd_now":0.0883,"die_usd_now":0.0583,"lpg_usd_now":0.057,"gas_loc_now":47.0,"die_loc_now":31.0,"lpg_loc_now":30.55,"gas_usd_w":[0.0883,0.0883,0.0883,0.0883,0.0883,0.0883,0.0883,0.0883,0.0883,0.0883,0.0883,0.0883,0.0883,0.0883,0.0883,0.0883,0.0883,0.0883],"die_usd_w":[0.0583,0.0583,0.0583,0.0583,0.0583,0.0583,0.0583,0.0583,0.0583,0.0583,0.0583,0.0583,0.0583,0.0583,0.0583,0.0583,0.0583,0.0583],"gas_loc_w":[47.0,47.0,47.0,47.0,47.0,47.0,47.0,47.0,47.0,47.0,47.0,47.0,47.0,47.0,47.0,47.0,47.0,47.0],"die_loc_w":[31.0,31.0,31.0,31.0,31.0,31.0,31.0,31.0,31.0,31.0,31.0,31.0,31.0,31.0,31.0,31.0,31.0,31.0],"chg_gas":0.0,"chg_die":0.0,"min_gas":0.0883,"max_gas":0.0883,"avg_gas":0.0883,"regulated":true},{"name":"Egypt","region":"North Africa","currency":"EGP","fx_rate":50.3,"octane":92,"src":"https://www.sis.gov.eg/en/media-center","confidence":"high","old_source":false,"stale":false,"effective_date":"2026-03-10","gas_usd_now":0.4771,"die_usd_now":0.4076,"lpg_usd_now":0.31,"gas_loc_now":24.0,"die_loc_now":20.5,"lpg_loc_now":15.6,"gas_usd_w":[0.4771,0.4771,0.4771,0.4771,0.4771,0.4771,0.4771,0.4771,0.4771,0.4771,0.4771,0.4771,0.4771,0.4771,0.4771,0.4771,0.4771,0.4771],"die_usd_w":[0.4076,0.4076,0.4076,0.4076,0.4076,0.4076,0.4076,0.4076,0.4076,0.4076,0.4076,0.4076,0.4076,0.4076,0.4076,0.4076,0.4076,0.4076],"gas_loc_w":[24.0,24.0,24.0,24.0,24.0,24.0,24.0,24.0,24.0,24.0,24.0,24.0,24.0,24.0,24.0,24.0,24.0,24.0],"die_loc_w":[20.5,20.5,20.5,20.5,20.5,20.5,20.5,20.5,20.5,20.5,20.5,20.5,20.5,20.5,20.5,20.5,20.5,20.5],"chg_gas":0.0,"chg_die":0.0,"min_gas":0.4771,"max_gas":0.4771,"avg_gas":0.4771,"regulated":true},{"name":"Libya","region":"North Africa","currency":"LYD","fx_rate":4.85,"octane":95,"src":"https://noc.ly/","confidence":"high","old_source":false,"stale":false,"effective_date":"2026-01-01","gas_usd_now":0.0309,"die_usd_now":0.0278,"lpg_usd_now":0.02,"gas_loc_now":0.15,"die_loc_now":0.135,"lpg_loc_now":0.1,"gas_usd_w":[0.0309,0.0309,0.0309,0.0309,0.0309,0.0309,0.0309,0.0309,0.0309,0.0309,0.0309,0.0309,0.0309,0.0309,0.0309,0.0309,0.0309,0.0309],"die_usd_w":[0.0278,0.0278,0.0278,0.0278,0.0278,0.0278,0.0278,0.0278,0.0278,0.0278,0.0278,0.0278,0.0278,0.0278,0.0278,0.0278,0.0278,0.0278],"gas_loc_w":[0.15,0.15,0.15,0.15,0.15,0.15,0.15,0.15,0.15,0.15,0.15,0.15,0.15,0.15,0.15,0.15,0.15,0.15],"die_loc_w":[0.135,0.135,0.135,0.135,0.135,0.135,0.135,0.135,0.135,0.135,0.135,0.135,0.135,0.135,0.135,0.135,0.135,0.135],"chg_gas":0.0,"chg_die":0.0,"min_gas":0.0309,"max_gas":0.0309,"avg_gas":0.0309,"regulated":true},{"name":"Morocco","region":"North Africa","currency":"MAD","fx_rate":10.03,"octane":95,"src":"https://auto24.ma/en/fuel-price-tracker","confidence":"high","old_source":false,"stale":false,"effective_date":"2026-03-16","gas_usd_now":1.3779,"die_usd_now":1.2722,"lpg_usd_now":0.896,"gas_loc_now":13.82,"die_loc_now":12.76,"lpg_loc_now":8.98,"gas_usd_w":[1.2762,1.2762,1.2762,1.2762,1.2762,1.2762,1.2762,1.2762,1.3061,1.3061,1.3061,1.3061,1.3061,1.3061,1.3061,1.3779,1.3779,1.3779],"die_usd_w":[1.1466,1.1466,1.1466,1.1466,1.1466,1.1466,1.1466,1.1466,1.1864,1.1864,1.1864,1.1864,1.1864,1.1864,1.1864,1.2722,1.2722,1.2722],"gas_loc_w":[12.8,12.8,12.8,12.8,12.8,12.8,12.8,12.8,13.1,13.1,13.1,13.1,13.1,13.1,13.1,13.82,13.82,13.82],"die_loc_w":[11.5,11.5,11.5,11.5,11.5,11.5,11.5,11.5,11.9,11.9,11.9,11.9,11.9,11.9,11.9,12.76,12.76,12.76],"chg_gas":7.97,"chg_die":10.95,"min_gas":1.2762,"max_gas":1.3779,"avg_gas":1.3048,"regulated":false},{"name":"Sudan","region":"North Africa","currency":"SDG","fx_rate":601.5,"octane":91,"src":"https://oilpricez.com/sd/sudan-gasoline-price","confidence":"low","old_source":false,"stale":false,"effective_date":"2026-03-29","gas_usd_now":1.0474,"die_usd_now":0.9809,"lpg_usd_now":0.681,"gas_loc_now":630.0,"die_loc_now":590.0,"lpg_loc_now":409.5,"gas_usd_w":[1.0474,1.0474,1.0474,1.0474,1.0474,1.0474,1.0474,1.0474,1.0474,1.0474,1.0474,1.0474,1.0474,1.0474,1.0474,1.0474,1.0474,1.0474],"die_usd_w":[0.9809,0.9809,0.9809,0.9809,0.9809,0.9809,0.9809,0.9809,0.9809,0.9809,0.9809,0.9809,0.9809,0.9809,0.9809,0.9809,0.9809,0.9809],"gas_loc_w":[630.0,630.0,630.0,630.0,630.0,630.0,630.0,630.0,630.0,630.0,630.0,630.0,630.0,630.0,630.0,630.0,630.0,630.0],"die_loc_w":[590.0,590.0,590.0,590.0,590.0,590.0,590.0,590.0,590.0,590.0,590.0,590.0,590.0,590.0,590.0,590.0,590.0,590.0],"chg_gas":0.0,"chg_die":0.0,"min_gas":1.0474,"max_gas":1.0474,"avg_gas":1.0474,"regulated":true},{"name":"Tunisia","region":"North Africa","currency":"TND","fx_rate":3.02,"octane":95,"src":"https://www.stir.com.tn/","confidence":"high","old_source":false,"stale":false,"effective_date":"2026-01-01","gas_usd_now":0.8377,"die_usd_now":0.7318,"lpg_usd_now":0.545,"gas_loc_now":2.53,"die_loc_now":2.21,"lpg_loc_now":1.64,"gas_usd_w":[0.8377,0.8377,0.8377,0.8377,0.8377,0.8377,0.8377,0.8377,0.8377,0.8377,0.8377,0.8377,0.8377,0.8377,0.8377,0.8377,0.8377,0.8377],"die_usd_w":[0.7318,0.7318,0.7318,0.7318,0.7318,0.7318,0.7318,0.7318,0.7318,0.7318,0.7318,0.7318,0.7318,0.7318,0.7318,0.7318,0.7318,0.7318],"gas_loc_w":[2.53,2.53,2.53,2.53,2.53,2.53,2.53,2.53,2.53,2.53,2.53,2.53,2.53,2.53,2.53,2.53,2.53,2.53],"die_loc_w":[2.21,2.21,2.21,2.21,2.21,2.21,2.21,2.21,2.21,2.21,2.21,2.21,2.21,2.21,2.21,2.21,2.21,2.21],"chg_gas":0.0,"chg_die":0.0,"min_gas":0.8377,"max_gas":0.8377,"avg_gas":0.8377,"regulated":true},{"name":"Benin","region":"West Africa","currency":"XOF","fx_rate":603.5,"octane":91,"src":"https://www.gouv.bj/","confidence":"medium","old_source":false,"stale":false,"effective_date":"2026-02-01","gas_usd_now":1.2262,"die_usd_now":1.2593,"lpg_usd_now":0.797,"gas_loc_now":740.0,"die_loc_now":760.0,"lpg_loc_now":481.0,"gas_usd_w":[1.2262,1.2262,1.2262,1.2262,1.2262,1.2262,1.2262,1.2262,1.2262,1.2262,1.2262,1.2262,1.2262,1.2262,1.2262,1.2262,1.2262,1.2262],"die_usd_w":[1.2593,1.2593,1.2593,1.2593,1.2593,1.2593,1.2593,1.2593,1.2593,1.2593,1.2593,1.2593,1.2593,1.2593,1.2593,1.2593,1.2593,1.2593],"gas_loc_w":[740.0,740.0,740.0,740.0,740.0,740.0,740.0,740.0,740.0,740.0,740.0,740.0,740.0,740.0,740.0,740.0,740.0,740.0],"die_loc_w":[760.0,760.0,760.0,760.0,760.0,760.0,760.0,760.0,760.0,760.0,760.0,760.0,760.0,760.0,760.0,760.0,760.0,760.0],"chg_gas":0.0,"chg_die":0.0,"min_gas":1.2262,"max_gas":1.2262,"avg_gas":1.2262,"regulated":false},{"name":"Burkina Faso","region":"West Africa","currency":"XOF","fx_rate":603.5,"octane":91,"src":"https://www.sonabhy.bf/","confidence":"medium","old_source":false,"stale":false,"effective_date":"2026-02-01","gas_usd_now":1.3919,"die_usd_now":1.1997,"lpg_usd_now":0.905,"gas_loc_now":840.0,"die_loc_now":724.0,"lpg_loc_now":546.0,"gas_usd_w":[1.3919,1.3919,1.3919,1.3919,1.3919,1.3919,1.3919,1.3919,1.3919,1.3919,1.3919,1.3919,1.3919,1.3919,1.3919,1.3919,1.3919,1.3919],"die_usd_w":[1.1997,1.1997,1.1997,1.1997,1.1997,1.1997,1.1997,1.1997,1.1997,1.1997,1.1997,1.1997,1.1997,1.1997,1.1997,1.1997,1.1997,1.1997],"gas_loc_w":[840.0,840.0,840.0,840.0,840.0,840.0,840.0,840.0,840.0,840.0,840.0,840.0,840.0,840.0,840.0,840.0,840.0,840.0],"die_loc_w":[724.0,724.0,724.0,724.0,724.0,724.0,724.0,724.0,724.0,724.0,724.0,724.0,724.0,724.0,724.0,724.0,724.0,724.0],"chg_gas":0.0,"chg_die":0.0,"min_gas":1.3919,"max_gas":1.3919,"avg_gas":1.3919,"regulated":false},{"name":"Cabo Verde","region":"West Africa","currency":"CVE","fx_rate":100.5,"octane":91,"src":"https://www.are.cv/","confidence":"medium","old_source":false,"stale":false,"effective_date":"2026-03-01","gas_usd_now":1.2886,"die_usd_now":1.0826,"lpg_usd_now":0.838,"gas_loc_now":129.5,"die_loc_now":108.8,"lpg_loc_now":84.17,"gas_usd_w":[1.2886,1.2886,1.2886,1.2886,1.2886,1.2886,1.2886,1.2886,1.2886,1.2886,1.2886,1.2886,1.2886,1.2886,1.2886,1.2886,1.2886,1.2886],"die_usd_w":[1.0826,1.0826,1.0826,1.0826,1.0826,1.0826,1.0826,1.0826,1.0826,1.0826,1.0826,1.0826,1.0826,1.0826,1.0826,1.0826,1.0826,1.0826],"gas_loc_w":[129.5,129.5,129.5,129.5,129.5,129.5,129.5,129.5,129.5,129.5,129.5,129.5,129.5,129.5,129.5,129.5,129.5,129.5],"die_loc_w":[108.8,108.8,108.8,108.8,108.8,108.8,108.8,108.8,108.8,108.8,108.8,108.8,108.8,108.8,108.8,108.8,108.8,108.8],"chg_gas":0.0,"chg_die":0.0,"min_gas":1.2886,"max_gas":1.2886,"avg_gas":1.2886,"regulated":false},{"name":"Gambia","region":"West Africa","currency":"GMD","fx_rate":68.0,"octane":91,"src":"https://www.gambia.gov.gm/","confidence":"medium","old_source":false,"stale":false,"effective_date":"2026-01-01","gas_usd_now":1.0882,"die_usd_now":0.9559,"lpg_usd_now":0.707,"gas_loc_now":74.0,"die_loc_now":65.0,"lpg_loc_now":48.1,"gas_usd_w":[1.0882,1.0882,1.0882,1.0882,1.0882,1.0882,1.0882,1.0882,1.0882,1.0882,1.0882,1.0882,1.0882,1.0882,1.0882,1.0882,1.0882,1.0882],"die_usd_w":[0.9559,0.9559,0.9559,0.9559,0.9559,0.9559,0.9559,0.9559,0.9559,0.9559,0.9559,0.9559,0.9559,0.9559,0.9559,0.9559,0.9559,0.9559],"gas_loc_w":[74.0,74.0,74.0,74.0,74.0,74.0,74.0,74.0,74.0,74.0,74.0,74.0,74.0,74.0,74.0,74.0,74.0,74.0],"die_loc_w":[65.0,65.0,65.0,65.0,65.0,65.0,65.0,65.0,65.0,65.0,65.0,65.0,65.0,65.0,65.0,65.0,65.0,65.0],"chg_gas":0.0,"chg_die":0.0,"min_gas":1.0882,"max_gas":1.0882,"avg_gas":1.0882,"regulated":false},{"name":"Ghana","region":"West Africa","currency":"GHS","fx_rate":10.89,"octane":91,"src":"https://www.npa.gov.gh/","confidence":"high","old_source":false,"stale":false,"effective_date":"2026-03-16","gas_usd_now":1.3177,"die_usd_now":1.3177,"lpg_usd_now":0.857,"gas_loc_now":14.35,"die_loc_now":14.35,"lpg_loc_now":9.33,"gas_usd_w":[1.3177,1.3177,1.3177,1.3177,1.3177,1.3177,1.3177,1.3177,1.3177,1.3177,1.3177,1.3177,1.3177,1.3177,1.3177,1.3177,1.3177,1.3177],"die_usd_w":[1.3177,1.3177,1.3177,1.3177,1.3177,1.3177,1.3177,1.3177,1.3177,1.3177,1.3177,1.3177,1.3177,1.3177,1.3177,1.3177,1.3177,1.3177],"gas_loc_w":[14.35,14.35,14.35,14.35,14.35,14.35,14.35,14.35,14.35,14.35,14.35,14.35,14.35,14.35,14.35,14.35,14.35,14.35],"die_loc_w":[14.35,14.35,14.35,14.35,14.35,14.35,14.35,14.35,14.35,14.35,14.35,14.35,14.35,14.35,14.35,14.35,14.35,14.35],"chg_gas":0.0,"chg_die":0.0,"min_gas":1.3177,"max_gas":1.3177,"avg_gas":1.3177,"regulated":false},{"name":"Guinea","region":"West Africa","currency":"GNF","fx_rate":8650.0,"octane":91,"src":"https://www.mines.gov.gn/","confidence":"medium","old_source":false,"stale":false,"effective_date":"2026-02-01","gas_usd_now":1.3681,"die_usd_now":1.341,"lpg_usd_now":0.889,"gas_loc_now":11834.0,"die_loc_now":11600.0,"lpg_loc_now":7692.1,"gas_usd_w":[1.3681,1.3681,1.3681,1.3681,1.3681,1.3681,1.3681,1.3681,1.3681,1.3681,1.3681,1.3681,1.3681,1.3681,1.3681,1.3681,1.3681,1.3681],"die_usd_w":[1.341,1.341,1.341,1.341,1.341,1.341,1.341,1.341,1.341,1.341,1.341,1.341,1.341,1.341,1.341,1.341,1.341,1.341],"gas_loc_w":[11834.0,11834.0,11834.0,11834.0,11834.0,11834.0,11834.0,11834.0,11834.0,11834.0,11834.0,11834.0,11834.0,11834.0,11834.0,11834.0,11834.0,11834.0],"die_loc_w":[11600.0,11600.0,11600.0,11600.0,11600.0,11600.0,11600.0,11600.0,11600.0,11600.0,11600.0,11600.0,11600.0,11600.0,11600.0,11600.0,11600.0,11600.0],"chg_gas":0.0,"chg_die":0.0,"min_gas":1.3681,"max_gas":1.3681,"avg_gas":1.3681,"regulated":false},{"name":"Guinea-Bissau","region":"West Africa","currency":"XOF","fx_rate":603.5,"octane":91,"src":"https://www.bceao.int/fr/publications/bulletins","confidence":"medium","old_source":false,"stale":false,"effective_date":"2025-06-30","gas_usd_now":1.3289,"die_usd_now":1.2693,"lpg_usd_now":0.864,"gas_loc_now":802.0,"die_loc_now":766.0,"lpg_loc_now":521.3,"gas_usd_w":[1.3289,1.3289,1.3289,1.3289,1.3289,1.3289,1.3289,1.3289,1.3289,1.3289,1.3289,1.3289,1.3289,1.3289,1.3289,1.3289,1.3289,1.3289],"die_usd_w":[1.2693,1.2693,1.2693,1.2693,1.2693,1.2693,1.2693,1.2693,1.2693,1.2693,1.2693,1.2693,1.2693,1.2693,1.2693,1.2693,1.2693,1.2693],"gas_loc_w":[802.0,802.0,802.0,802.0,802.0,802.0,802.0,802.0,802.0,802.0,802.0,802.0,802.0,802.0,802.0,802.0,802.0,802.0],"die_loc_w":[766.0,766.0,766.0,766.0,766.0,766.0,766.0,766.0,766.0,766.0,766.0,766.0,766.0,766.0,766.0,766.0,766.0,766.0],"chg_gas":0.0,"chg_die":0.0,"min_gas":1.3289,"max_gas":1.3289,"avg_gas":1.3289,"regulated":false},{"name":"Ivory Coast","region":"West Africa","currency":"XOF","fx_rate":603.5,"octane":91,"src":"https://www.petroci.ci/","confidence":"medium","old_source":false,"stale":false,"effective_date":"2026-02-01","gas_usd_now":1.3587,"die_usd_now":1.1185,"lpg_usd_now":0.883,"gas_loc_now":820.0,"die_loc_now":675.0,"lpg_loc_now":533.0,"gas_usd_w":[1.3587,1.3587,1.3587,1.3587,1.3587,1.3587,1.3587,1.3587,1.3587,1.3587,1.3587,1.3587,1.3587,1.3587,1.3587,1.3587,1.3587,1.3587],"die_usd_w":[1.1185,1.1185,1.1185,1.1185,1.1185,1.1185,1.1185,1.1185,1.1185,1.1185,1.1185,1.1185,1.1185,1.1185,1.1185,1.1185,1.1185,1.1185],"gas_loc_w":[820.0,820.0,820.0,820.0,820.0,820.0,820.0,820.0,820.0,820.0,820.0,820.0,820.0,820.0,820.0,820.0,820.0,820.0],"die_loc_w":[675.0,675.0,675.0,675.0,675.0,675.0,675.0,675.0,675.0,675.0,675.0,675.0,675.0,675.0,675.0,675.0,675.0,675.0],"chg_gas":0.0,"chg_die":0.0,"min_gas":1.3587,"max_gas":1.3587,"avg_gas":1.3587,"regulated":false},{"name":"Liberia","region":"West Africa","currency":"LRD","fx_rate":194.0,"octane":91,"src":"https://www.nocal.com.lr/","confidence":"medium","old_source":false,"stale":false,"effective_date":"2026-02-01","gas_usd_now":0.8608,"die_usd_now":0.9124,"lpg_usd_now":0.56,"gas_loc_now":167.0,"die_loc_now":177.0,"lpg_loc_now":108.55,"gas_usd_w":[0.8608,0.8608,0.8608,0.8608,0.8608,0.8608,0.8608,0.8608,0.8608,0.8608,0.8608,0.8608,0.8608,0.8608,0.8608,0.8608,0.8608,0.8608],"die_usd_w":[0.9124,0.9124,0.9124,0.9124,0.9124,0.9124,0.9124,0.9124,0.9124,0.9124,0.9124,0.9124,0.9124,0.9124,0.9124,0.9124,0.9124,0.9124],"gas_loc_w":[167.0,167.0,167.0,167.0,167.0,167.0,167.0,167.0,167.0,167.0,167.0,167.0,167.0,167.0,167.0,167.0,167.0,167.0],"die_loc_w":[177.0,177.0,177.0,177.0,177.0,177.0,177.0,177.0,177.0,177.0,177.0,177.0,177.0,177.0,177.0,177.0,177.0,177.0],"chg_gas":0.0,"chg_die":0.0,"min_gas":0.8608,"max_gas":0.8608,"avg_gas":0.8608,"regulated":false},{"name":"Mali","region":"West Africa","currency":"XOF","fx_rate":603.5,"octane":91,"src":"https://www.energie.gov.ml/","confidence":"medium","old_source":false,"stale":false,"effective_date":"2026-02-01","gas_usd_now":1.3919,"die_usd_now":1.2494,"lpg_usd_now":0.905,"gas_loc_now":840.0,"die_loc_now":754.0,"lpg_loc_now":546.0,"gas_usd_w":[1.3919,1.3919,1.3919,1.3919,1.3919,1.3919,1.3919,1.3919,1.3919,1.3919,1.3919,1.3919,1.3919,1.3919,1.3919,1.3919,1.3919,1.3919],"die_usd_w":[1.2494,1.2494,1.2494,1.2494,1.2494,1.2494,1.2494,1.2494,1.2494,1.2494,1.2494,1.2494,1.2494,1.2494,1.2494,1.2494,1.2494,1.2494],"gas_loc_w":[840.0,840.0,840.0,840.0,840.0,840.0,840.0,840.0,840.0,840.0,840.0,840.0,840.0,840.0,840.0,840.0,840.0,840.0],"die_loc_w":[754.0,754.0,754.0,754.0,754.0,754.0,754.0,754.0,754.0,754.0,754.0,754.0,754.0,754.0,754.0,754.0,754.0,754.0],"chg_gas":0.0,"chg_die":0.0,"min_gas":1.3919,"max_gas":1.3919,"avg_gas":1.3919,"regulated":false},{"name":"Mauritania","region":"West Africa","currency":"MRU","fx_rate":36.5,"octane":91,"src":"https://www.petrole.gov.mr/","confidence":"medium","old_source":false,"stale":false,"effective_date":"2026-01-01","gas_usd_now":1.1671,"die_usd_now":1.1014,"lpg_usd_now":0.759,"gas_loc_now":42.6,"die_loc_now":40.2,"lpg_loc_now":27.69,"gas_usd_w":[1.1671,1.1671,1.1671,1.1671,1.1671,1.1671,1.1671,1.1671,1.1671,1.1671,1.1671,1.1671,1.1671,1.1671,1.1671,1.1671,1.1671,1.1671],"die_usd_w":[1.1014,1.1014,1.1014,1.1014,1.1014,1.1014,1.1014,1.1014,1.1014,1.1014,1.1014,1.1014,1.1014,1.1014,1.1014,1.1014,1.1014,1.1014],"gas_loc_w":[42.6,42.6,42.6,42.6,42.6,42.6,42.6,42.6,42.6,42.6,42.6,42.6,42.6,42.6,42.6,42.6,42.6,42.6],"die_loc_w":[40.2,40.2,40.2,40.2,40.2,40.2,40.2,40.2,40.2,40.2,40.2,40.2,40.2,40.2,40.2,40.2,40.2,40.2],"chg_gas":0.0,"chg_die":0.0,"min_gas":1.1671,"max_gas":1.1671,"avg_gas":1.1671,"regulated":false},{"name":"Niger","region":"West Africa","currency":"XOF","fx_rate":603.5,"octane":91,"src":"https://www.sonidep.ne/","confidence":"medium","old_source":false,"stale":false,"effective_date":"2026-02-01","gas_usd_now":0.8964,"die_usd_now":1.0025,"lpg_usd_now":0.583,"gas_loc_now":541.0,"die_loc_now":605.0,"lpg_loc_now":351.65,"gas_usd_w":[0.8964,0.8964,0.8964,0.8964,0.8964,0.8964,0.8964,0.8964,0.8964,0.8964,0.8964,0.8964,0.8964,0.8964,0.8964,0.8964,0.8964,0.8964],"die_usd_w":[1.0025,1.0025,1.0025,1.0025,1.0025,1.0025,1.0025,1.0025,1.0025,1.0025,1.0025,1.0025,1.0025,1.0025,1.0025,1.0025,1.0025,1.0025],"gas_loc_w":[541.0,541.0,541.0,541.0,541.0,541.0,541.0,541.0,541.0,541.0,541.0,541.0,541.0,541.0,541.0,541.0,541.0,541.0],"die_loc_w":[605.0,605.0,605.0,605.0,605.0,605.0,605.0,605.0,605.0,605.0,605.0,605.0,605.0,605.0,605.0,605.0,605.0,605.0],"chg_gas":0.0,"chg_die":0.0,"min_gas":0.8964,"max_gas":0.8964,"avg_gas":0.8964,"regulated":true},{"name":"Nigeria","region":"West Africa","currency":"NGN","fx_rate":1621.0,"octane":91,"src":"https://www.nnpcgroup.com/","confidence":"medium","old_source":false,"stale":false,"effective_date":"2026-03-18","gas_usd_now":0.6971,"die_usd_now":0.987,"lpg_usd_now":0.453,"gas_loc_now":1130.0,"die_loc_now":1600.0,"lpg_loc_now":734.5,"gas_usd_w":[0.5861,0.5861,0.5861,0.5861,0.5861,0.5861,0.5861,0.5861,0.6477,0.6477,0.6477,0.6477,0.6477,0.6477,0.6477,0.6971,0.6971,0.6971],"die_usd_w":[0.7403,0.7403,0.7403,0.7403,0.7403,0.7403,0.7403,0.7403,0.8637,0.8637,0.8637,0.8637,0.8637,0.8637,0.8637,0.987,0.987,0.987],"gas_loc_w":[950.0,950.0,950.0,950.0,950.0,950.0,950.0,950.0,1050.0,1050.0,1050.0,1050.0,1050.0,1050.0,1050.0,1130.0,1130.0,1130.0],"die_loc_w":[1200.0,1200.0,1200.0,1200.0,1200.0,1200.0,1200.0,1200.0,1400.0,1400.0,1400.0,1400.0,1400.0,1400.0,1400.0,1600.0,1600.0,1600.0],"chg_gas":18.94,"chg_die":33.32,"min_gas":0.5861,"max_gas":0.6971,"avg_gas":0.6286,"regulated":false},{"name":"Senegal","region":"West Africa","currency":"XOF","fx_rate":603.5,"octane":91,"src":"https://primature.sn/publications/communiques-officiels/baisse-des-prix-des-hydrocarbures","confidence":"high","old_source":false,"stale":false,"effective_date":"2025-12-06","gas_usd_now":1.5244,"die_usd_now":1.1268,"lpg_usd_now":0.991,"gas_loc_now":920.0,"die_loc_now":680.0,"lpg_loc_now":598.0,"gas_usd_w":[1.5244,1.5244,1.5244,1.5244,1.5244,1.5244,1.5244,1.5244,1.5244,1.5244,1.5244,1.5244,1.5244,1.5244,1.5244,1.5244,1.5244,1.5244],"die_usd_w":[1.1268,1.1268,1.1268,1.1268,1.1268,1.1268,1.1268,1.1268,1.1268,1.1268,1.1268,1.1268,1.1268,1.1268,1.1268,1.1268,1.1268,1.1268],"gas_loc_w":[920.0,920.0,920.0,920.0,920.0,920.0,920.0,920.0,920.0,920.0,920.0,920.0,920.0,920.0,920.0,920.0,920.0,920.0],"die_loc_w":[680.0,680.0,680.0,680.0,680.0,680.0,680.0,680.0,680.0,680.0,680.0,680.0,680.0,680.0,680.0,680.0,680.0,680.0],"chg_gas":0.0,"chg_die":0.0,"min_gas":1.5244,"max_gas":1.5244,"avg_gas":1.5244,"regulated":false},{"name":"Sierra Leone","region":"West Africa","currency":"SLL","fx_rate":22500.0,"octane":91,"src":"https://www.npra.gov.sl/","confidence":"high","old_source":false,"stale":false,"effective_date":"2026-03-14","gas_usd_now":1.4222,"die_usd_now":1.5556,"lpg_usd_now":0.924,"gas_loc_now":32000.0,"die_loc_now":35000.0,"lpg_loc_now":20800.0,"gas_usd_w":[1.4222,1.4222,1.4222,1.4222,1.4222,1.4222,1.4222,1.4222,1.4222,1.4222,1.4222,1.4222,1.4222,1.4222,1.4222,1.4222,1.4222,1.4222],"die_usd_w":[1.5556,1.5556,1.5556,1.5556,1.5556,1.5556,1.5556,1.5556,1.5556,1.5556,1.5556,1.5556,1.5556,1.5556,1.5556,1.5556,1.5556,1.5556],"gas_loc_w":[32000.0,32000.0,32000.0,32000.0,32000.0,32000.0,32000.0,32000.0,32000.0,32000.0,32000.0,32000.0,32000.0,32000.0,32000.0,32000.0,32000.0,32000.0],"die_loc_w":[35000.0,35000.0,35000.0,35000.0,35000.0,35000.0,35000.0,35000.0,35000.0,35000.0,35000.0,35000.0,35000.0,35000.0,35000.0,35000.0,35000.0,35000.0],"chg_gas":0.0,"chg_die":0.0,"min_gas":1.4222,"max_gas":1.4222,"avg_gas":1.4222,"regulated":false},{"name":"Togo","region":"West Africa","currency":"XOF","fx_rate":603.5,"octane":91,"src":"https://www.mines-energie.gouv.tg/","confidence":"medium","old_source":false,"stale":false,"effective_date":"2026-02-01","gas_usd_now":1.2212,"die_usd_now":1.1814,"lpg_usd_now":0.794,"gas_loc_now":737.0,"die_loc_now":713.0,"lpg_loc_now":479.05,"gas_usd_w":[1.2212,1.2212,1.2212,1.2212,1.2212,1.2212,1.2212,1.2212,1.2212,1.2212,1.2212,1.2212,1.2212,1.2212,1.2212,1.2212,1.2212,1.2212],"die_usd_w":[1.1814,1.1814,1.1814,1.1814,1.1814,1.1814,1.1814,1.1814,1.1814,1.1814,1.1814,1.1814,1.1814,1.1814,1.1814,1.1814,1.1814,1.1814],"gas_loc_w":[737.0,737.0,737.0,737.0,737.0,737.0,737.0,737.0,737.0,737.0,737.0,737.0,737.0,737.0,737.0,737.0,737.0,737.0],"die_loc_w":[713.0,713.0,713.0,713.0,713.0,713.0,713.0,713.0,713.0,713.0,713.0,713.0,713.0,713.0,713.0,713.0,713.0,713.0],"chg_gas":0.0,"chg_die":0.0,"min_gas":1.2212,"max_gas":1.2212,"avg_gas":1.2212,"regulated":false},{"name":"CAR","region":"Central Africa","currency":"XAF","fx_rate":603.5,"octane":91,"src":"https://www.primature.cf/","confidence":"medium","old_source":false,"stale":false,"effective_date":"2026-01-05","gas_usd_now":1.7399,"die_usd_now":2.1541,"lpg_usd_now":1.131,"gas_loc_now":1050.0,"die_loc_now":1300.0,"lpg_loc_now":682.5,"gas_usd_w":[1.7399,1.7399,1.7399,1.7399,1.7399,1.7399,1.7399,1.7399,1.7399,1.7399,1.7399,1.7399,1.7399,1.7399,1.7399,1.7399,1.7399,1.7399],"die_usd_w":[2.1541,2.1541,2.1541,2.1541,2.1541,2.1541,2.1541,2.1541,2.1541,2.1541,2.1541,2.1541,2.1541,2.1541,2.1541,2.1541,2.1541,2.1541],"gas_loc_w":[1050.0,1050.0,1050.0,1050.0,1050.0,1050.0,1050.0,1050.0,1050.0,1050.0,1050.0,1050.0,1050.0,1050.0,1050.0,1050.0,1050.0,1050.0],"die_loc_w":[1300.0,1300.0,1300.0,1300.0,1300.0,1300.0,1300.0,1300.0,1300.0,1300.0,1300.0,1300.0,1300.0,1300.0,1300.0,1300.0,1300.0,1300.0],"chg_gas":0.0,"chg_die":0.0,"min_gas":1.7399,"max_gas":1.7399,"avg_gas":1.7399,"regulated":false},{"name":"Cameroon","region":"Central Africa","currency":"XAF","fx_rate":603.5,"octane":91,"src":"https://www.csph.cm/","confidence":"medium","old_source":false,"stale":false,"effective_date":"2026-03-02","gas_usd_now":1.3919,"die_usd_now":1.372,"lpg_usd_now":0.905,"gas_loc_now":840.0,"die_loc_now":828.0,"lpg_loc_now":546.0,"gas_usd_w":[1.3919,1.3919,1.3919,1.3919,1.3919,1.3919,1.3919,1.3919,1.3919,1.3919,1.3919,1.3919,1.3919,1.3919,1.3919,1.3919,1.3919,1.3919],"die_usd_w":[1.372,1.372,1.372,1.372,1.372,1.372,1.372,1.372,1.372,1.372,1.372,1.372,1.372,1.372,1.372,1.372,1.372,1.372],"gas_loc_w":[840.0,840.0,840.0,840.0,840.0,840.0,840.0,840.0,840.0,840.0,840.0,840.0,840.0,840.0,840.0,840.0,840.0,840.0],"die_loc_w":[828.0,828.0,828.0,828.0,828.0,828.0,828.0,828.0,828.0,828.0,828.0,828.0,828.0,828.0,828.0,828.0,828.0,828.0],"chg_gas":0.0,"chg_die":0.0,"min_gas":1.3919,"max_gas":1.3919,"avg_gas":1.3919,"regulated":true},{"name":"Chad","region":"Central Africa","currency":"XAF","fx_rate":603.5,"octane":91,"src":"https://www.finances.gouv.td/","confidence":"medium","old_source":false,"stale":false,"effective_date":"2024-02-01","gas_usd_now":1.2096,"die_usd_now":1.372,"lpg_usd_now":0.786,"gas_loc_now":730.0,"die_loc_now":828.0,"lpg_loc_now":474.5,"gas_usd_w":[1.2096,1.2096,1.2096,1.2096,1.2096,1.2096,1.2096,1.2096,1.2096,1.2096,1.2096,1.2096,1.2096,1.2096,1.2096,1.2096,1.2096,1.2096],"die_usd_w":[1.372,1.372,1.372,1.372,1.372,1.372,1.372,1.372,1.372,1.372,1.372,1.372,1.372,1.372,1.372,1.372,1.372,1.372],"gas_loc_w":[730.0,730.0,730.0,730.0,730.0,730.0,730.0,730.0,730.0,730.0,730.0,730.0,730.0,730.0,730.0,730.0,730.0,730.0],"die_loc_w":[828.0,828.0,828.0,828.0,828.0,828.0,828.0,828.0,828.0,828.0,828.0,828.0,828.0,828.0,828.0,828.0,828.0,828.0],"chg_gas":0.0,"chg_die":0.0,"min_gas":1.2096,"max_gas":1.2096,"avg_gas":1.2096,"regulated":true},{"name":"Congo DR","region":"Central Africa","currency":"CDF","fx_rate":2820.0,"octane":91,"src":"https://www.hydrocarbures.gouv.cd/","confidence":"medium","old_source":false,"stale":false,"effective_date":"2026-02-01","gas_usd_now":1.0525,"die_usd_now":0.8621,"lpg_usd_now":0.684,"gas_loc_now":2968.0,"die_loc_now":2431.0,"lpg_loc_now":1929.2,"gas_usd_w":[1.0525,1.0525,1.0525,1.0525,1.0525,1.0525,1.0525,1.0525,1.0525,1.0525,1.0525,1.0525,1.0525,1.0525,1.0525,1.0525,1.0525,1.0525],"die_usd_w":[0.8621,0.8621,0.8621,0.8621,0.8621,0.8621,0.8621,0.8621,0.8621,0.8621,0.8621,0.8621,0.8621,0.8621,0.8621,0.8621,0.8621,0.8621],"gas_loc_w":[2968.0,2968.0,2968.0,2968.0,2968.0,2968.0,2968.0,2968.0,2968.0,2968.0,2968.0,2968.0,2968.0,2968.0,2968.0,2968.0,2968.0,2968.0],"die_loc_w":[2431.0,2431.0,2431.0,2431.0,2431.0,2431.0,2431.0,2431.0,2431.0,2431.0,2431.0,2431.0,2431.0,2431.0,2431.0,2431.0,2431.0,2431.0],"chg_gas":0.0,"chg_die":0.0,"min_gas":1.0525,"max_gas":1.0525,"avg_gas":1.0525,"regulated":false},{"name":"Congo Republic","region":"Central Africa","currency":"XAF","fx_rate":603.5,"octane":91,"src":"https://www.hydrocarbures.gouv.cg/","confidence":"medium","old_source":false,"stale":false,"effective_date":"2026-01-01","gas_usd_now":1.1516,"die_usd_now":1.0439,"lpg_usd_now":0.749,"gas_loc_now":695.0,"die_loc_now":630.0,"lpg_loc_now":451.75,"gas_usd_w":[1.1516,1.1516,1.1516,1.1516,1.1516,1.1516,1.1516,1.1516,1.1516,1.1516,1.1516,1.1516,1.1516,1.1516,1.1516,1.1516,1.1516,1.1516],"die_usd_w":[1.0439,1.0439,1.0439,1.0439,1.0439,1.0439,1.0439,1.0439,1.0439,1.0439,1.0439,1.0439,1.0439,1.0439,1.0439,1.0439,1.0439,1.0439],"gas_loc_w":[695.0,695.0,695.0,695.0,695.0,695.0,695.0,695.0,695.0,695.0,695.0,695.0,695.0,695.0,695.0,695.0,695.0,695.0],"die_loc_w":[630.0,630.0,630.0,630.0,630.0,630.0,630.0,630.0,630.0,630.0,630.0,630.0,630.0,630.0,630.0,630.0,630.0,630.0],"chg_gas":0.0,"chg_die":0.0,"min_gas":1.1516,"max_gas":1.1516,"avg_gas":1.1516,"regulated":true},{"name":"Equatorial Guinea","region":"Central Africa","currency":"XAF","fx_rate":603.5,"octane":91,"src":"https://www.globalpetrolprices.com/Equatorial-Guinea/","confidence":"medium","old_source":false,"stale":false,"effective_date":"2025-01-01","gas_usd_now":0.9114,"die_usd_now":0.8616,"lpg_usd_now":0.592,"gas_loc_now":550.0,"die_loc_now":520.0,"lpg_loc_now":357.5,"gas_usd_w":[0.9114,0.9114,0.9114,0.9114,0.9114,0.9114,0.9114,0.9114,0.9114,0.9114,0.9114,0.9114,0.9114,0.9114,0.9114,0.9114,0.9114,0.9114],"die_usd_w":[0.8616,0.8616,0.8616,0.8616,0.8616,0.8616,0.8616,0.8616,0.8616,0.8616,0.8616,0.8616,0.8616,0.8616,0.8616,0.8616,0.8616,0.8616],"gas_loc_w":[550.0,550.0,550.0,550.0,550.0,550.0,550.0,550.0,550.0,550.0,550.0,550.0,550.0,550.0,550.0,550.0,550.0,550.0],"die_loc_w":[520.0,520.0,520.0,520.0,520.0,520.0,520.0,520.0,520.0,520.0,520.0,520.0,520.0,520.0,520.0,520.0,520.0,520.0],"chg_gas":0.0,"chg_die":0.0,"min_gas":0.9114,"max_gas":0.9114,"avg_gas":0.9114,"regulated":true},{"name":"Gabon","region":"Central Africa","currency":"XAF","fx_rate":603.5,"octane":91,"src":"https://www.hydrocarbures.gouv.ga/","confidence":"medium","old_source":false,"stale":false,"effective_date":"2026-01-01","gas_usd_now":1.0671,"die_usd_now":0.9544,"lpg_usd_now":0.694,"gas_loc_now":644.0,"die_loc_now":576.0,"lpg_loc_now":418.6,"gas_usd_w":[1.0671,1.0671,1.0671,1.0671,1.0671,1.0671,1.0671,1.0671,1.0671,1.0671,1.0671,1.0671,1.0671,1.0671,1.0671,1.0671,1.0671,1.0671],"die_usd_w":[0.9544,0.9544,0.9544,0.9544,0.9544,0.9544,0.9544,0.9544,0.9544,0.9544,0.9544,0.9544,0.9544,0.9544,0.9544,0.9544,0.9544,0.9544],"gas_loc_w":[644.0,644.0,644.0,644.0,644.0,644.0,644.0,644.0,644.0,644.0,644.0,644.0,644.0,644.0,644.0,644.0,644.0,644.0],"die_loc_w":[576.0,576.0,576.0,576.0,576.0,576.0,576.0,576.0,576.0,576.0,576.0,576.0,576.0,576.0,576.0,576.0,576.0,576.0],"chg_gas":0.0,"chg_die":0.0,"min_gas":1.0671,"max_gas":1.0671,"avg_gas":1.0671,"regulated":true},{"name":"Sao Tome","region":"Central Africa","currency":"STN","fx_rate":21.5,"octane":91,"src":"https://www.globalpetrolprices.com/Sao-Tome-and-Principe/","confidence":"medium","old_source":false,"stale":false,"effective_date":"2025-06-01","gas_usd_now":1.3023,"die_usd_now":1.186,"lpg_usd_now":0.846,"gas_loc_now":28.0,"die_loc_now":25.5,"lpg_loc_now":18.2,"gas_usd_w":[1.3023,1.3023,1.3023,1.3023,1.3023,1.3023,1.3023,1.3023,1.3023,1.3023,1.3023,1.3023,1.3023,1.3023,1.3023,1.3023,1.3023,1.3023],"die_usd_w":[1.186,1.186,1.186,1.186,1.186,1.186,1.186,1.186,1.186,1.186,1.186,1.186,1.186,1.186,1.186,1.186,1.186,1.186],"gas_loc_w":[28.0,28.0,28.0,28.0,28.0,28.0,28.0,28.0,28.0,28.0,28.0,28.0,28.0,28.0,28.0,28.0,28.0,28.0],"die_loc_w":[25.5,25.5,25.5,25.5,25.5,25.5,25.5,25.5,25.5,25.5,25.5,25.5,25.5,25.5,25.5,25.5,25.5,25.5],"chg_gas":0.0,"chg_die":0.0,"min_gas":1.3023,"max_gas":1.3023,"avg_gas":1.3023,"regulated":false},{"name":"Burundi","region":"East Africa","currency":"BIF","fx_rate":2920.0,"octane":91,"src":"https://www.areen.bi/","confidence":"medium","old_source":false,"stale":false,"effective_date":"2026-02-01","gas_usd_now":1.3479,"die_usd_now":1.288,"lpg_usd_now":0.876,"gas_loc_now":3936.0,"die_loc_now":3761.0,"lpg_loc_now":2558.4,"gas_usd_w":[1.3479,1.3479,1.3479,1.3479,1.3479,1.3479,1.3479,1.3479,1.3479,1.3479,1.3479,1.3479,1.3479,1.3479,1.3479,1.3479,1.3479,1.3479],"die_usd_w":[1.288,1.288,1.288,1.288,1.288,1.288,1.288,1.288,1.288,1.288,1.288,1.288,1.288,1.288,1.288,1.288,1.288,1.288],"gas_loc_w":[3936.0,3936.0,3936.0,3936.0,3936.0,3936.0,3936.0,3936.0,3936.0,3936.0,3936.0,3936.0,3936.0,3936.0,3936.0,3936.0,3936.0,3936.0],"die_loc_w":[3761.0,3761.0,3761.0,3761.0,3761.0,3761.0,3761.0,3761.0,3761.0,3761.0,3761.0,3761.0,3761.0,3761.0,3761.0,3761.0,3761.0,3761.0],"chg_gas":0.0,"chg_die":0.0,"min_gas":1.3479,"max_gas":1.3479,"avg_gas":1.3479,"regulated":false},{"name":"Comoros","region":"East Africa","currency":"KMF","fx_rate":426.0,"octane":91,"src":"https://oilpricez.com/km/comoros-oil-price","confidence":"medium","old_source":false,"stale":false,"effective_date":"2026-03-16","gas_usd_now":1.784,"die_usd_now":1.5962,"lpg_usd_now":1.16,"gas_loc_now":760.0,"die_loc_now":680.0,"lpg_loc_now":494.0,"gas_usd_w":[1.784,1.784,1.784,1.784,1.784,1.784,1.784,1.784,1.784,1.784,1.784,1.784,1.784,1.784,1.784,1.784,1.784,1.784],"die_usd_w":[1.5962,1.5962,1.5962,1.5962,1.5962,1.5962,1.5962,1.5962,1.5962,1.5962,1.5962,1.5962,1.5962,1.5962,1.5962,1.5962,1.5962,1.5962],"gas_loc_w":[760.0,760.0,760.0,760.0,760.0,760.0,760.0,760.0,760.0,760.0,760.0,760.0,760.0,760.0,760.0,760.0,760.0,760.0],"die_loc_w":[680.0,680.0,680.0,680.0,680.0,680.0,680.0,680.0,680.0,680.0,680.0,680.0,680.0,680.0,680.0,680.0,680.0,680.0],"chg_gas":0.0,"chg_die":0.0,"min_gas":1.784,"max_gas":1.784,"avg_gas":1.784,"regulated":false},{"name":"Djibouti","region":"East Africa","currency":"DJF","fx_rate":177.7,"octane":91,"src":"https://www.ane.gouv.dj/","confidence":"medium","old_source":false,"stale":false,"effective_date":"2026-01-01","gas_usd_now":1.3506,"die_usd_now":1.2662,"lpg_usd_now":0.878,"gas_loc_now":240.0,"die_loc_now":225.0,"lpg_loc_now":156.0,"gas_usd_w":[1.3506,1.3506,1.3506,1.3506,1.3506,1.3506,1.3506,1.3506,1.3506,1.3506,1.3506,1.3506,1.3506,1.3506,1.3506,1.3506,1.3506,1.3506],"die_usd_w":[1.2662,1.2662,1.2662,1.2662,1.2662,1.2662,1.2662,1.2662,1.2662,1.2662,1.2662,1.2662,1.2662,1.2662,1.2662,1.2662,1.2662,1.2662],"gas_loc_w":[240.0,240.0,240.0,240.0,240.0,240.0,240.0,240.0,240.0,240.0,240.0,240.0,240.0,240.0,240.0,240.0,240.0,240.0],"die_loc_w":[225.0,225.0,225.0,225.0,225.0,225.0,225.0,225.0,225.0,225.0,225.0,225.0,225.0,225.0,225.0,225.0,225.0,225.0],"chg_gas":0.0,"chg_die":0.0,"min_gas":1.3506,"max_gas":1.3506,"avg_gas":1.3506,"regulated":false},{"name":"Eritrea","region":"East Africa","currency":"ERN","fx_rate":15.0,"octane":91,"src":"https://www.thefuelprice.com/Fer/en","confidence":"low","old_source":true,"stale":false,"effective_date":"2016-12-01","gas_usd_now":2.0,"die_usd_now":1.3333,"lpg_usd_now":1.3,"gas_loc_now":30.0,"die_loc_now":20.0,"lpg_loc_now":19.5,"gas_usd_w":[2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0],"die_usd_w":[1.3333,1.3333,1.3333,1.3333,1.3333,1.3333,1.3333,1.3333,1.3333,1.3333,1.3333,1.3333,1.3333,1.3333,1.3333,1.3333,1.3333,1.3333],"gas_loc_w":[30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0],"die_loc_w":[20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0],"chg_gas":0.0,"chg_die":0.0,"min_gas":2.0,"max_gas":2.0,"avg_gas":2.0,"regulated":false},{"name":"Ethiopia","region":"East Africa","currency":"ETB","fx_rate":157.4,"octane":91,"src":"https://www.2merkato.com/news/energy-and-mining/8814-ethiopia-ministry-of-trade-and-regional-integration-announces-fuel-price-adjustments","confidence":"high","old_source":false,"stale":false,"effective_date":"2026-03-10","gas_usd_now":0.8398,"die_usd_now":0.8884,"lpg_usd_now":0.546,"gas_loc_now":132.18,"die_loc_now":139.84,"lpg_loc_now":85.92,"gas_usd_w":[0.6447,0.6447,0.6447,0.6447,0.6447,0.6447,0.6447,0.6447,0.6447,0.6447,0.6447,0.6447,0.6447,0.6447,0.8398,0.8398,0.8398,0.8398],"die_usd_w":[0.6288,0.6288,0.6288,0.6288,0.6288,0.6288,0.6288,0.6288,0.6288,0.6288,0.6288,0.6288,0.6288,0.6288,0.8884,0.8884,0.8884,0.8884],"gas_loc_w":[101.47,101.47,101.47,101.47,101.47,101.47,101.47,101.47,101.47,101.47,101.47,101.47,101.47,101.47,132.18,132.18,132.18,132.18],"die_loc_w":[98.98,98.98,98.98,98.98,98.98,98.98,98.98,98.98,98.98,98.98,98.98,98.98,98.98,98.98,139.84,139.84,139.84,139.84],"chg_gas":30.26,"chg_die":41.28,"min_gas":0.6447,"max_gas":0.8398,"avg_gas":0.6881,"regulated":true},{"name":"Kenya","region":"East Africa","currency":"KES","fx_rate":130.5,"octane":93,"src":"https://www.epra.go.ke/pump-prices","confidence":"high","old_source":false,"stale":false,"effective_date":"2026-03-15","gas_usd_now":1.3661,"die_usd_now":1.2762,"lpg_usd_now":0.888,"gas_loc_now":178.28,"die_loc_now":166.54,"lpg_loc_now":115.88,"gas_usd_w":[1.3986,1.3986,1.3986,1.3986,1.3986,1.3986,1.3986,1.3986,1.3986,1.3986,1.3661,1.3661,1.3661,1.3661,1.3661,1.3661,1.3661,1.3661],"die_usd_w":[1.3063,1.3063,1.3063,1.3063,1.3063,1.3063,1.3063,1.3063,1.3063,1.3063,1.2762,1.2762,1.2762,1.2762,1.2762,1.2762,1.2762,1.2762],"gas_loc_w":[182.52,182.52,182.52,182.52,182.52,182.52,182.52,182.52,182.52,182.52,178.28,178.28,178.28,178.28,178.28,178.28,178.28,178.28],"die_loc_w":[170.47,170.47,170.47,170.47,170.47,170.47,170.47,170.47,170.47,170.47,166.54,166.54,166.54,166.54,166.54,166.54,166.54,166.54],"chg_gas":-2.32,"chg_die":-2.3,"min_gas":1.3661,"max_gas":1.3986,"avg_gas":1.3842,"regulated":false},{"name":"Madagascar","region":"East Africa","currency":"MGA","fx_rate":4620.0,"octane":91,"src":"https://www.omh.mg/","confidence":"medium","old_source":false,"stale":false,"effective_date":"2026-03-01","gas_usd_now":1.1939,"die_usd_now":1.1199,"lpg_usd_now":0.776,"gas_loc_now":5516.0,"die_loc_now":5174.0,"lpg_loc_now":3585.4,"gas_usd_w":[1.1939,1.1939,1.1939,1.1939,1.1939,1.1939,1.1939,1.1939,1.1939,1.1939,1.1939,1.1939,1.1939,1.1939,1.1939,1.1939,1.1939,1.1939],"die_usd_w":[1.1199,1.1199,1.1199,1.1199,1.1199,1.1199,1.1199,1.1199,1.1199,1.1199,1.1199,1.1199,1.1199,1.1199,1.1199,1.1199,1.1199,1.1199],"gas_loc_w":[5516.0,5516.0,5516.0,5516.0,5516.0,5516.0,5516.0,5516.0,5516.0,5516.0,5516.0,5516.0,5516.0,5516.0,5516.0,5516.0,5516.0,5516.0],"die_loc_w":[5174.0,5174.0,5174.0,5174.0,5174.0,5174.0,5174.0,5174.0,5174.0,5174.0,5174.0,5174.0,5174.0,5174.0,5174.0,5174.0,5174.0,5174.0],"chg_gas":0.0,"chg_die":0.0,"min_gas":1.1939,"max_gas":1.1939,"avg_gas":1.1939,"regulated":false},{"name":"Malawi","region":"East Africa","currency":"MWK","fx_rate":1734.0,"octane":91,"src":"https://www.meramalawi.mw/","confidence":"medium","old_source":false,"stale":false,"effective_date":"2026-02-01","gas_usd_now":2.8633,"die_usd_now":2.8518,"lpg_usd_now":1.861,"gas_loc_now":4965.0,"die_loc_now":4945.0,"lpg_loc_now":3227.25,"gas_usd_w":[2.8633,2.8633,2.8633,2.8633,2.8633,2.8633,2.8633,2.8633,2.8633,2.8633,2.8633,2.8633,2.8633,2.8633,2.8633,2.8633,2.8633,2.8633],"die_usd_w":[2.8518,2.8518,2.8518,2.8518,2.8518,2.8518,2.8518,2.8518,2.8518,2.8518,2.8518,2.8518,2.8518,2.8518,2.8518,2.8518,2.8518,2.8518],"gas_loc_w":[4965.0,4965.0,4965.0,4965.0,4965.0,4965.0,4965.0,4965.0,4965.0,4965.0,4965.0,4965.0,4965.0,4965.0,4965.0,4965.0,4965.0,4965.0],"die_loc_w":[4945.0,4945.0,4945.0,4945.0,4945.0,4945.0,4945.0,4945.0,4945.0,4945.0,4945.0,4945.0,4945.0,4945.0,4945.0,4945.0,4945.0,4945.0],"chg_gas":0.0,"chg_die":0.0,"min_gas":2.8633,"max_gas":2.8633,"avg_gas":2.8633,"regulated":false},{"name":"Mauritius","region":"East Africa","currency":"MUR","fx_rate":46.5,"octane":95,"src":"https://www.stcmu.com/ppm/press-release","confidence":"high","old_source":false,"stale":false,"effective_date":"2026-03-24","gas_usd_now":1.257,"die_usd_now":1.3935,"lpg_usd_now":0.817,"gas_loc_now":58.45,"die_loc_now":64.8,"lpg_loc_now":37.99,"gas_usd_w":[1.2677,1.2677,1.2677,1.2677,1.2677,1.2677,1.2677,1.2677,1.2677,1.2677,1.2677,1.2677,1.2677,1.2677,1.2677,1.2677,1.257,1.257],"die_usd_w":[1.2677,1.2677,1.2677,1.2677,1.2677,1.2677,1.2677,1.2677,1.2677,1.2677,1.2677,1.2677,1.2677,1.2677,1.2677,1.2677,1.3935,1.3935],"gas_loc_w":[58.95,58.95,58.95,58.95,58.95,58.95,58.95,58.95,58.95,58.95,58.95,58.95,58.95,58.95,58.95,58.95,58.45,58.45],"die_loc_w":[58.95,58.95,58.95,58.95,58.95,58.95,58.95,58.95,58.95,58.95,58.95,58.95,58.95,58.95,58.95,58.95,64.8,64.8],"chg_gas":-0.84,"chg_die":9.92,"min_gas":1.257,"max_gas":1.2677,"avg_gas":1.2665,"regulated":false},{"name":"Rwanda","region":"East Africa","currency":"RWF","fx_rate":1463.0,"octane":91,"src":"https://www.rura.rw/index.php/en/fuel-prices","confidence":"high","old_source":false,"stale":false,"effective_date":"2026-03-05","gas_usd_now":1.3595,"die_usd_now":1.3315,"lpg_usd_now":0.884,"gas_loc_now":1989.0,"die_loc_now":1948.0,"lpg_loc_now":1292.85,"gas_usd_w":[1.3691,1.3691,1.3691,1.3691,1.3691,1.3691,1.3691,1.3691,1.3691,1.3691,1.3691,1.3691,1.3691,1.3595,1.3595,1.3595,1.3595,1.3595],"die_usd_w":[1.3418,1.3418,1.3418,1.3418,1.3418,1.3418,1.3418,1.3418,1.3418,1.3418,1.3418,1.3418,1.3418,1.3315,1.3315,1.3315,1.3315,1.3315],"gas_loc_w":[2003.0,2003.0,2003.0,2003.0,2003.0,2003.0,2003.0,2003.0,2003.0,2003.0,2003.0,2003.0,2003.0,1989.0,1989.0,1989.0,1989.0,1989.0],"die_loc_w":[1963.0,1963.0,1963.0,1963.0,1963.0,1963.0,1963.0,1963.0,1963.0,1963.0,1963.0,1963.0,1963.0,1948.0,1948.0,1948.0,1948.0,1948.0],"chg_gas":-0.7,"chg_die":-0.77,"min_gas":1.3595,"max_gas":1.3691,"avg_gas":1.3664,"regulated":false},{"name":"Seychelles","region":"East Africa","currency":"SCR","fx_rate":14.15,"octane":95,"src":"https://www.puc.sc/","confidence":"medium","old_source":false,"stale":false,"effective_date":"2026-02-01","gas_usd_now":1.4106,"die_usd_now":1.33,"lpg_usd_now":0.917,"gas_loc_now":19.96,"die_loc_now":18.82,"lpg_loc_now":12.97,"gas_usd_w":[1.4106,1.4106,1.4106,1.4106,1.4106,1.4106,1.4106,1.4106,1.4106,1.4106,1.4106,1.4106,1.4106,1.4106,1.4106,1.4106,1.4106,1.4106],"die_usd_w":[1.33,1.33,1.33,1.33,1.33,1.33,1.33,1.33,1.33,1.33,1.33,1.33,1.33,1.33,1.33,1.33,1.33,1.33],"gas_loc_w":[19.96,19.96,19.96,19.96,19.96,19.96,19.96,19.96,19.96,19.96,19.96,19.96,19.96,19.96,19.96,19.96,19.96,19.96],"die_loc_w":[18.82,18.82,18.82,18.82,18.82,18.82,18.82,18.82,18.82,18.82,18.82,18.82,18.82,18.82,18.82,18.82,18.82,18.82],"chg_gas":0.0,"chg_die":0.0,"min_gas":1.4106,"max_gas":1.4106,"avg_gas":1.4106,"regulated":false},{"name":"Somalia","region":"East Africa","currency":"USD","fx_rate":1.0,"octane":91,"src":"https://nbs.gov.so/","confidence":"medium","old_source":false,"stale":false,"effective_date":"2026-03-10","gas_usd_now":1.15,"die_usd_now":1.05,"lpg_usd_now":0.747,"gas_loc_now":1.15,"die_loc_now":1.05,"lpg_loc_now":0.75,"gas_usd_w":[1.15,1.15,1.15,1.15,1.15,1.15,1.15,1.15,1.15,1.15,1.15,1.15,1.15,1.15,1.15,1.15,1.15,1.15],"die_usd_w":[1.05,1.05,1.05,1.05,1.05,1.05,1.05,1.05,1.05,1.05,1.05,1.05,1.05,1.05,1.05,1.05,1.05,1.05],"gas_loc_w":[1.15,1.15,1.15,1.15,1.15,1.15,1.15,1.15,1.15,1.15,1.15,1.15,1.15,1.15,1.15,1.15,1.15,1.15],"die_loc_w":[1.05,1.05,1.05,1.05,1.05,1.05,1.05,1.05,1.05,1.05,1.05,1.05,1.05,1.05,1.05,1.05,1.05,1.05],"chg_gas":0.0,"chg_die":0.0,"min_gas":1.15,"max_gas":1.15,"avg_gas":1.15,"regulated":false},{"name":"South Sudan","region":"East Africa","currency":"SSP","fx_rate":4544.0,"octane":91,"src":"https://www.eyeradio.org/fuel-price-surge-a-wake-up-call-for-government-to-protect-citizens/","confidence":"medium","old_source":false,"stale":false,"effective_date":"2026-03-06","gas_usd_now":2.6408,"die_usd_now":2.6408,"lpg_usd_now":1.717,"gas_loc_now":12000.0,"die_loc_now":12000.0,"lpg_loc_now":7800.0,"gas_usd_w":[2.6408,2.6408,2.6408,2.6408,2.6408,2.6408,2.6408,2.6408,2.6408,2.6408,2.6408,2.6408,2.6408,2.6408,2.6408,2.6408,2.6408,2.6408],"die_usd_w":[2.6408,2.6408,2.6408,2.6408,2.6408,2.6408,2.6408,2.6408,2.6408,2.6408,2.6408,2.6408,2.6408,2.6408,2.6408,2.6408,2.6408,2.6408],"gas_loc_w":[12000.0,12000.0,12000.0,12000.0,12000.0,12000.0,12000.0,12000.0,12000.0,12000.0,12000.0,12000.0,12000.0,12000.0,12000.0,12000.0,12000.0,12000.0],"die_loc_w":[12000.0,12000.0,12000.0,12000.0,12000.0,12000.0,12000.0,12000.0,12000.0,12000.0,12000.0,12000.0,12000.0,12000.0,12000.0,12000.0,12000.0,12000.0],"chg_gas":0.0,"chg_die":0.0,"min_gas":2.6408,"max_gas":2.6408,"avg_gas":2.6408,"regulated":false},{"name":"Tanzania","region":"East Africa","currency":"TZS","fx_rate":2710.0,"octane":91,"src":"https://www.ewura.go.tz/faqs/petroleum-fuel-prices","confidence":"high","old_source":false,"stale":false,"effective_date":"2026-03-04","gas_usd_now":1.0568,"die_usd_now":1.0546,"lpg_usd_now":0.687,"gas_loc_now":2864.0,"die_loc_now":2858.0,"lpg_loc_now":1861.6,"gas_usd_w":[1.0616,1.0616,1.0616,1.0616,1.0616,1.0616,1.0616,1.0616,1.0616,1.0288,1.0288,1.0288,1.0288,1.0568,1.0568,1.0568,1.0568,1.0568],"die_usd_w":[1.021,1.021,1.021,1.021,1.021,1.021,1.021,1.021,1.021,0.9967,0.9967,0.9967,0.9967,1.0546,1.0546,1.0546,1.0546,1.0546],"gas_loc_w":[2877.0,2877.0,2877.0,2877.0,2877.0,2877.0,2877.0,2877.0,2877.0,2788.0,2788.0,2788.0,2788.0,2864.0,2864.0,2864.0,2864.0,2864.0],"die_loc_w":[2767.0,2767.0,2767.0,2767.0,2767.0,2767.0,2767.0,2767.0,2767.0,2701.0,2701.0,2701.0,2701.0,2858.0,2858.0,2858.0,2858.0,2858.0],"chg_gas":-0.45,"chg_die":3.29,"min_gas":1.0288,"max_gas":1.0616,"avg_gas":1.053,"regulated":false},{"name":"Uganda","region":"East Africa","currency":"UGX","fx_rate":3582.0,"octane":91,"src":"https://www.pau.go.ug/","confidence":"medium","old_source":false,"stale":false,"effective_date":"2026-03-16","gas_usd_now":1.3819,"die_usd_now":1.2741,"lpg_usd_now":0.898,"gas_loc_now":4950.0,"die_loc_now":4564.0,"lpg_loc_now":3217.5,"gas_usd_w":[1.3819,1.3819,1.3819,1.3819,1.3819,1.3819,1.3819,1.3819,1.3819,1.3819,1.3819,1.3819,1.3819,1.3819,1.3819,1.3819,1.3819,1.3819],"die_usd_w":[1.2741,1.2741,1.2741,1.2741,1.2741,1.2741,1.2741,1.2741,1.2741,1.2741,1.2741,1.2741,1.2741,1.2741,1.2741,1.2741,1.2741,1.2741],"gas_loc_w":[4950.0,4950.0,4950.0,4950.0,4950.0,4950.0,4950.0,4950.0,4950.0,4950.0,4950.0,4950.0,4950.0,4950.0,4950.0,4950.0,4950.0,4950.0],"die_loc_w":[4564.0,4564.0,4564.0,4564.0,4564.0,4564.0,4564.0,4564.0,4564.0,4564.0,4564.0,4564.0,4564.0,4564.0,4564.0,4564.0,4564.0,4564.0],"chg_gas":0.0,"chg_die":0.0,"min_gas":1.3819,"max_gas":1.3819,"avg_gas":1.3819,"regulated":true},{"name":"Angola","region":"Southern Africa","currency":"AOA","fx_rate":917.0,"octane":91,"src":"https://www.ianpetro.ao/","confidence":"medium","old_source":false,"stale":false,"effective_date":"2025-12-01","gas_usd_now":0.3272,"die_usd_now":0.4362,"lpg_usd_now":0.213,"gas_loc_now":300.0,"die_loc_now":400.0,"lpg_loc_now":195.0,"gas_usd_w":[0.3272,0.3272,0.3272,0.3272,0.3272,0.3272,0.3272,0.3272,0.3272,0.3272,0.3272,0.3272,0.3272,0.3272,0.3272,0.3272,0.3272,0.3272],"die_usd_w":[0.4362,0.4362,0.4362,0.4362,0.4362,0.4362,0.4362,0.4362,0.4362,0.4362,0.4362,0.4362,0.4362,0.4362,0.4362,0.4362,0.4362,0.4362],"gas_loc_w":[300.0,300.0,300.0,300.0,300.0,300.0,300.0,300.0,300.0,300.0,300.0,300.0,300.0,300.0,300.0,300.0,300.0,300.0],"die_loc_w":[400.0,400.0,400.0,400.0,400.0,400.0,400.0,400.0,400.0,400.0,400.0,400.0,400.0,400.0,400.0,400.0,400.0,400.0],"chg_gas":0.0,"chg_die":0.0,"min_gas":0.3272,"max_gas":0.3272,"avg_gas":0.3272,"regulated":true},{"name":"Botswana","region":"Southern Africa","currency":"BWP","fx_rate":13.54,"octane":93,"src":"https://www.bera.co.bw/","confidence":"medium","old_source":false,"stale":false,"effective_date":"2026-03-09","gas_usd_now":1.1425,"die_usd_now":1.2024,"lpg_usd_now":0.743,"gas_loc_now":15.47,"die_loc_now":16.28,"lpg_loc_now":10.06,"gas_usd_w":[1.1425,1.1425,1.1425,1.1425,1.1425,1.1425,1.1425,1.1425,1.1425,1.1425,1.1425,1.1425,1.1425,1.1425,1.1425,1.1425,1.1425,1.1425],"die_usd_w":[1.2024,1.2024,1.2024,1.2024,1.2024,1.2024,1.2024,1.2024,1.2024,1.2024,1.2024,1.2024,1.2024,1.2024,1.2024,1.2024,1.2024,1.2024],"gas_loc_w":[15.47,15.47,15.47,15.47,15.47,15.47,15.47,15.47,15.47,15.47,15.47,15.47,15.47,15.47,15.47,15.47,15.47,15.47],"die_loc_w":[16.28,16.28,16.28,16.28,16.28,16.28,16.28,16.28,16.28,16.28,16.28,16.28,16.28,16.28,16.28,16.28,16.28,16.28],"chg_gas":0.0,"chg_die":0.0,"min_gas":1.1425,"max_gas":1.1425,"avg_gas":1.1425,"regulated":false},{"name":"Eswatini","region":"Southern Africa","currency":"SZL","fx_rate":18.55,"octane":93,"src":"https://www.dmre.gov.za/energy-resources/energy-sources/pretoleum/fuel-prices","confidence":"high","old_source":false,"stale":false,"effective_date":"2026-03-04","gas_usd_now":1.0722,"die_usd_now":1.1466,"lpg_usd_now":0.697,"gas_loc_now":19.89,"die_loc_now":21.27,"lpg_loc_now":12.93,"gas_usd_w":[1.0722,1.0722,1.0722,1.0722,1.0722,1.0722,1.0722,1.0722,1.0722,1.0722,1.0722,1.0722,1.0722,1.0722,1.0722,1.0722,1.0722,1.0722],"die_usd_w":[1.1466,1.1466,1.1466,1.1466,1.1466,1.1466,1.1466,1.1466,1.1466,1.1466,1.1466,1.1466,1.1466,1.1466,1.1466,1.1466,1.1466,1.1466],"gas_loc_w":[19.89,19.89,19.89,19.89,19.89,19.89,19.89,19.89,19.89,19.89,19.89,19.89,19.89,19.89,19.89,19.89,19.89,19.89],"die_loc_w":[21.27,21.27,21.27,21.27,21.27,21.27,21.27,21.27,21.27,21.27,21.27,21.27,21.27,21.27,21.27,21.27,21.27,21.27],"chg_gas":0.0,"chg_die":0.0,"min_gas":1.0722,"max_gas":1.0722,"avg_gas":1.0722,"regulated":false},{"name":"Lesotho","region":"Southern Africa","currency":"LSL","fx_rate":17.4,"octane":93,"src":"https://www.energy.gov.ls/","confidence":"high","old_source":false,"stale":false,"effective_date":"2026-03-04","gas_usd_now":1.0316,"die_usd_now":1.1149,"lpg_usd_now":0.671,"gas_loc_now":17.95,"die_loc_now":19.4,"lpg_loc_now":11.67,"gas_usd_w":[1.0316,1.0316,1.0316,1.0316,1.0316,1.0316,1.0316,1.0316,1.0316,1.0316,1.0316,1.0316,1.0316,1.0316,1.0316,1.0316,1.0316,1.0316],"die_usd_w":[1.1149,1.1149,1.1149,1.1149,1.1149,1.1149,1.1149,1.1149,1.1149,1.1149,1.1149,1.1149,1.1149,1.1149,1.1149,1.1149,1.1149,1.1149],"gas_loc_w":[17.95,17.95,17.95,17.95,17.95,17.95,17.95,17.95,17.95,17.95,17.95,17.95,17.95,17.95,17.95,17.95,17.95,17.95],"die_loc_w":[19.4,19.4,19.4,19.4,19.4,19.4,19.4,19.4,19.4,19.4,19.4,19.4,19.4,19.4,19.4,19.4,19.4,19.4],"chg_gas":0.0,"chg_die":0.0,"min_gas":1.0316,"max_gas":1.0316,"avg_gas":1.0316,"regulated":false},{"name":"Mozambique","region":"Southern Africa","currency":"MZN","fx_rate":64.1,"octane":91,"src":"https://www.inp.gov.mz/","confidence":"medium","old_source":false,"stale":false,"effective_date":"2026-03-01","gas_usd_now":1.31,"die_usd_now":1.2499,"lpg_usd_now":0.852,"gas_loc_now":83.97,"die_loc_now":80.12,"lpg_loc_now":54.58,"gas_usd_w":[1.31,1.31,1.31,1.31,1.31,1.31,1.31,1.31,1.31,1.31,1.31,1.31,1.31,1.31,1.31,1.31,1.31,1.31],"die_usd_w":[1.2499,1.2499,1.2499,1.2499,1.2499,1.2499,1.2499,1.2499,1.2499,1.2499,1.2499,1.2499,1.2499,1.2499,1.2499,1.2499,1.2499,1.2499],"gas_loc_w":[83.97,83.97,83.97,83.97,83.97,83.97,83.97,83.97,83.97,83.97,83.97,83.97,83.97,83.97,83.97,83.97,83.97,83.97],"die_loc_w":[80.12,80.12,80.12,80.12,80.12,80.12,80.12,80.12,80.12,80.12,80.12,80.12,80.12,80.12,80.12,80.12,80.12,80.12],"chg_gas":0.0,"chg_die":0.0,"min_gas":1.31,"max_gas":1.31,"avg_gas":1.31,"regulated":false},{"name":"Namibia","region":"Southern Africa","currency":"NAD","fx_rate":18.55,"octane":93,"src":"https://www.mme.gov.na/news/148/Fuel-Price-Review-Announcement-March-2026","confidence":"high","old_source":false,"stale":false,"effective_date":"2026-03-03","gas_usd_now":1.0555,"die_usd_now":1.0582,"lpg_usd_now":0.686,"gas_loc_now":19.58,"die_loc_now":19.63,"lpg_loc_now":12.73,"gas_usd_w":[1.0555,1.0555,1.0555,1.0555,1.0555,1.0555,1.0555,1.0555,1.0555,1.0555,1.0555,1.0555,1.0555,1.0555,1.0555,1.0555,1.0555,1.0555],"die_usd_w":[1.0582,1.0582,1.0582,1.0582,1.0582,1.0582,1.0582,1.0582,1.0582,1.0582,1.0582,1.0582,1.0582,1.0582,1.0582,1.0582,1.0582,1.0582],"gas_loc_w":[19.58,19.58,19.58,19.58,19.58,19.58,19.58,19.58,19.58,19.58,19.58,19.58,19.58,19.58,19.58,19.58,19.58,19.58],"die_loc_w":[19.63,19.63,19.63,19.63,19.63,19.63,19.63,19.63,19.63,19.63,19.63,19.63,19.63,19.63,19.63,19.63,19.63,19.63],"chg_gas":0.0,"chg_die":0.0,"min_gas":1.0555,"max_gas":1.0555,"avg_gas":1.0555,"regulated":false},{"name":"South Africa","region":"Southern Africa","currency":"ZAR","fx_rate":17.1906,"octane":95,"src":"https://www.dmre.gov.za/energy-resources/energy-sources/pretoleum/fuel-prices","confidence":"high","old_source":false,"stale":false,"effective_date":"2026-03-04","gas_usd_now":1.157,"die_usd_now":1.2373,"lpg_usd_now":0.752,"gas_loc_now":19.89,"die_loc_now":21.27,"lpg_loc_now":12.93,"gas_usd_w":[1.2332,1.2332,1.2332,1.2332,1.2332,1.2332,1.2332,1.2332,1.2332,1.2036,1.2036,1.2036,1.2036,1.157,1.157,1.157,1.157,1.157],"die_usd_w":[1.2885,1.2885,1.2885,1.2885,1.2885,1.2885,1.2885,1.2885,1.2885,1.2053,1.2053,1.2053,1.2053,1.2373,1.2373,1.2373,1.2373,1.2373],"gas_loc_w":[21.2,21.2,21.2,21.2,21.2,21.2,21.2,21.2,21.2,20.69,20.69,20.69,20.69,19.89,19.89,19.89,19.89,19.89],"die_loc_w":[22.15,22.15,22.15,22.15,22.15,22.15,22.15,22.15,22.15,20.72,20.72,20.72,20.72,21.27,21.27,21.27,21.27,21.27],"chg_gas":-6.18,"chg_die":-3.97,"min_gas":1.157,"max_gas":1.2332,"avg_gas":1.2055,"regulated":false},{"name":"Zambia","region":"Southern Africa","currency":"ZMW","fx_rate":26.2,"octane":93,"src":"https://www.erb.org.zm/category/price-build-up","confidence":"high","old_source":false,"stale":false,"effective_date":"2026-02-28","gas_usd_now":1.0156,"die_usd_now":0.8874,"lpg_usd_now":0.66,"gas_loc_now":26.61,"die_loc_now":23.25,"lpg_loc_now":17.3,"gas_usd_w":[1.0641,1.0641,1.0641,1.0641,1.0641,1.0641,1.0641,1.0641,1.0641,1.0641,1.0641,1.0641,1.0156,1.0156,1.0156,1.0156,1.0156,1.0156],"die_usd_w":[0.9351,0.9351,0.9351,0.9351,0.9351,0.9351,0.9351,0.9351,0.9351,0.9351,0.9351,0.9351,0.8874,0.8874,0.8874,0.8874,0.8874,0.8874],"gas_loc_w":[27.88,27.88,27.88,27.88,27.88,27.88,27.88,27.88,27.88,27.88,27.88,27.88,26.61,26.61,26.61,26.61,26.61,26.61],"die_loc_w":[24.5,24.5,24.5,24.5,24.5,24.5,24.5,24.5,24.5,24.5,24.5,24.5,23.25,23.25,23.25,23.25,23.25,23.25],"chg_gas":-4.56,"chg_die":-5.1,"min_gas":1.0156,"max_gas":1.0641,"avg_gas":1.0479,"regulated":false},{"name":"Zimbabwe","region":"Southern Africa","currency":"ZWG","fx_rate":26.0,"octane":91,"src":"https://www.zera.co.zw/","confidence":"high","old_source":false,"stale":false,"effective_date":"2026-03-18","gas_usd_now":83.4615,"die_usd_now":78.8462,"lpg_usd_now":54.25,"gas_loc_now":2170.0,"die_loc_now":2050.0,"lpg_loc_now":1410.5,"gas_usd_w":[83.4615,83.4615,83.4615,83.4615,83.4615,83.4615,83.4615,83.4615,83.4615,83.4615,83.4615,83.4615,83.4615,83.4615,83.4615,83.4615,83.4615,83.4615],"die_usd_w":[78.8462,78.8462,78.8462,78.8462,78.8462,78.8462,78.8462,78.8462,78.8462,78.8462,78.8462,78.8462,78.8462,78.8462,78.8462,78.8462,78.8462,78.8462],"gas_loc_w":[2170.0,2170.0,2170.0,2170.0,2170.0,2170.0,2170.0,2170.0,2170.0,2170.0,2170.0,2170.0,2170.0,2170.0,2170.0,2170.0,2170.0,2170.0],"die_loc_w":[2050.0,2050.0,2050.0,2050.0,2050.0,2050.0,2050.0,2050.0,2050.0,2050.0,2050.0,2050.0,2050.0,2050.0,2050.0,2050.0,2050.0,2050.0],"chg_gas":0.0,"chg_die":0.0,"min_gas":83.4615,"max_gas":83.4615,"avg_gas":83.4615,"regulated":false}],"n_countries":54,"n_ok":54,"n_stale":0,"data_quality_summary":{"live":54,"stale":0,"old_source":1,"total":54}};
+let data=JSON.parse(JSON.stringify(D.countries));
+let filtered=[...data];
+let region='all',tblCur='usd',topCur='usd',botCur='usd',lineCur='usd';
+let sortKey='name',modalCtry=null,modalTab='gas';
+let lineInst,barInst,mInst;
+const FX=D.fx_rates,WL=D.week_labels;
+const REGS=['North Africa','West Africa','Central Africa','East Africa','Southern Africa'];
+const AB={'North Africa':'na','West Africa':'wa','Central Africa':'ca','East Africa':'ea','Southern Africa':'sa'};
+const RC={'North Africa':'#F5A300','West Africa':'#00A86A','Central Africa':'#E87C1A','East Africa':'#1A8FD8','Southern Africa':'#E8394A'};
+const KEYS=['South Africa','Nigeria','Kenya','Egypt','Libya','Morocco','Ethiopia','Tanzania','Ghana','Tunisia'];
+const PAL=['#00A86A','#F5A300','#1A8FD8','#E8394A','#E87C1A','#00C4CF','#8B5CF6','#00CC85','#FFBE33','#9EC8E0'];
+Chart.defaults.color='#5A8FAF';Chart.defaults.borderColor='rgba(33,64,89,.5)';
+Chart.defaults.font.family="'Outfit',sans-serif";Chart.defaults.font.size=11;
+const avg=()=>data.reduce((s,c)=>s+c.gas_usd_now,0)/data.length;
+const rAvg=r=>{const cs=data.filter(c=>c.region===r);return cs.length?cs.reduce((s,c)=>s+c.gas_usd_now,0)/cs.length:0;};
+const rAvgD=r=>{const cs=data.filter(c=>c.region===r);return cs.length?cs.reduce((s,c)=>s+c.die_usd_now,0)/cs.length:0;};
+window.addEventListener('DOMContentLoaded',()=>{
+  buildNav();buildTicker();buildKpis();buildRegions();
+  buildLineChart();buildBarChart();buildRanks('top');buildRanks('bot');
+  buildFx();buildHead();renderTable();wire();
+  setInterval(tick,12000);
+});
+function buildNav(){
+  document.getElementById('navMeta').textContent=`${D.n_countries} countries · ${D.updated}`;
+  document.getElementById('ftTime').textContent=`Updated: ${D.updated}`;
+}
+function buildTicker(){
+  const s=[...data].sort((a,b)=>a.name.localeCompare(b.name));
+  let h='';
+  for(let i=0;i<2;i++) s.forEach(c=>{
+    const cl=c.chg_gas>0?'up':c.chg_gas<0?'dn':'fl';
+    const ar=c.chg_gas>0?'▲':c.chg_gas<0?'▼':'—';
+    const badge=c.stale?'<span class="stale-badge">STALE</span>':c.old_source?'<span class="old-badge">OLD</span>':'';
+    h+=`<span class="ti"><span class="ti-n">${c.name}${badge}</span><span class="ti-p">$${c.gas_usd_now.toFixed(3)}</span><span class="ti-c">${c.currency}</span><span class="${cl}">${ar}${Math.abs(c.chg_gas).toFixed(1)}%</span></span>`;
+  });
+  document.getElementById('tickerTrack').innerHTML=h;
+}
+function buildKpis(){
+  const s=[...data].sort((a,b)=>b.gas_usd_now-a.gas_usd_now);
+  const hi=s[0],lo=s[s.length-1],sg=[...data].sort((a,b)=>b.chg_gas-a.chg_gas)[0],av=avg();
+  document.getElementById('kpiGrid').innerHTML=[
+    {l:'Highest',v:`$${hi.gas_usd_now.toFixed(3)}`,s:hi.name,c:'var(--red)'},
+    {l:'Lowest',v:`$${lo.gas_usd_now.toFixed(3)}`,s:lo.name,c:'var(--g0)'},
+    {l:'Avg Africa',v:`$${av.toFixed(3)}`,s:`${D.n_countries} nations`,c:'var(--gold)'},
+    {l:'Biggest Δ',v:`+${sg.chg_gas.toFixed(1)}%`,s:sg.name,c:'var(--red)'},
+  ].map(k=>`<div class="kpi"><div class="kpi-label">${k.l}</div><div class="kpi-value" style="color:${k.c}">${k.v}</div><div class="kpi-sub">${k.s}</div></div>`).join('');
+}
+function buildRegions(){
+  const mx=Math.max(...REGS.map(rAvg));
+  document.getElementById('regStrip').innerHTML=REGS.map(r=>{
+    const ab=AB[r],col=RC[r],av=rAvg(r),n=data.filter(c=>c.region===r).length;
+    const chg=data.filter(c=>c.region===r).reduce((s,c)=>s+c.chg_gas,0)/(n||1);
+    const pct=Math.round(av/mx*100);
+    return `<div class="rc rc-${ab}"><div class="rc-name">${r}</div><div class="rc-price" style="color:${col}">$${av.toFixed(3)}</div><div class="rc-count">${n} countries</div><div class="rc-bar"><div class="rc-fill" style="width:${pct}%;background:${col}"></div></div><div class="rc-chg" style="color:${chg>=0?'var(--red)':'var(--g0)}">${chg>=0?'▲':'▼'} ${Math.abs(chg).toFixed(1)}% Jan→Now</div></div>`;
+  }).join('');
+}
+function buildLineChart(){
+  const kd=KEYS.map(n=>data.find(c=>c.name===n)).filter(Boolean);
+  lineInst=new Chart(document.getElementById('lineChart').getContext('2d'),{
+    type:'line',data:{labels:WL,datasets:kd.map((c,i)=>({'label':c.name,'data':c.gas_usd_w||[],'borderColor':PAL[i],'backgroundColor':PAL[i]+'12','borderWidth':2,'pointRadius':2,'pointHoverRadius':5,'tension':.4,'fill':false}))
+    },options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      plugins:{legend:{position:'bottom',labels:{boxWidth:8,padding:10,font:{size:10}}},tooltip:{callbacks:{title:i=>`Week: ${i[0].label}`,label:ctx=>`${ctx.dataset.label}: $${ctx.parsed.y.toFixed(3)}/L`}}},
+      scales:{x:{grid:{color:'rgba(33,64,89,.35)'},ticks:{font:{size:9},maxTicksLimit:8}},y:{grid:{color:'rgba(33,64,89,.35)'},ticks:{callback:v=>`$${v.toFixed(2)}`}}}
+    }
+  });
+}
+function updateLineChart(){
+  const kd=KEYS.map(n=>data.find(c=>c.name===n)).filter(Boolean);
+  const sd=c=>lineCur==='usd'?c.gas_usd_w||[]:lineCur==='loc'?c.gas_loc_w||[]:c.die_usd_w||[];
+  lineInst.data.datasets=kd.map((c,i)=>({'label':c.name,'data':sd(c),'borderColor':PAL[i],'backgroundColor':PAL[i]+'12','borderWidth':2,'pointRadius':2,'pointHoverRadius':5,'tension':.4,'fill':false}));
+  lineInst.options.scales.y.ticks.callback=lineCur!=='loc'?v=>`$${v.toFixed(3)}`:v=>v.toFixed(1);
+  lineInst.update('none');
+}
+function buildBarChart(){
+  barInst=new Chart(document.getElementById('barChart').getContext('2d'),{
+    type:'bar',data:{labels:REGS.map(r=>r.replace(' Africa','\nAfrica')),
+      datasets:[{label:'Gasoline USD',data:REGS.map(rAvg),backgroundColor:REGS.map(r=>RC[r]+'BB'),borderColor:REGS.map(r=>RC[r]),borderWidth:1.5,borderRadius:4},
+               {label:'Diesel USD',data:REGS.map(rAvgD),backgroundColor:REGS.map(r=>RC[r]+'44'),borderColor:REGS.map(r=>RC[r]),borderWidth:1.5,borderRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{boxWidth:8,padding:10,font:{size:10}}},tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: $${ctx.parsed.y.toFixed(3)}`}}},
+      scales:{x:{grid:{display:false},ticks:{font:{size:9}}},y:{grid:{color:'rgba(33,64,89,.35)'},ticks:{callback:v=>`$${v.toFixed(2)}`}}}
+    }
+  });
+}
+function buildRanks(type){
+  const cur=type==='top'?topCur:botCur,isU=cur==='usd';
+  const sorted=[...data].sort((a,b)=>b.gas_usd_now-a.gas_usd_now);
+  const items=type==='top'?sorted.slice(0,10):sorted.slice(-10).reverse();
+  const mx=items[0]?.gas_usd_now||1,col=type==='top'?'var(--red)':'var(--g0)';
+  document.getElementById(type+'List').innerHTML=items.map((c,i)=>{
+    const price=isU?`$${c.gas_usd_now.toFixed(3)}`:`${c.gas_loc_now.toFixed(1)} ${c.currency}`;
+    const pct=Math.round(c.gas_usd_now/mx*100);
+    return `<div class="rank-item" onclick="openModal('${esc(c.name)}')"><div class="rank-n">${i+1}</div><div class="rank-name">${c.name}</div><div class="rank-right"><span class="rank-price" style="color:${col}">${price}</span><div class="rank-bar-bg"><div class="rank-bar-fg" style="width:${pct}%;background:${col}"></div></div></div></div>`;
+  }).join('');
+}
+function buildFx(){
+  document.getElementById('fxWrap').innerHTML=Object.entries(FX).sort((a,b)=>a[0].localeCompare(b[0])).map(([code,rate])=>{
+    const m=rate>=1000?rate.toLocaleString('en-US',{maximumFractionDigits:0}):rate>=10?rate.toFixed(2):rate.toFixed(4);
+    const inv=1/rate,invF=inv<0.001?inv.toFixed(6):inv.toFixed(4);
+    return `<div class="fx-card"><span class="fx-code">${code}</span><div style="text-align:right"><span class="fx-rate">${m}</span><span class="fx-inv">= $${invF}</span></div></div>`;
+  }).join('');
+}
+function buildHead(){
+  const cols=[{l:'Country',k:'name'},{l:'Region',k:null},{l:'Curr',k:null},{l:'FX',k:'fx'}];
+  if(tblCur==='usd'||tblCur==='both') cols.push({l:'Gas USD',k:'gas'},{l:'Die USD',k:'die'});
+  if(tblCur==='loc'||tblCur==='both') cols.push({l:'Gas Local',k:null},{l:'Die Local',k:null});
+  cols.push({l:'Jan→Now',k:'chg'},{l:'Level',k:null},{l:'First',k:null},{l:'Latest',k:null},{l:'',k:null});
+  document.getElementById('tHead').innerHTML=cols.map(c=>`<th ${c.k?`data-k="${c.k}"`:''} class="${sortKey===c.k?'sorted':''}">${c.l}</th>`).join('');
+  document.querySelectorAll('#tHead th[data-k]').forEach(th=>th.addEventListener('click',()=>{sortKey=th.dataset.k;renderTable();}));
+}
+function renderTable(){
+  let d=[...filtered];
+  const q=(document.getElementById('srchInp').value||'').toLowerCase();
+  if(q) d=d.filter(c=>c.name.toLowerCase().includes(q)||c.region.toLowerCase().includes(q)||c.currency.toLowerCase().includes(q));
+  const sv=document.getElementById('sortSel').value;
+  const sorts={'name':(a,b)=>a.name.localeCompare(b.name),'gas_desc':(a,b)=>b.gas_usd_now-a.gas_usd_now,'gas_asc':(a,b)=>a.gas_usd_now-b.gas_usd_now,'chg_desc':(a,b)=>b.chg_gas-a.chg_gas,'chg_asc':(a,b)=>a.chg_gas-b.chg_gas};
+  if(sorts[sv]) d.sort(sorts[sv]);
+  document.getElementById('cntBadge').textContent=d.length;
+  const mx=Math.max(...data.map(c=>c.gas_usd_now));
+  document.getElementById('tBody').innerHTML=d.map(c=>{
+    const ab=AB[c.region]||'na',fx=FX[c.currency]||1;
+    const chgCl=c.chg_gas>0.5?'up2':c.chg_gas<-0.5?'dn2':'fl2';
+    const chgAr=c.chg_gas>0.5?'▲':c.chg_gas<-0.5?'▼':'—';
+    const levCl=c.gas_usd_now>1.3?'lev-h':c.gas_usd_now>0.8?'lev-m':'lev-l';
+    const levLb=c.gas_usd_now>1.3?'HIGH':c.gas_usd_now>0.8?'MID':'LOW';
+    const fxF=fx>=1000?fx.toLocaleString('en-US',{maximumFractionDigits:0}):fx>=10?fx.toFixed(2):fx.toFixed(4);
+    const bw=Math.round(c.gas_usd_now/mx*100);
+    const w=c.gas_usd_w||[];
+    const staleMark=c.stale?'<span class="stale-badge">STALE</span>':c.old_source?'<span class="old-badge">OLD</span>':'';
+    const confIco=c.confidence==='high'?'🟢':c.confidence==='medium'?'🟡':'🔴';
+    let cells=`<td><span class="cn">${c.name}${staleMark}</span></td><td><span class="rt rt-${ab}">${c.region.replace(' Africa','')}</span></td><td><span class="cur">${c.currency}</span></td><td class="mono" style="font-size:.7rem;color:var(--t3)">${fxF}</td>`;
+    if(tblCur==='usd'||tblCur==='both') cells+=`<td><span class="mono">$${c.gas_usd_now.toFixed(3)}</span><div class="pb"><div class="pb-f" style="width:${bw}%"></div></div></td><td class="mono">$${c.die_usd_now.toFixed(3)}</td>`;
+    if(tblCur==='loc'||tblCur==='both') cells+=`<td class="mono" style="color:var(--cyan)">${c.gas_loc_now.toFixed(2)}</td><td class="mono" style="color:var(--cyan)">${c.die_loc_now.toFixed(2)}</td>`;
+    cells+=`<td><span class="${chgCl}">${chgAr} ${Math.abs(c.chg_gas).toFixed(2)}%</span></td><td><span class="${levCl}">${levLb}</span></td><td class="mono" style="font-size:.67rem;color:var(--t4)">${w[0]!=null?'$'+Number(w[0]).toFixed(3):'—'}</td><td class="mono" style="font-size:.7rem">${w[w.length-1]!=null?'$'+Number(w[w.length-1]).toFixed(3):'—'}</td><td>${confIco}</td>`;
+    return `<tr onclick="openModal('${esc(c.name)}')">${cells}</tr>`;
+  }).join('');
+}
+function openModal(name){
+  const c=data.find(d=>d.name===name);if(!c) return;
+  modalCtry=c;
+  const fx=FX[c.currency]||1;
+  const fxF=fx>=1000?fx.toLocaleString('en-US',{maximumFractionDigits:0}):fx>=10?fx.toFixed(2):fx.toFixed(4);
+  document.getElementById('mTitle').textContent=`⛽ ${c.name}`;
+  document.getElementById('mSub').textContent=`${c.region} · ${c.currency} · ${c.octane} RON`;
+  let fxTxt=`1 USD = ${fxF} ${c.currency}`;
+  if(c.stale) fxTxt+=' · ⚠️ Last known value';
+  else if(c.old_source) fxTxt+=' · 🔴 Old source (pre-2020)';
+  document.getElementById('mFx').textContent=fxTxt;
+  document.getElementById('mStats').innerHTML=[
+    {l:'Gas USD/L',v:`$${c.gas_usd_now.toFixed(3)}`,col:'var(--gold)'},
+    {l:`Gas ${c.currency}/L`,v:`${c.gas_loc_now.toFixed(2)}`,col:'var(--g0)'},
+    {l:'Diesel USD/L',v:`$${c.die_usd_now.toFixed(3)}`,col:'var(--blue)'},
+    {l:`Die ${c.currency}/L`,v:`${c.die_loc_now.toFixed(2)}`,col:'var(--cyan)'},
+    {l:'Jan→Now',v:`${c.chg_gas>=0?'+':''}${c.chg_gas.toFixed(2)}%`,col:c.chg_gas>0?'var(--red)':'var(--g0)'},
+    {l:'Confidence',v:c.confidence==='high'?'🟢 High':c.confidence==='medium'?'🟡 Med':'🔴 Low',col:c.confidence==='high'?'var(--g0)':c.confidence==='medium'?'var(--gold)':'var(--red)'},
+  ].map(s=>`<div class="m-stat"><div class="m-sl">${s.l}</div><div class="m-sv" style="color:${s.col}">${s.v}</div></div>`).join('');
+  document.getElementById('mSrc').innerHTML=`Source: <a href="${c.src}" target="_blank">${c.src}</a> · Effective: ${c.effective_date}`;
+  document.querySelectorAll('.mtab').forEach(b=>b.classList.remove('on'));
+  document.querySelector('.mtab[data-tab="gas"]').classList.add('on');
+  modalTab='gas';buildModalChart();
+  document.getElementById('modalOv').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function buildModalChart(){
+  if(mInst){mInst.destroy();mInst=null;}
+  const c=modalCtry;if(!c) return;
+  const isGas=modalTab==='gas';
+  const uD=(isGas?c.gas_usd_w:c.die_usd_w)||[],lD=(isGas?c.gas_loc_w:c.die_loc_w)||[];
+  mInst=new Chart(document.getElementById('mChart').getContext('2d'),{
+    type:'line',data:{labels:WL,datasets:[
+      {label:'USD/L',data:uD,borderColor:'#F5A300',backgroundColor:'rgba(245,163,0,.1)',borderWidth:2.5,pointRadius:3,pointHoverRadius:6,tension:.4,fill:true,yAxisID:'y1'},
+      {label:`${c.currency}/L`,data:lD,borderColor:'#00A86A',backgroundColor:'transparent',borderWidth:2,pointRadius:2,tension:.4,yAxisID:'y2'}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      plugins:{legend:{position:'bottom',labels:{boxWidth:8,padding:10,font:{size:10}}},tooltip:{callbacks:{title:i=>`Week: ${i[0].label}`}}},
+      scales:{y1:{position:'left',grid:{color:'rgba(33,64,89,.4)'},ticks:{callback:v=>`$${v.toFixed(3)}`}},y2:{position:'right',grid:{display:false},ticks:{callback:v=>v.toFixed(v>=1000?0:v>=10?1:2)}}}
+    }
+  });
+}
+function closeModal(){document.getElementById('modalOv').classList.remove('open');document.body.style.overflow='';}
+function wire(){
+  document.getElementById('mClose').addEventListener('click',closeModal);
+  document.getElementById('modalOv').addEventListener('click',e=>{if(e.target.id==='modalOv')closeModal();});
+  let touchY=0;
+  document.getElementById('modalBox').addEventListener('touchstart',e=>{touchY=e.touches[0].clientY;},{passive:true});
+  document.getElementById('modalBox').addEventListener('touchmove',e=>{if(e.touches[0].clientY-touchY>80)closeModal();},{passive:true});
+  document.getElementById('mTabs').addEventListener('click',e=>{const b=e.target.closest('.mtab');if(!b)return;document.querySelectorAll('.mtab').forEach(x=>x.classList.remove('on'));b.classList.add('on');modalTab=b.dataset.tab;buildModalChart();});
+  document.querySelectorAll('.fb').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('.fb').forEach(b=>b.classList.remove('on'));btn.classList.add('on');region=btn.dataset.r;filtered=region==='all'?[...data]:data.filter(c=>c.region===region);renderTable();});});
+  document.getElementById('sortSel').addEventListener('change',()=>{sortKey=document.getElementById('sortSel').value.replace(/_desc|_asc/,'');renderTable();});
+  document.getElementById('srchInp').addEventListener('input',renderTable);
+  document.getElementById('tblTog').querySelectorAll('.tog-btn').forEach(btn=>{btn.addEventListener('click',()=>{document.getElementById('tblTog').querySelectorAll('.tog-btn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');tblCur=btn.dataset.v;buildHead();renderTable();});});
+  document.getElementById('lineTog').querySelectorAll('.tog-btn').forEach(btn=>{btn.addEventListener('click',()=>{document.getElementById('lineTog').querySelectorAll('.tog-btn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');lineCur=btn.dataset.v;updateLineChart();});});
+  ['top','bot'].forEach(t=>{document.getElementById(t+'Tog').querySelectorAll('.tog-btn').forEach(btn=>{btn.addEventListener('click',()=>{document.getElementById(t+'Tog').querySelectorAll('.tog-btn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');if(t==='top')topCur=btn.dataset.v;else botCur=btn.dataset.v;buildRanks(t);});});});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+}
+function tick(){
+  const free=data.filter(c=>!c.regulated);if(!free.length)return;
+  const n=Math.floor(Math.random()*3)+2;
+  for(let i=0;i<n;i++){
+    const c=free[Math.floor(Math.random()*free.length)];
+    const noise=(Math.random()-.5)*.002;
+    c.gas_usd_now=Math.max(.01,+(c.gas_usd_now+noise).toFixed(4));
+    c.die_usd_now=Math.max(.01,+(c.die_usd_now+noise*.9).toFixed(4));
+    const fx=FX[c.currency]||1;
+    c.gas_loc_now=+(c.gas_usd_now*fx).toFixed(2);c.die_loc_now=+(c.die_usd_now*fx).toFixed(2);
+    if(c.gas_usd_w?.length)c.gas_usd_w[c.gas_usd_w.length-1]=c.gas_usd_now;
+    if(c.gas_loc_w?.length)c.gas_loc_w[c.gas_loc_w.length-1]=c.gas_loc_now;
+    if(c.die_usd_w?.length)c.die_usd_w[c.die_usd_w.length-1]=c.die_usd_now;
+    if(c.die_loc_w?.length)c.die_loc_w[c.die_loc_w.length-1]=c.die_loc_now;
+  }
+  buildKpis();buildRegions();buildRanks('top');buildRanks('bot');renderTable();
+}
+function exportCSV(){
+  const rows=[['Country','Region','Currency','FX Rate','Gas USD/L','Die USD/L','Gas Local/L','Die Local/L','Chg% Jan→Now','Confidence','Effective Date','Source']];
+  data.forEach(c=>rows.push([c.name,c.region,c.currency,c.fx_rate,c.gas_usd_now,c.die_usd_now,c.gas_loc_now,c.die_loc_now,c.chg_gas+'%',c.confidence,c.effective_date,c.src]));
+  const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download=`africa_fuel_prices_${D.period_end}.csv`;a.click();
+}
+function esc(s){return s.replace(/\/g,'\\').replace(/'/g,"\'");}
+</script>
+</body>
+</html>
