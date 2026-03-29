@@ -11,7 +11,7 @@ ROOT       = Path(__file__).parent
 DATA_DIR   = ROOT / "data"
 PRICES_DB  = DATA_DIR / "prices_db.json"
 HISTORY_DB = DATA_DIR / "history_db.json"
-OUTPUT     = ROOT / "dashboard.html"
+OUTPUT     = ROOT / "index.html"
 
 REGIONS = ["North Africa","West Africa","Central Africa","East Africa","Southern Africa"]
 
