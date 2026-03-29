@@ -168,17 +168,23 @@ nav{position:sticky;top:0;z-index:500;height:56px;background:rgba(7,17,30,.96);b
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
 .btn-dl-nav{display:flex;align-items:center;gap:.4rem;padding:.32rem .75rem;border-radius:var(--r8);background:var(--g0);color:#fff;font-size:.73rem;font-weight:700;transition:.15s;white-space:nowrap;cursor:pointer}
 .btn-dl-nav:hover{background:var(--g1);transform:translateY(-1px)}
-.ticker{background:var(--bg1);border-bottom:1px solid var(--s2);height:32px;overflow:hidden;display:flex;align-items:center}
-.ticker-lbl{flex-shrink:0;padding:0 .75rem;height:100%;display:flex;align-items:center;gap:.4rem;background:rgba(0,168,106,.08);border-right:1px solid var(--s2);font-size:.62rem;font-weight:700;letter-spacing:.08em;color:var(--g0);text-transform:uppercase;white-space:nowrap}
+.ticker{background:#0a0e14;border-bottom:2px solid #1a2a3a;height:34px;overflow:hidden;display:flex;align-items:center;flex-shrink:0}
+.ticker-lbl{flex-shrink:0;padding:0 1rem;height:100%;display:flex;align-items:center;gap:.5rem;background:#F5A300;font-size:.65rem;font-weight:800;letter-spacing:.1em;color:#000;text-transform:uppercase;white-space:nowrap;font-family:'JetBrains Mono',monospace}
+.ticker-lbl .tl-dot{width:7px;height:7px;border-radius:50%;background:#000;animation:pulse 2s ease-in-out infinite}
 .ticker-body{flex:1;overflow:hidden;position:relative}
-.ticker-body::before{content:'';position:absolute;top:0;bottom:0;left:0;width:32px;z-index:2;background:linear-gradient(90deg,var(--bg1),transparent);pointer-events:none}
-.ticker-body::after{content:'';position:absolute;top:0;bottom:0;right:0;width:32px;z-index:2;background:linear-gradient(270deg,var(--bg1),transparent);pointer-events:none}
-.ticker-track{display:flex;align-items:center;white-space:nowrap;animation:ticker 120s linear infinite}
+.ticker-body::before{content:'';position:absolute;top:0;bottom:0;left:0;width:48px;z-index:2;background:linear-gradient(90deg,#0a0e14,transparent);pointer-events:none}
+.ticker-body::after{content:'';position:absolute;top:0;bottom:0;right:0;width:48px;z-index:2;background:linear-gradient(270deg,#0a0e14,transparent);pointer-events:none}
+.ticker-track{display:flex;align-items:center;white-space:nowrap;animation:ticker 140s linear infinite}
 .ticker-track:hover{animation-play-state:paused}
 @keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-.ti{display:inline-flex;align-items:center;gap:.45rem;padding:0 1rem;height:32px;border-right:1px solid rgba(33,64,89,.5);font-size:.7rem}
-.ti-n{font-weight:600}.ti-p{font-family:'JetBrains Mono',monospace;color:var(--g0);font-weight:500}.ti-c{font-size:.6rem;color:var(--t4)}
-.up{color:var(--red)}.dn{color:var(--g1)}.fl{color:var(--t4)}
+.ti{display:inline-flex;align-items:center;gap:.5rem;padding:0 1.2rem;height:34px;border-right:1px solid rgba(255,255,255,.07);font-size:.72rem;cursor:default}
+.ti-n{font-weight:700;color:#e8eef4;letter-spacing:.01em}
+.ti-p{font-family:'JetBrains Mono',monospace;color:#F5A300;font-weight:600;font-size:.72rem}
+.ti-c{font-size:.6rem;color:#4a6a7a;font-family:'JetBrains Mono',monospace}
+.ti-sep{color:#1a3347;font-size:.6rem;margin:0 -.2rem}
+.up{color:#E8394A;font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:700}
+.dn{color:#00CC85;font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:700}
+.fl{color:#4a6a7a;font-family:'JetBrains Mono',monospace;font-size:.68rem}
 main{flex:1;padding:1.25rem 0 3rem}
 .hero{background:linear-gradient(135deg,#0B1E31 0%,#0E2A3D 60%,#0A1E2D 100%);border:1px solid var(--s2);border-radius:var(--r16);padding:1.5rem;margin-bottom:1.25rem;position:relative;overflow:hidden}
 .hero-glow{position:absolute;top:-80px;right:-80px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(0,168,106,.07) 0%,transparent 70%);pointer-events:none}
@@ -321,7 +327,7 @@ footer strong{color:var(--t3)}
   </div>
 </div></nav>
 <div class="ticker">
-  <div class="ticker-lbl"><svg width="10" height="10" viewBox="0 0 24 24" fill="var(--g0)"><circle cx="12" cy="12" r="10"/></svg>PRICES</div>
+  <div class="ticker-lbl"><span class="tl-dot"></span>LIVE · JAN–MAR 2026</div>
   <div class="ticker-body"><div class="ticker-track" id="tickerTrack"></div></div>
 </div>
 <main><div class="wrap">
@@ -486,10 +492,16 @@ function buildTicker(){
   const s=[...data].sort((a,b)=>a.name.localeCompare(b.name));
   let h='';
   for(let i=0;i<2;i++) s.forEach(c=>{
-    const cl=c.chg_gas>0?'up':c.chg_gas<0?'dn':'fl';
-    const ar=c.chg_gas>0?'\u25b2':c.chg_gas<0?'\u25bc':'\u2014';
+    const cl=c.chg_gas>0.1?'up':c.chg_gas<-0.1?'dn':'fl';
+    const ar=c.chg_gas>0.1?'\u25b2':c.chg_gas<-0.1?'\u25bc':'\u2014';
+    const sign=c.chg_gas>0?'+':'';
     const badge=c.stale?'<span class="stale-badge">STALE</span>':c.old_source?'<span class="old-badge">OLD</span>':'';
-    h+='<span class="ti"><span class="ti-n">'+c.name+badge+'</span><span class="ti-p">$'+c.gas_usd_now.toFixed(3)+'</span><span class="ti-c">'+c.currency+'</span><span class="'+cl+'">'+ar+Math.abs(c.chg_gas).toFixed(1)+'%</span></span>';
+    h+='<span class="ti">'+
+       '<span class="ti-n">'+c.name+badge+'</span>'+
+       '<span class="ti-p">$'+c.gas_usd_now.toFixed(3)+'</span>'+
+       '<span class="ti-c">'+c.currency+'</span>'+
+       '<span class="'+cl+'">'+ar+sign+Math.abs(c.chg_gas).toFixed(1)+'%</span>'+
+       '</span>';
   });
   document.getElementById('tickerTrack').innerHTML=h;
 }
