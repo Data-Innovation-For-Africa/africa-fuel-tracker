@@ -42,7 +42,7 @@ class EritreaScraper(SmartScraper):
             "Eritrea gasoline diesel price {year} Asmara pump",
         ],
 
-        "last_known": {"gas_loc": 30.0, "die_loc": 20.0, "date": "2016-12-01"},
+        "last_known": {"gas_loc": 30.0, "die_loc": 26.0, "date": "2026-01-01"},
     }
 
     def run(self) -> CountryResult:

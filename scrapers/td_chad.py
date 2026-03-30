@@ -21,7 +21,7 @@ class ChadScraper(SmartScraper):
             "Chad prix carburant FCFA XAF litre {month} {year} officiel",
             "Chad fuel price XAF FCFA {year} official",
         ],
-        "last_known":{"gas_loc":730,"die_loc":828,"date":"2024-02-01"},
+        "last_known":{"gas_loc":730,"die_loc":665,"date":"2026-01-01"},
     }
     def _parse(self, html, url):
         t = self._text(html)

@@ -51,7 +51,7 @@ class EquatorialGuineaScraper(SmartScraper):
         "last_known": {
             "gas_loc": 550.0,
             "die_loc": 520.0,
-            "date":    "2025-01-01",
+            "date":    "2026-01-01",
         },
     }
 

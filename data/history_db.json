@@ -639,16 +639,6 @@
   ],
   "Senegal": [
     {
-      "date": "2025-12-06",
-      "gas_loc": 920.0,
-      "die_loc": 680.0,
-      "gas_usd": 1.5244,
-      "die_usd": 1.1268,
-      "fx_rate": 603.5,
-      "status": "ok",
-      "source_url": "https://primature.sn/publications/communiques-officiels/baisse-des-prix-des-hydrocarbures"
-    },
-    {
       "date": "2026-03-29",
       "gas_loc": 920.0,
       "die_loc": 680.0,
@@ -801,10 +791,10 @@
     {
       "date": "2026-01-01",
       "gas_loc": 730.0,
-      "die_loc": 828.0,
-      "gas_usd": 1.2096,
-      "die_usd": 1.372,
-      "fx_rate": 603.5,
+      "die_loc": 665.0,
+      "gas_usd": 1.2086,
+      "die_usd": 1.101,
+      "fx_rate": 604.0,
       "status": "ok",
       "source_url": "https://www.finances.gouv.td/"
     },
@@ -898,11 +888,11 @@
       "date": "2026-01-01",
       "gas_loc": 550.0,
       "die_loc": 520.0,
-      "gas_usd": 0.9114,
-      "die_usd": 0.8616,
-      "fx_rate": 603.5,
+      "gas_usd": 0.9106,
+      "die_usd": 0.8609,
+      "fx_rate": 604.0,
       "status": "ok",
-      "source_url": "https://www.globalpetrolprices.com/Equatorial-Guinea/"
+      "source_url": "https://www.cepe.gq/"
     },
     {
       "date": "2026-03-29",
@@ -966,7 +956,7 @@
       "die_usd": 1.186,
       "fx_rate": 21.5,
       "status": "ok",
-      "source_url": "https://www.globalpetrolprices.com/Sao-Tome-and-Principe/"
+      "source_url": "https://www.governo.st/"
     },
     {
       "date": "2026-03-29",
@@ -1089,12 +1079,12 @@
     {
       "date": "2026-01-01",
       "gas_loc": 30.0,
-      "die_loc": 20.0,
+      "die_loc": 26.0,
       "gas_usd": 2.0,
-      "die_usd": 1.3333,
+      "die_usd": 1.7333,
       "fx_rate": 15.0,
       "status": "ok",
-      "source_url": "https://www.thefuelprice.com/Fer/en"
+      "source_url": "https://www.eri.gov.er/"
     },
     {
       "date": "2026-03-29",
@@ -1266,10 +1256,10 @@
     },
     {
       "date": "2026-03-30",
-      "gas_loc": 2023.0,
-      "die_loc": 2023.0,
-      "gas_usd": 1.166,
-      "die_usd": 1.166,
+      "gas_loc": 4965.0,
+      "die_loc": 4945.0,
+      "gas_usd": 2.8617,
+      "die_usd": 2.8501,
       "fx_rate": 1735.0,
       "status": "ok",
       "source_url": "https://mera.mw/"
@@ -1435,14 +1425,14 @@
   ],
   "South Sudan": [
     {
-      "date": "2026-03-06",
-      "gas_loc": 12000.0,
-      "die_loc": 12000.0,
-      "gas_usd": 2.6408,
-      "die_usd": 2.6408,
+      "date": "2026-01-01",
+      "gas_loc": 3000.0,
+      "die_loc": 3000.0,
+      "gas_usd": 0.6602,
+      "die_usd": 0.6602,
       "fx_rate": 4544.0,
       "status": "ok",
-      "source_url": "https://www.eyeradio.org/fuel-price-surge-a-wake-up-call-for-government-to-protect-citizens/"
+      "source_url": "https://africa-press.net/"
     },
     {
       "date": "2026-03-29",

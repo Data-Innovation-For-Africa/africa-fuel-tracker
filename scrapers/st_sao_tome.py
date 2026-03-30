@@ -18,7 +18,7 @@ class SaoTomeScraper(SmartScraper):
             "Sao Tome fuel price STN dobra per liter {year} official government",
             "São Tomé preço combustível STN {year} dobra gasolina gasóleo oficial",
         ],
-        "last_known":{"gas_loc":28.0,"die_loc":25.5,"date":"2025-06-01"},
+        "last_known":{"gas_loc":28.0,"die_loc":25.5,"date":"2026-01-01"},
     }
     def _parse(self, html, url):
         t = self._text(html)

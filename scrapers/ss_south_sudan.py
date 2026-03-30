@@ -13,6 +13,7 @@ class SouthSudanScraper(SmartScraper):
         # Real pump price Mar-2026 confirmed ~3000 SSP/L at official BoSS rate
         # Lower bound 1000 to accommodate possible future price drops
         "price_range":(1000, 60000),
+        "last_known":{"gas_loc":3000.0,"die_loc":3000.0,"date":"2026-01-01"},
         "official_sources":[
             {"url":"https://www.eyeradio.org/","name":"Eye Radio South Sudan","confidence":"medium"},
             {"url":"https://mop.gov.ss/","name":"Ministry of Petroleum South Sudan","confidence":"high"},
