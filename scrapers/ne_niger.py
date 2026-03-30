@@ -21,7 +21,7 @@ class NigerScraper(SmartScraper):
             "Niger prix carburant FCFA XOF litre {month} {year} officiel arrêté",
             "Niger fuel price XOF FCFA {year} official decree",
         ],
-        "last_known":{"gas_loc":541,"die_loc":605,"date":"2026-02-01"},
+        "last_known":{"gas_loc":499,"die_loc":618,"date":"2026-01-01"},
     }
     def _parse(self, html, url):
         t = self._text(html)
