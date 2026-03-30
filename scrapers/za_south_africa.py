@@ -10,6 +10,7 @@ class SouthAfricaScraper(SmartScraper):
     COUNTRY_META = {
         "country":"South Africa","iso2":"ZA","region":"Southern Africa","currency":"ZAR",
         "update_cycle":CYCLE_MONTHLY_ANY,"price_range":(14,30),
+        "last_known":{"gas_loc":20.75,"die_loc":18.42,"date":"2026-03-04"},
         "official_sources":[
             {"url":"https://www.dmre.gov.za/energy-resources/energy-sources/pretoleum/fuel-prices",
              "name":"DMRE South Africa — Fuel Prices","confidence":"high"},

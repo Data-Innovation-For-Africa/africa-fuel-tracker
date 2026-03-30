@@ -21,7 +21,7 @@ class MaliScraper(SmartScraper):
             "Mali prix carburant FCFA XOF litre {month} {year} officiel arrêté",
             "Mali fuel price XOF FCFA {year} official decree",
         ],
-        "last_known":{"gas_loc":840,"die_loc":754,"date":"2026-02-01"},
+        "last_known":{"gas_loc":875,"die_loc":940,"date":"2026-03-28"},
     }
     def _parse(self, html, url):
         t = self._text(html)
