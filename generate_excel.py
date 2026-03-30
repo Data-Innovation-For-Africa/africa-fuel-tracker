@@ -1,7 +1,7 @@
 """
 generate_excel.py — Africa Fuel Tracker  |  Professional Excel Report
 Reads  data/prices_db.json + data/history_db.json
-Writes africa_fuel_tracker_YYYY-MM-DD.xlsx
+Writes africa_fuel_tracker_latest.xlsx  (fixed name — no date mismatch)
 
 Sheets
 ------
@@ -530,7 +530,7 @@ def main():
     sh_region(wb,   meta, rows)
 
     run_date = meta.get("run_date", date.today().isoformat())
-    out = ROOT / f"africa_fuel_tracker_{run_date}.xlsx"
+    out = ROOT / "africa_fuel_tracker_latest.xlsx"
     wb.save(out)
     print(f"✅ {out.name}  ({out.stat().st_size//1024} KB)")
     print(f"   Sheets: {wb.sheetnames}")

@@ -50,18 +50,14 @@ jobs:
       - name: Generate Excel report
         run: python generate_excel.py
 
-      - name: Remove stale Excel files (keep only today's)
-        run: |
-          TODAY=$(date -u +%Y-%m-%d)
-          for f in africa_fuel_tracker_*.xlsx; do
-            [ "$f" != "africa_fuel_tracker_${TODAY}.xlsx" ] && rm -f "$f" && echo "Removed $f"
-          done
+      - name: Remove stale dated Excel files
+        run: rm -f africa_fuel_tracker_2[0-9][0-9][0-9]-*.xlsx && echo "Cleaned old dated xlsx files"
 
       - name: Commit and push updated files
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/prices_db.json data/history_db.json index.html africa_fuel_tracker_*.xlsx
+          git add data/prices_db.json data/history_db.json index.html africa_fuel_tracker_latest.xlsx
           git diff --staged --quiet || git commit -m "chore: daily update $(date -u +%Y-%m-%d)"
           git push
 
@@ -95,17 +91,13 @@ jobs:
       - name: Generate Excel report
         run: python generate_excel.py
 
-      - name: Remove stale Excel files (keep only today's)
-        run: |
-          TODAY=$(date -u +%Y-%m-%d)
-          for f in africa_fuel_tracker_*.xlsx; do
-            [ "$f" != "africa_fuel_tracker_${TODAY}.xlsx" ] && rm -f "$f" && echo "Removed $f"
-          done
+      - name: Remove stale dated Excel files
+        run: rm -f africa_fuel_tracker_2[0-9][0-9][0-9]-*.xlsx && echo "Cleaned old dated xlsx files"
 
       - name: Commit and push regenerated files
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add index.html africa_fuel_tracker_*.xlsx
+          git add index.html africa_fuel_tracker_latest.xlsx
           git diff --staged --quiet || git commit -m "chore: regenerate dashboard + Excel $(date -u +%Y-%m-%d)"
           git push

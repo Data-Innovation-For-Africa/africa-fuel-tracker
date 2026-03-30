@@ -687,12 +687,11 @@ function tick(){
   buildKpis();buildRegions();buildRanks('top');buildRanks('bot');renderTable();
 }
 function exportXLSX(){
-  // Download the pre-built, professionally formatted Excel file
-  // generated server-side by generate_excel.py (committed daily by GitHub Actions)
-  const filename = 'africa_fuel_tracker_' + D.period_end + '.xlsx';
+  // Always download the fixed-name file — no date mismatch possible
+  const filename = 'africa_fuel_tracker_latest.xlsx';
   const a = document.createElement('a');
   a.href     = filename;
-  a.download = filename;
+  a.download = 'africa_fuel_tracker_' + D.period_end + '.xlsx';  // rename on save
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
