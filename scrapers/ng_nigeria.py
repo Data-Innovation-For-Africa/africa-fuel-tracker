@@ -12,6 +12,7 @@ class NigeriaScraper(SmartScraper):
         "update_cycle":CYCLE_WEEKLY,
         # NGN real range: 600–2000 NGN/L. 2026 must NOT be captured (it's a year).
         "price_range":(600, 2000),
+        "last_known":{"gas_loc":1330,"die_loc":1600,"date":"2026-03-21"},
         "official_sources":[
             {"url":"https://www.nnpcgroup.com/","name":"NNPC Limited Nigeria","confidence":"high"},
             {"url":"https://www.nnpcgroup.com/NNPC-Business/Downstream-Ventures/Pages/Retail.aspx","name":"NNPC Retail","confidence":"high"},

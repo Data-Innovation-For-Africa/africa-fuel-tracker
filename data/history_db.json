@@ -607,24 +607,24 @@
       "source_url": "https://www.nnpcgroup.com/"
     },
     {
-      "date": "2026-03-29",
-      "gas_loc": 1130.0,
+      "date": "2026-03-21",
+      "gas_loc": 1330.0,
       "die_loc": 1600.0,
-      "gas_usd": 0.6971,
+      "gas_usd": 0.8205,
+      "die_usd": 0.987,
+      "fx_rate": 1621.0,
+      "status": "ok",
+      "source_url": "https://www.legit.ng/business-economy/energy/1702150-nnpc-raises-petrol-prices-lagos-abuja-stats/"
+    },
+    {
+      "date": "2026-03-29",
+      "gas_loc": 1330.0,
+      "die_loc": 1600.0,
+      "gas_usd": 0.8205,
       "die_usd": 0.987,
       "fx_rate": 1621.0,
       "status": "ok",
       "source_url": "https://www.nnpcgroup.com/"
-    },
-    {
-      "date": "2026-03-30",
-      "gas_loc": 1200.0,
-      "die_loc": 1250.0,
-      "gas_usd": 0.7403,
-      "die_usd": 0.7711,
-      "fx_rate": 1621.0,
-      "status": "ok",
-      "source_url": "https://informantonline.com.ng/2026/03/27/latest-petrol-price-across-nigeria-friday-march-27-2026/"
     }
   ],
   "Senegal": [
