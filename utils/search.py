@@ -155,15 +155,37 @@ def _find_price_near_keyword(
     text: str, keywords: list[str], min_val: float, max_val: float
 ) -> float | None:
     """Find a numeric value near any keyword, within valid range."""
+    # Year integers to exclude (e.g. "2026", "2025")
+    YEAR_RE = re.compile(r"^20\d\d$")
+
+    def is_year(raw: str) -> bool:
+        return bool(YEAR_RE.match(raw.strip()))
+
     for kw in keywords:
-        # Pattern: keyword ... number   OR   number ... keyword (within 80 chars)
-        patterns = [
-            rf"(?i){re.escape(kw)}[\s\S]{{0,80}}?([\d][.\d]{{1,8}})",
-            rf"(?i)([\d][.\d]{{1,8}})[\s\S]{{0,80}}?{re.escape(kw)}",
-        ]
-        for pat in patterns:
-            for m in re.finditer(pat, text):
-                raw = m.group(1).replace(",", "")
+        # Find all positions of keyword in text
+        for kw_match in re.finditer(rf"(?i){re.escape(kw)}", text):
+            pos = kw_match.end()
+            # Scan all numbers in the next 200 characters
+            window = text[pos:pos + 200]
+            for num_match in re.finditer(r"([\d][\d.,]{0,10})", window):
+                raw = num_match.group(1).replace(",", "").rstrip(".")
+                if is_year(raw):
+                    continue
+                try:
+                    val = float(raw)
+                    if min_val <= val <= max_val:
+                        return val
+                except ValueError:
+                    continue
+        # Also try: number BEFORE keyword
+        for num_match in re.finditer(r"([\d][\d.,]{0,10})", text):
+            raw = num_match.group(1).replace(",", "").rstrip(".")
+            if is_year(raw):
+                continue
+            num_end = num_match.end()
+            # Check if keyword appears within 100 chars after this number
+            after = text[num_end:num_end + 100]
+            if re.search(rf"(?i){re.escape(kw)}", after):
                 try:
                     val = float(raw)
                     if min_val <= val <= max_val:

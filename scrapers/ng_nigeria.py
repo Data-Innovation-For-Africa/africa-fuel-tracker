@@ -10,9 +10,8 @@ class NigeriaScraper(SmartScraper):
     COUNTRY_META = {
         "country":"Nigeria","iso2":"NG","region":"West Africa","currency":"NGN",
         "update_cycle":CYCLE_WEEKLY,
-        # NGN real range: 600–2500 NGN/L — but 2026 must be excluded
-        # Use explicit lower-bound patterns to avoid matching year "2026"
-        "price_range":(600, 2500),
+        # NGN real range: 600–2000 NGN/L. 2026 must NOT be captured (it's a year).
+        "price_range":(600, 2000),
         "official_sources":[
             {"url":"https://www.nnpcgroup.com/","name":"NNPC Limited Nigeria","confidence":"high"},
             {"url":"https://www.nnpcgroup.com/NNPC-Business/Downstream-Ventures/Pages/Retail.aspx","name":"NNPC Retail","confidence":"high"},
