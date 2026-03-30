@@ -4,12 +4,22 @@ on:
   schedule:
     - cron: '0 5 * * *'   # 05:00 UTC every morning
   workflow_dispatch:       # manual trigger from GitHub UI
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'index.html'               # avoid infinite loop (bot pushes index.html)
+      - 'africa_fuel_tracker_*.xlsx'  # avoid infinite loop (bot pushes xlsx)
+      - '.github/**'
+      - 'README.md'
 
 permissions:
-  contents: write          # needed to commit updated data files
+  contents: write
 
 jobs:
+  # ── Job 1: Daily scrape + full regeneration (cron / workflow_dispatch) ────
   update-prices:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -40,10 +50,62 @@ jobs:
       - name: Generate Excel report
         run: python generate_excel.py
 
+      - name: Remove stale Excel files (keep only today's)
+        run: |
+          TODAY=$(date -u +%Y-%m-%d)
+          for f in africa_fuel_tracker_*.xlsx; do
+            [ "$f" != "africa_fuel_tracker_${TODAY}.xlsx" ] && rm -f "$f" && echo "Removed $f"
+          done
+
       - name: Commit and push updated files
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/prices_db.json data/history_db.json index.html africa_fuel_tracker_*.xlsx
           git diff --staged --quiet || git commit -m "chore: daily update $(date -u +%Y-%m-%d)"
+          git push
+
+  # ── Job 2: Regenerate Excel + dashboard on every manual push ─────────────
+  regenerate-on-push:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Cache pip packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Generate dashboard HTML
+        run: python generate_dashboard.py
+
+      - name: Generate Excel report
+        run: python generate_excel.py
+
+      - name: Remove stale Excel files (keep only today's)
+        run: |
+          TODAY=$(date -u +%Y-%m-%d)
+          for f in africa_fuel_tracker_*.xlsx; do
+            [ "$f" != "africa_fuel_tracker_${TODAY}.xlsx" ] && rm -f "$f" && echo "Removed $f"
+          done
+
+      - name: Commit and push regenerated files
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add index.html africa_fuel_tracker_*.xlsx
+          git diff --staged --quiet || git commit -m "chore: regenerate dashboard + Excel $(date -u +%Y-%m-%d)"
           git push
