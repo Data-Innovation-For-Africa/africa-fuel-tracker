@@ -32,7 +32,7 @@ def week_series(entries, first_date, last_date, fu, fl):
     while d.weekday() != 6:
         d += timedelta(days=1)
     weeks, usd_s, loc_s, labels = [], [], [], []
-    while d <= last_date + timedelta(days=7):
+    while d <= last_date:
         weeks.append(d)
         d += timedelta(days=7)
     if not weeks:
