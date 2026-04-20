@@ -184,7 +184,7 @@ def main():
     # Exit with error code if too many failures (> 10 countries stale/error)
     if counts["stale"] + counts["error"] > 10:
         print("⚠️  WARNING: more than 10 countries failed. Check scraper logs.")
-        sys.exit(1)
+        sys.exit(1) 
 
 
 if __name__ == "__main__":
