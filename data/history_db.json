@@ -829,6 +829,16 @@
       "fx_rate": 134.5,
       "status": "ok",
       "source_url": "https://www.thefuelprice.com/Fdz/en"
+    },
+    {
+      "date": "2026-07-16",
+      "gas_loc": 47.0,
+      "die_loc": 31.0,
+      "gas_usd": 0.3494,
+      "die_usd": 0.2305,
+      "fx_rate": 134.5,
+      "status": "ok",
+      "source_url": "https://www.thefuelprice.com/Fdz/en"
     }
   ],
   "Egypt": [
@@ -1661,6 +1671,16 @@
       "fx_rate": 50.3,
       "status": "ok",
       "source_url": "https://sarfegp.com/en/egypt-fuel-prices-july-2026/"
+    },
+    {
+      "date": "2026-07-16",
+      "gas_loc": 22.25,
+      "die_loc": 15.0,
+      "gas_usd": 0.4423,
+      "die_usd": 0.2982,
+      "fx_rate": 50.3,
+      "status": "ok",
+      "source_url": "https://sarfegp.com/en/egypt-fuel-prices-july-2026/"
     }
   ],
   "Libya": [
@@ -2486,6 +2506,16 @@
     },
     {
       "date": "2026-07-15",
+      "gas_loc": 0.15,
+      "die_loc": 0.135,
+      "gas_usd": 0.0309,
+      "die_usd": 0.0278,
+      "fx_rate": 4.85,
+      "status": "ok",
+      "source_url": "https://noc.ly/"
+    },
+    {
+      "date": "2026-07-16",
       "gas_loc": 0.15,
       "die_loc": 0.135,
       "gas_usd": 0.0309,
@@ -3345,6 +3375,16 @@
       "fx_rate": 10.03,
       "status": "ok",
       "source_url": "https://www.moroccoworldnews.com/2026/07/326700/fuel-prices-fall-again-in-morocco-diesel-drops-below-mad-13-per-liter/"
+    },
+    {
+      "date": "2026-07-16",
+      "gas_loc": 13.84,
+      "die_loc": 13.0,
+      "gas_usd": 1.3799,
+      "die_usd": 1.2961,
+      "fx_rate": 10.03,
+      "status": "ok",
+      "source_url": "https://www.moroccoworldnews.com/2026/07/326700/fuel-prices-fall-again-in-morocco-diesel-drops-below-mad-13-per-liter/"
     }
   ],
   "Sudan": [
@@ -4160,6 +4200,16 @@
     },
     {
       "date": "2026-07-15",
+      "gas_loc": 630.0,
+      "die_loc": 590.0,
+      "gas_usd": 1.0474,
+      "die_usd": 0.9809,
+      "fx_rate": 601.5,
+      "status": "ok",
+      "source_url": "https://afrotools.com/tools/fuel-tracker/sudan/"
+    },
+    {
+      "date": "2026-07-16",
       "gas_loc": 630.0,
       "die_loc": 590.0,
       "gas_usd": 1.0474,
@@ -4999,6 +5049,16 @@
       "fx_rate": 3.02,
       "status": "ok",
       "source_url": "https://www.stir.com.tn/"
+    },
+    {
+      "date": "2026-07-16",
+      "gas_loc": 2.53,
+      "die_loc": 2.21,
+      "gas_usd": 0.8377,
+      "die_usd": 0.7318,
+      "fx_rate": 3.02,
+      "status": "ok",
+      "source_url": "https://www.stir.com.tn/"
     }
   ],
   "Benin": [
@@ -5831,6 +5891,16 @@
       "fx_rate": 604.0,
       "status": "ok",
       "source_url": "https://www.toumaiwebmedias.com/benin-hausse-des-prix-du-carburant-les-nouveaux-tarifs-desormais-appliques/"
+    },
+    {
+      "date": "2026-07-16",
+      "gas_loc": 725.0,
+      "die_loc": 750.0,
+      "gas_usd": 1.2003,
+      "die_usd": 1.2417,
+      "fx_rate": 604.0,
+      "status": "ok",
+      "source_url": "https://beninwebtv.com/benin-les-nouveaux-prix-des-produits-petroliers-applicables-a-partir-du-1er-mai-2026/"
     }
   ],
   "Burkina Faso": [
@@ -6656,6 +6726,16 @@
     },
     {
       "date": "2026-07-15",
+      "gas_loc": 650.0,
+      "die_loc": 625.0,
+      "gas_usd": 1.0762,
+      "die_usd": 1.0348,
+      "fx_rate": 604.0,
+      "status": "ok",
+      "source_url": "https://afrotools.com/tools/fuel-tracker/burkina-faso/"
+    },
+    {
+      "date": "2026-07-16",
       "gas_loc": 650.0,
       "die_loc": 625.0,
       "gas_usd": 1.0762,
@@ -7495,6 +7575,16 @@
       "fx_rate": 110.5,
       "status": "ok",
       "source_url": "https://inforpress.cv/combustiveis-mais-caros-a-partir-de-01-de-julho"
+    },
+    {
+      "date": "2026-07-16",
+      "gas_loc": 130.0,
+      "die_loc": 108.0,
+      "gas_usd": 1.1765,
+      "die_usd": 0.9774,
+      "fx_rate": 110.5,
+      "status": "ok",
+      "source_url": "https://inforpress.cv/combustiveis-mais-caros-a-partir-de-01-de-julho"
     }
   ],
   "Gambia": [
@@ -8320,6 +8410,16 @@
     },
     {
       "date": "2026-07-15",
+      "gas_loc": 101.1,
+      "die_loc": 113.52,
+      "gas_usd": 1.3849,
+      "die_usd": 1.5551,
+      "fx_rate": 73.0,
+      "status": "ok",
+      "source_url": "https://www.capmad.com/post/gambie-le-gouvernement-ajuste-les-prix-des-carburants-a-partir-du-1er-juillet-2026"
+    },
+    {
+      "date": "2026-07-16",
       "gas_loc": 101.1,
       "die_loc": 113.52,
       "gas_usd": 1.3849,
@@ -9159,6 +9259,16 @@
       "fx_rate": 15.7,
       "status": "ok",
       "source_url": "https://pumply.co/fuel-price-update-ghana/"
+    },
+    {
+      "date": "2026-07-16",
+      "gas_loc": 13.28,
+      "die_loc": 14.35,
+      "gas_usd": 0.8459,
+      "die_usd": 0.914,
+      "fx_rate": 15.7,
+      "status": "ok",
+      "source_url": "https://www.myjoyonline.com/npa-increases-price-floor-from-july-16-petrol-up-to-gh%C2%A2-13-28-and-diesel-pegged-at-gh%C2%A2-14-35/"
     }
   ],
   "Guinea": [
@@ -9984,6 +10094,16 @@
     },
     {
       "date": "2026-07-15",
+      "gas_loc": 12000.0,
+      "die_loc": 12000.0,
+      "gas_usd": 1.3873,
+      "die_usd": 1.3873,
+      "fx_rate": 8650.0,
+      "status": "ok",
+      "source_url": "https://oilpricez.com/gn/guinea-oil-price"
+    },
+    {
+      "date": "2026-07-16",
       "gas_loc": 12000.0,
       "die_loc": 12000.0,
       "gas_usd": 1.3873,
@@ -10823,6 +10943,16 @@
       "fx_rate": 604.0,
       "status": "ok",
       "source_url": "https://afrotools.com/fr/tools/suivi-carburant/guinea-bissau/"
+    },
+    {
+      "date": "2026-07-16",
+      "gas_loc": 720.0,
+      "die_loc": 700.0,
+      "gas_usd": 1.1921,
+      "die_usd": 1.1589,
+      "fx_rate": 604.0,
+      "status": "ok",
+      "source_url": "https://afrotools.com/fr/tools/suivi-carburant/guinea-bissau/"
     }
   ],
   "Ivory Coast": [
@@ -11655,6 +11785,16 @@
       "fx_rate": 604.0,
       "status": "ok",
       "source_url": "https://www.affairage.ci/carburants-en-cote-divoire-voici-les-prix/"
+    },
+    {
+      "date": "2026-07-16",
+      "gas_loc": 875.0,
+      "die_loc": 700.0,
+      "gas_usd": 1.4487,
+      "die_usd": 1.1589,
+      "fx_rate": 604.0,
+      "status": "ok",
+      "source_url": "https://www.yessouan.ci/Prix-carburant-en-Cote-d-Ivoire-voici-les-tarifs-des-ce-1er-juillet-2026_a8861.html"
     }
   ],
   "Liberia": [
@@ -12487,6 +12627,16 @@
       "fx_rate": 194.0,
       "status": "ok",
       "source_url": "https://afrotools.com/tools/fuel-tracker/liberia/"
+    },
+    {
+      "date": "2026-07-16",
+      "gas_loc": 240.0,
+      "die_loc": 245.0,
+      "gas_usd": 1.2371,
+      "die_usd": 1.2629,
+      "fx_rate": 194.0,
+      "status": "ok",
+      "source_url": "https://afrotools.com/tools/fuel-tracker/liberia/"
     }
   ],
   "Mali": [
@@ -13309,6 +13459,16 @@
       "fx_rate": 604.0,
       "status": "ok",
       "source_url": "https://croissanceafrique.com/au-mali-le-litre-dessence-passe-de-702-fcfa-a-694-fcfa-et-le-gasoil-de-633-fcfa-a-623-fcfa/"
+    },
+    {
+      "date": "2026-07-16",
+      "gas_loc": 875.0,
+      "die_loc": 875.0,
+      "gas_usd": 1.4487,
+      "die_usd": 1.4487,
+      "fx_rate": 604.0,
+      "status": "ok",
+      "source_url": "https://www.maliweb.net/economie/petrole/carburant-la-situation-sameliore-3117201.html"
     }
   ],
   "Mauritania": [
@@ -14141,6 +14301,16 @@
       "fx_rate": 36.5,
       "status": "stale",
       "source_url": "https://www.petrole.gov.mr/"
+    },
+    {
+      "date": "2026-07-16",
+      "gas_loc": 42.6,
+      "die_loc": 40.2,
+      "gas_usd": 1.1671,
+      "die_usd": 1.1014,
+      "fx_rate": 36.5,
+      "status": "stale",
+      "source_url": "https://www.petrole.gov.mr/"
     }
   ],
   "Niger": [
@@ -14966,6 +15136,16 @@
     },
     {
       "date": "2026-07-15",
+      "gas_loc": 499.0,
+      "die_loc": 618.0,
+      "gas_usd": 0.8262,
+      "die_usd": 1.0232,
+      "fx_rate": 604.0,
+      "status": "ok",
+      "source_url": "https://lesbonsplans.online/blog/prix-du-carburant-au-niger-en-2026-essence-gasoil-et-ou-payer-le-juste-prix"
+    },
+    {
+      "date": "2026-07-16",
       "gas_loc": 499.0,
       "die_loc": 618.0,
       "gas_usd": 0.8262,
@@ -15825,6 +16005,16 @@
       "fx_rate": 1621.0,
       "status": "ok",
       "source_url": "https://pricesnow.com.ng/nigeria-petrol-price/"
+    },
+    {
+      "date": "2026-07-16",
+      "gas_loc": 895.0,
+      "die_loc": 895.0,
+      "gas_usd": 0.5521,
+      "die_usd": 0.5521,
+      "fx_rate": 1621.0,
+      "status": "ok",
+      "source_url": "https://guardian.ng/energy/nnpc-cuts-petrol-price-to-%E2%82%A6895-in-abuja-%E2%82%A6865-in-lagos/"
     }
   ],
   "Senegal": [
@@ -16640,6 +16830,16 @@
     },
     {
       "date": "2026-07-15",
+      "gas_loc": 990.0,
+      "die_loc": 755.0,
+      "gas_usd": 1.6391,
+      "die_usd": 1.25,
+      "fx_rate": 604.0,
+      "status": "ok",
+      "source_url": "https://primature.sn/publications/communiques-officiels/baisse-des-prix-des-hydrocarbures"
+    },
+    {
+      "date": "2026-07-16",
       "gas_loc": 990.0,
       "die_loc": 755.0,
       "gas_usd": 1.6391,
@@ -17479,6 +17679,16 @@
       "fx_rate": 22500.0,
       "status": "ok",
       "source_url": "https://oilpricez.com/sl/sierra-leone-gasoline-price"
+    },
+    {
+      "date": "2026-07-16",
+      "gas_loc": 33000.0,
+      "die_loc": 33000.0,
+      "gas_usd": 1.4667,
+      "die_usd": 1.4667,
+      "fx_rate": 22500.0,
+      "status": "ok",
+      "source_url": "https://oilpricez.com/sl/sierra-leone-gasoline-price"
     }
   ],
   "Togo": [
@@ -18311,6 +18521,16 @@
       "fx_rate": 604.0,
       "status": "ok",
       "source_url": "https://actulome.com/togo-les-nouveaux-prix-du-carburant/"
+    },
+    {
+      "date": "2026-07-16",
+      "gas_loc": 725.0,
+      "die_loc": 750.0,
+      "gas_usd": 1.2003,
+      "die_usd": 1.2417,
+      "fx_rate": 604.0,
+      "status": "ok",
+      "source_url": "https://ahouevinfo.tg/societe-togo-la-nouvelle-grille-tarifaire-des-produits-petroliers-officielle-des-ce-27-mai/"
     }
   ],
   "CAR": [
@@ -19136,6 +19356,16 @@
     },
     {
       "date": "2026-07-15",
+      "gas_loc": 1050.0,
+      "die_loc": 1300.0,
+      "gas_usd": 1.7384,
+      "die_usd": 2.1523,
+      "fx_rate": 604.0,
+      "status": "ok",
+      "source_url": "https://www.primature.cf/"
+    },
+    {
+      "date": "2026-07-16",
       "gas_loc": 1050.0,
       "die_loc": 1300.0,
       "gas_usd": 1.7384,
@@ -19975,6 +20205,16 @@
       "fx_rate": 604.0,
       "status": "ok",
       "source_url": "https://infospratiques.cm/prix-carburant-cameroun/"
+    },
+    {
+      "date": "2026-07-16",
+      "gas_loc": 840.0,
+      "die_loc": 828.0,
+      "gas_usd": 1.3907,
+      "die_usd": 1.3709,
+      "fx_rate": 604.0,
+      "status": "ok",
+      "source_url": "https://infospratiques.cm/prix-carburant-cameroun/"
     }
   ],
   "Chad": [
@@ -20800,6 +21040,16 @@
     },
     {
       "date": "2026-07-15",
+      "gas_loc": 730.0,
+      "die_loc": 665.0,
+      "gas_usd": 1.2086,
+      "die_usd": 1.101,
+      "fx_rate": 604.0,
+      "status": "ok",
+      "source_url": "https://www.finances.gouv.td/"
+    },
+    {
+      "date": "2026-07-16",
       "gas_loc": 730.0,
       "die_loc": 665.0,
       "gas_usd": 1.2086,
@@ -21639,6 +21889,16 @@
       "fx_rate": 2820.0,
       "status": "ok",
       "source_url": "https://www.hydrocarbures.gouv.cd/"
+    },
+    {
+      "date": "2026-07-16",
+      "gas_loc": 2968.0,
+      "die_loc": 2431.0,
+      "gas_usd": 1.0525,
+      "die_usd": 0.8621,
+      "fx_rate": 2820.0,
+      "status": "ok",
+      "source_url": "https://www.hydrocarbures.gouv.cd/"
     }
   ],
   "Congo Republic": [
@@ -22464,6 +22724,16 @@
     },
     {
       "date": "2026-07-15",
+      "gas_loc": 695.0,
+      "die_loc": 630.0,
+      "gas_usd": 1.1507,
+      "die_usd": 1.043,
+      "fx_rate": 604.0,
+      "status": "ok",
+      "source_url": "https://www.hydrocarbures.gouv.cg/"
+    },
+    {
+      "date": "2026-07-16",
       "gas_loc": 695.0,
       "die_loc": 630.0,
       "gas_usd": 1.1507,
@@ -23303,6 +23573,16 @@
       "fx_rate": 604.0,
       "status": "ok",
       "source_url": "https://fr.linkedin.com/posts/asu-david-1a421b319_guin%C3%A9e%C3%A9quatoriale-prix-carburants-activity-7475183970972950528-0SCv"
+    },
+    {
+      "date": "2026-07-16",
+      "gas_loc": 550.0,
+      "die_loc": 520.0,
+      "gas_usd": 0.9106,
+      "die_usd": 0.8609,
+      "fx_rate": 604.0,
+      "status": "ok",
+      "source_url": "https://fr.linkedin.com/posts/asu-david-1a421b319_guin%C3%A9e%C3%A9quatoriale-prix-carburants-activity-7475183970972950528-0SCv"
     }
   ],
   "Gabon": [
@@ -24128,6 +24408,16 @@
     },
     {
       "date": "2026-07-15",
+      "gas_loc": 644.0,
+      "die_loc": 576.0,
+      "gas_usd": 1.0662,
+      "die_usd": 0.9536,
+      "fx_rate": 604.0,
+      "status": "ok",
+      "source_url": "https://gabon-quotidien.com/prix-carburant-gabon-essence-gasoil-2026/"
+    },
+    {
+      "date": "2026-07-16",
       "gas_loc": 644.0,
       "die_loc": 576.0,
       "gas_usd": 1.0662,
@@ -24967,6 +25257,16 @@
       "fx_rate": 21.5,
       "status": "ok",
       "source_url": "https://afrotools.com/tools/fuel-tracker/sao-tome-and-principe/"
+    },
+    {
+      "date": "2026-07-16",
+      "gas_loc": 30.5,
+      "die_loc": 28.5,
+      "gas_usd": 1.4186,
+      "die_usd": 1.3256,
+      "fx_rate": 21.5,
+      "status": "ok",
+      "source_url": "https://afrotools.com/tools/fuel-tracker/sao-tome-and-principe/"
     }
   ],
   "Burundi": [
@@ -25792,6 +26092,16 @@
     },
     {
       "date": "2026-07-15",
+      "gas_loc": 4000.0,
+      "die_loc": 3925.0,
+      "gas_usd": 1.3699,
+      "die_usd": 1.3442,
+      "fx_rate": 2920.0,
+      "status": "ok",
+      "source_url": "https://oilpricez.com/bi/burundi-oil-price"
+    },
+    {
+      "date": "2026-07-16",
       "gas_loc": 4000.0,
       "die_loc": 3925.0,
       "gas_usd": 1.3699,
@@ -26631,6 +26941,16 @@
       "fx_rate": 451.0,
       "status": "ok",
       "source_url": "https://oilpricez.com/km/comoros-oil-price"
+    },
+    {
+      "date": "2026-07-16",
+      "gas_loc": 760.0,
+      "die_loc": 680.0,
+      "gas_usd": 1.6851,
+      "die_usd": 1.5078,
+      "fx_rate": 451.0,
+      "status": "ok",
+      "source_url": "https://oilpricez.com/km/comoros-oil-price"
     }
   ],
   "Djibouti": [
@@ -27463,6 +27783,16 @@
       "fx_rate": 177.7,
       "status": "ok",
       "source_url": "https://afrotools.com/tools/fuel-tracker/djibouti/"
+    },
+    {
+      "date": "2026-07-16",
+      "gas_loc": 283.0,
+      "die_loc": 275.0,
+      "gas_usd": 1.5926,
+      "die_usd": 1.5476,
+      "fx_rate": 177.7,
+      "status": "ok",
+      "source_url": "https://afrotools.com/tools/fuel-tracker/djibouti/"
     }
   ],
   "Eritrea": [
@@ -28288,6 +28618,16 @@
     },
     {
       "date": "2026-07-15",
+      "gas_loc": 24.5,
+      "die_loc": 24.5,
+      "gas_usd": 1.6333,
+      "die_usd": 1.6333,
+      "fx_rate": 15.0,
+      "status": "ok",
+      "source_url": "https://afrotools.com/tools/fuel-tracker/eritrea/"
+    },
+    {
+      "date": "2026-07-16",
       "gas_loc": 24.5,
       "die_loc": 24.5,
       "gas_usd": 1.6333,
@@ -29137,6 +29477,16 @@
       "fx_rate": 131.0,
       "status": "ok",
       "source_url": "https://time.et/tools/fuel-price"
+    },
+    {
+      "date": "2026-07-16",
+      "gas_loc": 132.18,
+      "die_loc": 139.84,
+      "gas_usd": 1.009,
+      "die_usd": 1.0675,
+      "fx_rate": 131.0,
+      "status": "ok",
+      "source_url": "https://www.ethiopiablackmarket.com/gas-prices"
     }
   ],
   "Kenya": [
@@ -29989,6 +30339,16 @@
       "fx_rate": 130.5,
       "status": "stale",
       "source_url": "https://www.kurunzinews.com/news/relief-at-the-pump-as-epra-cuts-petrol-and-diesel-prices-for-june-july-cycle/"
+    },
+    {
+      "date": "2026-07-16",
+      "gas_loc": 214.03,
+      "die_loc": 214.03,
+      "gas_usd": 1.6401,
+      "die_usd": 1.6401,
+      "fx_rate": 130.5,
+      "status": "stale",
+      "source_url": "https://www.kurunzinews.com/news/relief-at-the-pump-as-epra-cuts-petrol-and-diesel-prices-for-june-july-cycle/"
     }
   ],
   "Madagascar": [
@@ -30821,6 +31181,16 @@
       "fx_rate": 4620.0,
       "status": "ok",
       "source_url": "https://voyagiste-madagascar.com/fuel-prices-madagascar-2026-gas-station-locations-and-cost-per-liter/"
+    },
+    {
+      "date": "2026-07-16",
+      "gas_loc": 5100.0,
+      "die_loc": 4860.0,
+      "gas_usd": 1.1039,
+      "die_usd": 1.0519,
+      "fx_rate": 4620.0,
+      "status": "ok",
+      "source_url": "https://oilpricez.com/mg/madagascar-oil-price"
     }
   ],
   "Malawi": [
@@ -31646,6 +32016,16 @@
     },
     {
       "date": "2026-07-15",
+      "gas_loc": 4965.0,
+      "die_loc": 4945.0,
+      "gas_usd": 2.8617,
+      "die_usd": 2.8501,
+      "fx_rate": 1735.0,
+      "status": "ok",
+      "source_url": "https://mera.mw/"
+    },
+    {
+      "date": "2026-07-16",
       "gas_loc": 4965.0,
       "die_loc": 4945.0,
       "gas_usd": 2.8617,
@@ -32505,6 +32885,16 @@
       "fx_rate": 46.5,
       "status": "ok",
       "source_url": "https://www.stcmu.com/ppm/press-release"
+    },
+    {
+      "date": "2026-07-16",
+      "gas_loc": 58.45,
+      "die_loc": 58.45,
+      "gas_usd": 1.257,
+      "die_usd": 1.257,
+      "fx_rate": 46.5,
+      "status": "ok",
+      "source_url": "https://www.stcmu.com/ppm/press-release"
     }
   ],
   "Rwanda": [
@@ -33347,6 +33737,16 @@
       "fx_rate": 1463.0,
       "status": "ok",
       "source_url": "https://www.dailyfuels.com/rwanda/"
+    },
+    {
+      "date": "2026-07-16",
+      "gas_loc": 2026.0,
+      "die_loc": 2026.0,
+      "gas_usd": 1.3848,
+      "die_usd": 1.3848,
+      "fx_rate": 1463.0,
+      "status": "ok",
+      "source_url": "https://www.dailyfuels.com/rwanda/"
     }
   ],
   "Seychelles": [
@@ -34172,6 +34572,16 @@
     },
     {
       "date": "2026-07-15",
+      "gas_loc": 22.68,
+      "die_loc": 23.19,
+      "gas_usd": 1.6028,
+      "die_usd": 1.6389,
+      "fx_rate": 14.15,
+      "status": "ok",
+      "source_url": "https://www.seypec.com/fuel-prices"
+    },
+    {
+      "date": "2026-07-16",
       "gas_loc": 22.68,
       "die_loc": 23.19,
       "gas_usd": 1.6028,
@@ -35011,6 +35421,16 @@
       "fx_rate": 1.0,
       "status": "ok",
       "source_url": "https://afrotools.com/tools/fuel-tracker/somalia/"
+    },
+    {
+      "date": "2026-07-16",
+      "gas_loc": 1.31,
+      "die_loc": 1.31,
+      "gas_usd": 1.31,
+      "die_usd": 1.31,
+      "fx_rate": 1.0,
+      "status": "ok",
+      "source_url": "https://afrotools.com/tools/fuel-tracker/somalia/"
     }
   ],
   "South Sudan": [
@@ -35836,6 +36256,16 @@
     },
     {
       "date": "2026-07-15",
+      "gas_loc": 2800.0,
+      "die_loc": 3000.0,
+      "gas_usd": 0.6162,
+      "die_usd": 0.6602,
+      "fx_rate": 4544.0,
+      "status": "ok",
+      "source_url": "https://afrotools.com/tools/fuel-tracker/south-sudan/"
+    },
+    {
+      "date": "2026-07-16",
       "gas_loc": 2800.0,
       "die_loc": 3000.0,
       "gas_usd": 0.6162,
@@ -36695,6 +37125,16 @@
       "fx_rate": 2710.0,
       "status": "ok",
       "source_url": "https://mabumbe.com/blog/ewura-fuel-prices-july-2026-tanzania-petrol-and-diesel-prices/"
+    },
+    {
+      "date": "2026-07-16",
+      "gas_loc": 2026.0,
+      "die_loc": 2026.0,
+      "gas_usd": 0.7476,
+      "die_usd": 0.7476,
+      "fx_rate": 2710.0,
+      "status": "stale",
+      "source_url": "https://mabumbe.com/blog/ewura-fuel-prices-july-2026-tanzania-petrol-and-diesel-prices/"
     }
   ],
   "Uganda": [
@@ -37527,6 +37967,16 @@
       "fx_rate": 3582.0,
       "status": "ok",
       "source_url": "https://ugandaprices.ug/fuel-price-checker/"
+    },
+    {
+      "date": "2026-07-16",
+      "gas_loc": 6250.0,
+      "die_loc": 6105.0,
+      "gas_usd": 1.7448,
+      "die_usd": 1.7044,
+      "fx_rate": 3582.0,
+      "status": "ok",
+      "source_url": "https://oilpricez.com/ug/uganda-oil-price"
     }
   ],
   "Angola": [
@@ -38352,6 +38802,16 @@
     },
     {
       "date": "2026-07-15",
+      "gas_loc": 300.0,
+      "die_loc": 400.0,
+      "gas_usd": 0.3272,
+      "die_usd": 0.4362,
+      "fx_rate": 917.0,
+      "status": "ok",
+      "source_url": "https://www.dailyfuels.com/angola/"
+    },
+    {
+      "date": "2026-07-16",
       "gas_loc": 300.0,
       "die_loc": 400.0,
       "gas_usd": 0.3272,
@@ -39191,6 +39651,16 @@
       "fx_rate": 13.54,
       "status": "ok",
       "source_url": "https://dailynews.gov.bw/news-detail/92117"
+    },
+    {
+      "date": "2026-07-16",
+      "gas_loc": 18.21,
+      "die_loc": 20.93,
+      "gas_usd": 1.3449,
+      "die_usd": 1.5458,
+      "fx_rate": 13.54,
+      "status": "ok",
+      "source_url": "https://dailynews.gov.bw/news-detail/92117"
     }
   ],
   "Eswatini": [
@@ -40016,6 +40486,16 @@
     },
     {
       "date": "2026-07-15",
+      "gas_loc": 26.17,
+      "die_loc": 29.2,
+      "gas_usd": 1.4108,
+      "die_usd": 1.5741,
+      "fx_rate": 18.55,
+      "status": "ok",
+      "source_url": "https://independentnews.co.sz/45503/business/eswatini-government-announces-lower-fuel-prices-effective-friday/"
+    },
+    {
+      "date": "2026-07-16",
       "gas_loc": 26.17,
       "die_loc": 29.2,
       "gas_usd": 1.4108,
@@ -40855,6 +41335,16 @@
       "fx_rate": 18.55,
       "status": "ok",
       "source_url": "https://petroleum.org.ls/download/fuel-price-report-july-2026/"
+    },
+    {
+      "date": "2026-07-16",
+      "gas_loc": 23.85,
+      "die_loc": 25.85,
+      "gas_usd": 1.2857,
+      "die_usd": 1.3935,
+      "fx_rate": 18.55,
+      "status": "ok",
+      "source_url": "https://petroleum.org.ls/download/fuel-price-report-july-2026/"
     }
   ],
   "Mozambique": [
@@ -41680,6 +42170,16 @@
     },
     {
       "date": "2026-07-15",
+      "gas_loc": 93.69,
+      "die_loc": 93.69,
+      "gas_usd": 1.4616,
+      "die_usd": 1.4616,
+      "fx_rate": 64.1,
+      "status": "ok",
+      "source_url": "https://www.petromoc.co.mz/precos-de-combustivel/"
+    },
+    {
+      "date": "2026-07-16",
       "gas_loc": 93.69,
       "die_loc": 93.69,
       "gas_usd": 1.4616,
@@ -42519,6 +43019,16 @@
       "fx_rate": 18.55,
       "status": "ok",
       "source_url": "https://thebrief.com.na/2026/07/gvt-cuts-petrol-price-by-n1-diesel-by-n4/"
+    },
+    {
+      "date": "2026-07-16",
+      "gas_loc": 16.0,
+      "die_loc": 16.0,
+      "gas_usd": 0.8625,
+      "die_usd": 0.8625,
+      "fx_rate": 18.55,
+      "status": "ok",
+      "source_url": "https://dailyfuels.com/namibia/"
     }
   ],
   "South Africa": [
@@ -43344,6 +43854,16 @@
     },
     {
       "date": "2026-07-15",
+      "gas_loc": 26.0,
+      "die_loc": 19.0,
+      "gas_usd": 1.4286,
+      "die_usd": 1.044,
+      "fx_rate": 18.2,
+      "status": "stale",
+      "source_url": "https://fuelsindustry.org.za/consumer-information/fuel-prices-current-past/"
+    },
+    {
+      "date": "2026-07-16",
       "gas_loc": 26.0,
       "die_loc": 19.0,
       "gas_usd": 1.4286,
@@ -44193,6 +44713,16 @@
       "fx_rate": 27.2,
       "status": "ok",
       "source_url": "https://efficacynews.africa/2026/06/30/erb-cuts-fuel-prices-for-july-2026/"
+    },
+    {
+      "date": "2026-07-16",
+      "gas_loc": 30.0,
+      "die_loc": 28.11,
+      "gas_usd": 1.1029,
+      "die_usd": 1.0335,
+      "fx_rate": 27.2,
+      "status": "ok",
+      "source_url": "https://www.mwebantu.com/erb-cuts-fuel-prices-for-july-as-oil-costs-drop-kwacha-firms/"
     }
   ],
   "Zimbabwe": [
@@ -45008,6 +45538,16 @@
     },
     {
       "date": "2026-07-15",
+      "gas_loc": 51.83,
+      "die_loc": 50.0,
+      "gas_usd": 1.9935,
+      "die_usd": 1.9231,
+      "fx_rate": 26.0,
+      "status": "ok",
+      "source_url": "https://www.zera.co.zw/"
+    },
+    {
+      "date": "2026-07-16",
       "gas_loc": 51.83,
       "die_loc": 50.0,
       "gas_usd": 1.9935,
